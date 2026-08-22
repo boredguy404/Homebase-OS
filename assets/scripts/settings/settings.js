@@ -156,6 +156,15 @@ document.querySelectorAll('[data-retro-wallpaper]').forEach(button => {
   };
 });
 
+document.querySelector('#reset-dancer')?.addEventListener('click', () => {
+  localStorage.removeItem('homebase-dancer-hidden');
+  const positions = (() => { try { return JSON.parse(localStorage.getItem('homebase-desktop-positions') || '{}'); } catch { return {}; } })();
+  delete positions['orbit-dancer'];
+  localStorage.setItem('homebase-desktop-positions', JSON.stringify(positions));
+  tellDesktop({ type: 'homebase-reset-dancer' });
+  status.textContent = 'Orbit dancer restored to its default desktop position.';
+});
+
 const preferences = () => Object.fromEntries(Object.keys(localStorage)
   .filter(key => key.startsWith('nightglass-') || key.startsWith('homebase-') || key.startsWith('radio-'))
   .map(key => [key, localStorage.getItem(key)]));
