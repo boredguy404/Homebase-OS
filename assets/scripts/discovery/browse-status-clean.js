@@ -1,0 +1,1 @@
+(()=>{const status=document.querySelector('#status');if(!status)return;new MutationObserver(()=>{if(/\bresult(s)? · page \d+ of \d+/.test(status.textContent))status.textContent=''}).observe(status,{childList:true,characterData:true,subtree:true})})();

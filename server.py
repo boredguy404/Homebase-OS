@@ -342,6 +342,22 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                             items.extend({"kind":"developer discussion","title":x.get("title") or "Untitled","summary":str(x.get("points",0))+" points · "+str(x.get("num_comments",0))+" comments on Hacker News","meta":str(x.get("created_at","")).replace("T"," ")[:16],"url":x.get("url") or "https://news.ycombinator.com/item?id="+str(x.get("objectID",""))} for x in hn.get("hits",[]) if x.get("title"))
                         except (OSError, ValueError, KeyError):
                             pass
+                    if section == "ai":
+                        try:
+                            arxiv_url="https://export.arxiv.org/api/query?"+urllib.parse.urlencode({"search_query":"all:machine learning OR all:large language model OR all:artificial intelligence","start":0,"max_results":28,"sortBy":"submittedDate","sortOrder":"descending"})
+                            arxiv_request=urllib.request.Request(arxiv_url,headers={"User-Agent":"Homebase-OS/1.0"})
+                            with urllib.request.urlopen(arxiv_request,timeout=12) as response:arxiv=ET.fromstring(response.read())
+                            atom="{http://www.w3.org/2005/Atom}"
+                            items.extend({"kind":"AI research","title":" ".join((node.findtext(atom+"title") or "Untitled").split()),"summary":" ".join((node.findtext(atom+"summary") or "Recent AI research preprint.").split())[:500],"meta":(node.findtext(atom+"published") or "")[:10]+" · arXiv","url":next((link.get("href") for link in node.findall(atom+"link") if link.get("rel") in {None,"alternate"}),"")} for node in arxiv.findall(atom+"entry"))
+                        except (OSError, ValueError, KeyError, ET.ParseError):
+                            pass
+                        try:
+                            reddit_request=urllib.request.Request("https://www.reddit.com/r/MachineLearning/.rss",headers={"User-Agent":"Homebase-OS/1.0"})
+                            with urllib.request.urlopen(reddit_request,timeout=10) as response:reddit=ET.fromstring(response.read())
+                            atom="{http://www.w3.org/2005/Atom}"
+                            items.extend({"kind":"AI community","title":" ".join((node.findtext(atom+"title") or "Untitled").split()),"summary":"MachineLearning community discussion.","meta":(node.findtext(atom+"updated") or "")[:10]+" · r/MachineLearning","url":next((link.get("href") for link in node.findall(atom+"link") if link.get("rel") in {None,"alternate"}),"")} for node in reddit.findall(atom+"entry")[:28])
+                        except (OSError, ValueError, KeyError, ET.ParseError):
+                            pass
                     if section == "dev":
                         try:
                             devto_url="https://dev.to/api/articles?"+urllib.parse.urlencode({"per_page":36,"top":14})
@@ -350,8 +366,14 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                             items.extend({"kind":"developer article","title":x.get("title") or "Untitled","summary":x.get("description") or "A current developer article from DEV Community.","meta":(x.get("readable_publish_date") or "DEV Community")+" · "+str(x.get("positive_reactions_count",0))+" reactions","image":x.get("cover_image") or "","url":x.get("url") or ""} for x in devto if x.get("title"))
                         except (OSError, ValueError, KeyError):
                             pass
+                        try:
+                            lobsters_request=urllib.request.Request("https://lobste.rs/rss",headers={"User-Agent":"Homebase-OS/1.0"})
+                            with urllib.request.urlopen(lobsters_request,timeout=10) as response:lobsters=ET.fromstring(response.read())
+                            items.extend({"kind":"developer discussion","title":node.findtext("title",default="Untitled"),"summary":re.sub("<[^>]+>","",node.findtext("description",default="Developer discussion from Lobsters.")),"meta":node.findtext("pubDate",default="")+" · Lobsters","url":node.findtext("link",default="")} for node in lobsters.findall(".//item")[:35])
+                        except (OSError, ValueError, KeyError, ET.ParseError):
+                            pass
                     seen_titles=set();items=[item for item in items if item.get("title") and not (item["title"].casefold() in seen_titles or seen_titles.add(item["title"].casefold()))]
-                    result={"items":items,"source":labels[section]+(" · Google News RSS + Hacker News + DEV Community" if section=="dev" else " · Google News RSS + Hacker News")}
+                    result={"items":items,"source":labels[section]+(" · Google News RSS + Hacker News + DEV Community + Lobsters" if section=="dev" else " · Google News RSS + Hacker News + arXiv + r/MachineLearning" if section=="ai" else " · Google News RSS")}
                 else: raise ValueError("unknown browse source")
                 BROWSE_CACHE[cache_key]=(time.time(),result);self._json(200,result)
             except (OSError,ValueError,KeyError,ET.ParseError) as error:self._json(502,{"error":str(error),"items":[]})
