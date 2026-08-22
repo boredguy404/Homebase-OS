@@ -1,0 +1,9 @@
+addEventListener('DOMContentLoaded',()=>{
+  const player=document.querySelector('#player'),head=document.querySelector('.player-tools');
+  const button=document.createElement('button');button.className='perf-toggle';button.textContent='Performance';head?.prepend(button);
+  document.body.insertAdjacentHTML('beforeend','<aside id="perf-hud" class="perf-hud" hidden><div id="perf-grade" class="perf-grade">Measuring…</div><div class="perf-row"><span>Render rate</span><b id="perf-fps">—</b></div><div class="perf-row"><span>Frame time</span><b id="perf-frame">—</b></div><div class="perf-row"><span>System load</span><b id="perf-load">—</b></div><div class="perf-row"><span>Memory used</span><b id="perf-memory">—</b></div><div class="perf-row"><span>Mode</span><b id="perf-mode">Balanced</b></div></aside>');
+  const hud=document.querySelector('#perf-hud');button.onclick=()=>hud.hidden=!hud.hidden;
+  new MutationObserver(()=>document.body.classList.toggle('playing',player.style.display==='grid')).observe(player,{attributes:true,attributeFilter:['style']});
+  let frames=0,last=performance.now(),fps=60;function tick(now){frames++;if(now-last>=1000){fps=frames*1000/(now-last);frames=0;last=now;document.querySelector('#perf-fps').textContent=Math.round(fps)+' FPS';document.querySelector('#perf-frame').textContent=(1000/fps).toFixed(1)+' ms';const grade=document.querySelector('#perf-grade'),label=fps>=54?'Smooth':fps>=42?'Okay':'Struggling';grade.textContent=label;grade.className='perf-grade '+label.toLowerCase()}requestAnimationFrame(tick)}requestAnimationFrame(tick);
+  async function system(){try{const s=await fetch('/api/system').then(r=>r.json());document.querySelector('#perf-load').textContent=s.load;document.querySelector('#perf-memory').textContent=s.memory_used_percent+'%'}catch{}}system();setInterval(system,5000);
+});

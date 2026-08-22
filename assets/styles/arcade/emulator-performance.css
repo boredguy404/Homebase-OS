@@ -1,0 +1,5 @@
+/* Static CRT texture: same face, no full-screen repaint loop. */
+#player.n64-session:fullscreen .screen:before,#player.n64-session:fullscreen .screen:after{display:none!important}
+#player.n64-session:fullscreen .screen #game{filter:none!important}
+#player.n64-session:fullscreen .screen{transform:none!important;box-shadow:inset 0 0 0 2px #050706,0 0 0 2px #34383c!important}
+.screen:before,.screen:after,#player:fullscreen .screen:before,#player:fullscreen .screen:after,#game:fullscreen:before,#game:fullscreen:after{animation:none!important;will-change:auto!important}.screen:before,#game:fullscreen:before{opacity:.46!important;background:repeating-linear-gradient(0deg,#00000024 0 1px,transparent 1px 4px),repeating-linear-gradient(90deg,#ff000008 0 1px,#00ff0005 1px 2px,#0000ff08 2px 3px)!important}.screen:after,#game:fullscreen:after{opacity:.88!important;background:radial-gradient(ellipse at center,transparent 57%,#00000070 91%,#000 100%)!important;box-shadow:inset 0 0 42px #000!important}.app-open:after,.app-open .tile:before,.app-open .gyro3d{animation-play-state:paused!important}

@@ -1,0 +1,9 @@
+HOMEBASE — ONE BLOCK TO BOOT
+
+Paste this in Linux Terminal:
+
+curl -fsSL https://raw.githubusercontent.com/boredguy404/homebase/main/install.sh | bash
+
+Or double-click Homebase on the Desktop. Homebase runs locally and opens at the Linux container IP shown in Terminal.
+
+GitHub publishing setup is inside Homebase under “Publish Homebase.” The public edition must not contain ROMs, BIOS files, saves, imported music, credentials, or copyrighted capture media. Users add their own legally obtained game files during first-run setup.

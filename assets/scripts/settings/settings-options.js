@@ -1,0 +1,1 @@
+document.querySelectorAll('[data-setting]').forEach(input=>{const key=input.dataset.setting,stored=localStorage.getItem(key);if(stored!==null)input.checked=stored==='true';input.onchange=()=>{localStorage.setItem(key,String(input.checked));document.querySelector('#status').textContent='Setting saved.'}});

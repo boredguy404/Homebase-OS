@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="108" fill="#090b0f"/>
+  <circle cx="256" cy="256" r="174" fill="none" stroke="#d9ff43" stroke-width="8" opacity=".35"/>
+  <circle cx="256" cy="256" r="120" fill="none" stroke="#d9ff43" stroke-width="8" opacity=".65"/>
+  <circle cx="256" cy="256" r="62" fill="#d9ff43"/>
+  <circle cx="379" cy="132" r="21" fill="#eef0ea"/>
+  <path d="M256 82a174 174 0 0 1 123 50M133 379a174 174 0 0 1-51-123" fill="none" stroke="#eef0ea" stroke-width="12" stroke-linecap="round"/>
+  <text x="256" y="271" text-anchor="middle" font-family="monospace" font-size="44" font-weight="bold" fill="#090b0f">RO</text>
+</svg>

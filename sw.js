@@ -1,0 +1,36 @@
+const CACHE='homebase-v57';
+const SHELL=[
+  '/', '/index.html', '/manifest.webmanifest', '/assets/icons/homebase-icon.svg',
+  '/pages/arcade.html', '/pages/discover.html', '/pages/files.html', '/pages/apps.html',
+  '/pages/settings.html', '/pages/github-setup.html', '/pages/readme-studio.html',
+  '/assets/styles/homebase/visual-deck.css', '/assets/styles/homebase/shell.css',
+  '/assets/styles/homebase/tiles.css', '/assets/styles/homebase/clock.css',
+  '/assets/styles/homebase/gestures.css', '/assets/styles/homebase/indicators.css',
+  '/assets/styles/homebase/system-insights.css', '/assets/styles/homebase/scroll-motion.css',
+  '/assets/styles/homebase/themes.css', '/assets/styles/homebase/mini-player.css',
+  '/assets/styles/homebase/tile-layout.css', '/assets/styles/homebase/glass.css',
+  '/assets/styles/homebase/header-actions.css', '/assets/styles/homebase/orbit-performance.css',
+  '/assets/styles/arcade/archive.css', '/assets/styles/arcade/emulator-performance.css',
+  '/assets/styles/arcade/game-details.css', '/assets/styles/arcade/multiplayer.css',
+  '/assets/styles/arcade/performance.css', '/assets/styles/discovery/discover.css',
+  '/assets/styles/discovery/discover-gallery.css', '/assets/styles/files/files.css',
+  '/assets/styles/files/dialog.css', '/assets/styles/apps/catalog.css',
+  '/assets/styles/apps/apps-install-modal.css', '/assets/styles/settings/settings.css',
+  '/assets/styles/settings/settings-dialog.css', '/assets/styles/shared/modal-global.css',
+  '/assets/styles/shared/ultra-retro.css', '/assets/scripts/homebase/deck.js',
+  '/assets/scripts/homebase/deck-gestures.js', '/assets/scripts/homebase/gyro3d.js',
+  '/assets/scripts/homebase/clock.js', '/assets/scripts/homebase/system-insights.js',
+  '/assets/scripts/homebase/scroll-motion.js', '/assets/scripts/arcade/game-controls.js',
+  '/assets/scripts/arcade/game-capture.js', '/assets/scripts/arcade/game-details.js',
+  '/assets/scripts/arcade/library-extras.js', '/assets/scripts/arcade/performance.js',
+  '/assets/scripts/arcade/multiplayer.js', '/assets/scripts/arcade/browser-saves.js',
+  '/assets/scripts/discovery/discover.js', '/assets/scripts/files/files.js',
+  '/assets/scripts/apps/apps-enhance.js', '/assets/scripts/apps/apps-install-modal.js',
+  '/assets/scripts/apps/install-jobs.js',
+  '/assets/scripts/settings/settings.js', '/assets/scripts/settings/settings-restore.js',
+  '/assets/scripts/settings/settings-options.js', '/assets/scripts/shared/theme-sync.js',
+  '/assets/scripts/shared/github-status.js'
+];
+self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;event.respondWith(fetch(event.request).then(response=>{const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy));return response}).catch(()=>caches.match(event.request))) });

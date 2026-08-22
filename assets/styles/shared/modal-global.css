@@ -1,0 +1,2 @@
+dialog::backdrop{background:#020406b8!important;backdrop-filter:blur(12px) saturate(.75)!important;-webkit-backdrop-filter:blur(12px) saturate(.75)!important}
+.detail:not([hidden]),#uninstall-confirm:not([hidden]){background:#020406b8!important;backdrop-filter:blur(12px) saturate(.75);-webkit-backdrop-filter:blur(12px) saturate(.75)}

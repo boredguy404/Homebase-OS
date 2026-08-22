@@ -1,0 +1,49 @@
+# User-provided or copyrighted content — never publish
+roms/
+imports/
+saves/
+covers/
+doom/
+bin/
+
+# Downloaded third-party runtime (installed locally by setup)
+emulatorjs/
+
+# Personal data and generated media
+*.gba
+*.gb
+*.gbc
+*.z64
+*.n64
+*.v64
+*.chd
+*.iso
+*.cue
+*.bin
+*.sav
+*.srm
+*.state
+*.mp3
+*.flac
+*.wav
+*.ogg
+*.gif
+*.webm
+*.mp4
+*.png
+*.jpg
+*.jpeg
+!media/
+!media/*.png
+
+# Local/runtime files
+__pycache__/
+*.py[cod]
+*.log
+*.pid
+.DS_Store
+.env
+.env.*
+node_modules/
+tools/
+launch-*-xbox.sh

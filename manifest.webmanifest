@@ -1,0 +1,11 @@
+{
+  "name": "Homebase",
+  "short_name": "Homebase",
+  "description": "Touch-first Chromebook command deck",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#090b0e",
+  "theme_color": "#090b0e",
+  "icons": [{"src":"/homebase-icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}

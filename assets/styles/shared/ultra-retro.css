@@ -1,0 +1,32 @@
+[data-theme="ultra-retro"]{--action:#d85b18;--focus:#ffba43;--signal-rgb:255,176,46;--signal-alt-rgb:70,255,149;--bg:#100b08;--panel:#21160f;--line:#674426;--text:#fff4d4;--muted:#c8a87b}
+[data-theme="ultra-retro"] body{background:radial-gradient(ellipse at 72% 2%,#ff7a1838,transparent 38%),radial-gradient(ellipse at 12% 82%,#24dc8430,transparent 40%),#100b08!important;color:#fff4d4}
+[data-theme="ultra-retro"] body:before{content:"";position:fixed;z-index:999;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 3px,#0002 3px 4px);opacity:.38}
+[data-theme="ultra-retro"] .tile,[data-theme="ultra-retro"] .metric,[data-theme="ultra-retro"] section{--accent:#ffb02e;background:linear-gradient(145deg,#3a2218cc,#17100dd4 72%)!important;border-color:#8c572f!important;box-shadow:inset 0 1px #ffd99331,0 14px 38px #0007!important}
+[data-theme="ultra-retro"] .tile:nth-child(3n+2){--accent:#46ff95}[data-theme="ultra-retro"] .tile:nth-child(3n){--accent:#ff6b42}
+[data-theme="ultra-retro"] .tile.primary{background:linear-gradient(135deg,#b94a12,#6f2610 58%,#183727)!important;border-color:#ffbd55!important}
+[data-theme="ultra-retro"] button,[data-theme="ultra-retro"] .tag,[data-theme="ultra-retro"] small{letter-spacing:.08em}
+[data-theme="ultra-retro"] .screen{box-shadow:inset 0 0 65px #000,inset 0 0 0 3px #080402,0 0 0 2px #714520,0 0 34px #ff9e2530!important}
+@media(prefers-reduced-motion:reduce){[data-theme="ultra-retro"] body:before{display:none}}
+
+/* Ultra Retro is a complete pixel-era presentation, not a palette swap. */
+[data-theme="ultra-retro"]{color-scheme:dark;--action:#e86119;--focus:#ffd34e;--signal-rgb:255,174,46;--signal-alt-rgb:68,224,174;--bg:#090705;--panel:#17110c;--line:#ffb13b;--text:#fff3c4;--muted:#d0a968;font-family:"Courier New",ui-monospace,monospace!important}
+[data-theme="ultra-retro"] body{font-family:"Courier New",ui-monospace,monospace!important;background-color:#090705!important;background-image:linear-gradient(90deg,#ffae1f08 1px,transparent 1px),linear-gradient(#ffae1f08 1px,transparent 1px),radial-gradient(circle at 75% 8%,#f2651638,transparent 30%),radial-gradient(circle at 12% 80%,#24c99724,transparent 34%)!important;background-size:8px 8px,8px 8px,100% 100%,100% 100%!important}
+[data-theme="ultra-retro"] body:before{background:repeating-linear-gradient(0deg,transparent 0 2px,#0005 2px 4px)!important;opacity:.48!important}
+[data-theme="ultra-retro"] body:after{content:"";position:fixed;z-index:998;inset:0;pointer-events:none;border:8px solid #1d1208;box-shadow:inset 0 0 0 2px #ffb13b66,inset 0 0 80px #000!important;border-radius:0!important;filter:none!important;opacity:1!important;animation:none!important}
+[data-theme="ultra-retro"] h1,[data-theme="ultra-retro"] h2,[data-theme="ultra-retro"] .wordmark,[data-theme="ultra-retro"] .brand{font-family:"Courier New",ui-monospace,monospace!important;text-transform:uppercase;letter-spacing:-.045em!important;text-shadow:3px 3px 0 #7b2d0d,-1px -1px 0 #ffcf65}
+[data-theme="ultra-retro"] h1{font-weight:900!important;line-height:.88!important}
+[data-theme="ultra-retro"] small,[data-theme="ultra-retro"] .tag,[data-theme="ultra-retro"] .section-title,[data-theme="ultra-retro"] .eyebrow{font-family:"Courier New",ui-monospace,monospace!important;color:#ffd34e!important;letter-spacing:.12em!important;text-shadow:1px 1px #000}
+[data-theme="ultra-retro"] .tile,[data-theme="ultra-retro"] .metric,[data-theme="ultra-retro"] .game,[data-theme="ultra-retro"] .card,[data-theme="ultra-retro"] section,[data-theme="ultra-retro"] dialog,[data-theme="ultra-retro"] .file{border:2px solid #ffb13b!important;border-radius:2px!important;background:linear-gradient(135deg,#302014 0 12%,#17100b 12% 86%,#26180f 86%)!important;box-shadow:4px 4px 0 #6c2b10,8px 8px 0 #050302,inset 2px 2px 0 #ffe29c33!important;clip-path:polygon(0 8px,8px 8px,8px 0,calc(100% - 8px) 0,calc(100% - 8px) 8px,100% 8px,100% calc(100% - 8px),calc(100% - 8px) calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,8px calc(100% - 8px),0 calc(100% - 8px))}
+[data-theme="ultra-retro"] .tile:hover,[data-theme="ultra-retro"] .tile:focus-visible,[data-theme="ultra-retro"] .game:hover,[data-theme="ultra-retro"] .card:hover{transform:translate(-2px,-2px)!important;box-shadow:6px 6px 0 #ff7a1a,10px 10px 0 #050302!important;filter:saturate(1.25)}
+[data-theme="ultra-retro"] .tile.primary{background:linear-gradient(135deg,#c94c11 0 12%,#812b0d 12% 56%,#164a38 56% 86%,#0b2b22 86%)!important;border-color:#ffe277!important}
+[data-theme="ultra-retro"] .tile i,[data-theme="ultra-retro"] .app-card i,[data-theme="ultra-retro"] .file i{border:2px solid #ffd34e!important;border-radius:0!important;background:#0b0907!important;color:#ffd34e!important;box-shadow:3px 3px 0 #7c310f!important;animation:retroIcon 1.2s steps(2,end) infinite!important}
+[data-theme="ultra-retro"] button,[data-theme="ultra-retro"] input,[data-theme="ultra-retro"] select,[data-theme="ultra-retro"] .back,[data-theme="ultra-retro"] .layer-back{font-family:"Courier New",ui-monospace,monospace!important;border-radius:0!important;border:2px solid #ffbf45!important;background:#1b110b!important;color:#fff0bb!important;box-shadow:3px 3px 0 #6d2c10!important;text-transform:uppercase;font-weight:700}
+[data-theme="ultra-retro"] button:active,[data-theme="ultra-retro"] .back:active{transform:translate(3px,3px)!important;box-shadow:none!important}
+[data-theme="ultra-retro"] .gyro-stage{filter:contrast(1.25) saturate(1.35) drop-shadow(8px 8px 0 #000)!important}
+[data-theme="ultra-retro"] canvas,[data-theme="ultra-retro"] img{image-rendering:pixelated}
+[data-theme="ultra-retro"] .gyro-ring{border-style:dashed!important;border-width:3px!important;animation-timing-function:steps(24,end)!important}
+[data-theme="ultra-retro"] .gyro-core{border-radius:0!important;clip-path:polygon(25% 0,75% 0,100% 25%,100% 75%,75% 100%,25% 100%,0 75%,0 25%);animation-timing-function:steps(12,end)!important}
+[data-theme="ultra-retro"] .clock:before{content:"HI-SCORE 404  ·  ";color:#ffbe40}
+[data-theme="ultra-retro"] .screen,[data-theme="ultra-retro"] .bezel{border-radius:2px!important;border:3px solid #ffb13b!important;box-shadow:8px 8px 0 #050302,inset 0 0 50px #000!important}
+[data-theme="ultra-retro"] .orbit-player,[data-theme="ultra-retro"] .app-layer{border-radius:0!important;border:4px solid #ffb13b!important;box-shadow:inset 0 0 0 4px #090705!important}
+@keyframes retroIcon{0%,49%{transform:translateY(0)}50%,100%{transform:translateY(-2px)}}

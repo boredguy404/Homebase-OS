@@ -1,0 +1,2 @@
+/* One real icon per tile; the opposite corner is only reflected light. */
+.tile,.tile.primary{opacity:1!important;visibility:visible!important;animation:none!important}.tile:after,.tile.primary:after{display:none!important;content:none!important}.tile:before{animation:homebaseSheen 9s ease-in-out infinite!important}
