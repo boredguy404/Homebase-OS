@@ -1,0 +1,2 @@
+/* Classic system-blue title bars always use white text. */
+html[data-theme="ultra-retro"] dialog .retro-window-title,html[data-theme="ultra-retro"] dialog .retro-window-title span{color:#fff!important;text-shadow:none!important}
