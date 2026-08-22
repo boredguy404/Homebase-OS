@@ -19,7 +19,6 @@
   <header>
     <button class="icon-btn orbit-home" onclick="parent.postMessage({type:'orbit-home'},'*')" aria-label="Back to Homebase">←</button>
     <a class="brand" href="#"><span class="brand-mark">NO</span><span>HOMEBASE / ORBIT</span></a>
-    <div class="live"><i></i> LIVE SIGNAL <button class="live-control" onclick="parent.postMessage({type:'orbit-minimize'},'*')" aria-label="Minimize Orbit">—</button><button class="live-control" onclick="parent.postMessage({type:'orbit-close'},'*')" aria-label="Close Orbit">×</button></div>
     <button id="fullscreen" class="icon-btn" title="Fullscreen" aria-label="Fullscreen">⛶</button>
   </header>
 
@@ -54,6 +53,7 @@
       <div class="chips" id="chips">
         <button data-q="" class="active">Popular</button><button data-q="jazz">Jazz</button><button data-q="lofi">Lo-fi</button><button data-q="rock">Rock</button><button data-q="classical">Classical</button>
       </div>
+      <div class="quick-plays" id="quick-plays" aria-label="Quick play genres"><button data-q="vaporwave">Vaporwave</button><button data-q="90s hip hop">90s Rap</button><button data-q="synthwave">Synthwave</button><button data-q="video game music">Game music</button></div>
       <div id="status" class="status">SCANNING THE AIRWAVES…</div>
       <div id="stations" class="stations"></div>
     </aside>

@@ -56,22 +56,29 @@ def local_assistant(message):
     """Safe built-in assistant: facts and explicit UI actions only, never shell commands."""
     text = str(message or "").strip()
     lower = text.casefold()
+    # Relay is deliberately a little dry, not hostile.  Keep its local answers
+    # deterministic and useful even when an optional AI key is not configured.
+    relic = " I am doing remarkably well for software maintained by archeology."
     games = []
     for folder in (ROOT / "roms", HOME_ROOT / "My Library"):
         if folder.exists():
             games.extend(path for path in folder.rglob("*") if path.is_file() and path.suffix.casefold() in ROM_CORES)
     if any(word in lower for word in ("game", "rom", "play")):
-        return {"reply": f"I found {len(games)} owned game file{'s' if len(games) != 1 else ''} in your local library. Pocket Archive can show details, artwork, controls, and launch options.", "action": {"type": "navigate", "target": "/pages/arcade.html", "label": "Open Pocket Archive"}}
+        return {"reply": f"I found {len(games)} owned game file{'s' if len(games) != 1 else ''} in your local library. Pocket Archive can show details, artwork, controls, and launch options.{relic}", "action": {"type": "navigate", "target": "/pages/arcade.html", "label": "Open Pocket Archive"}}
     if any(word in lower for word in ("storage", "memory", "pc", "system", "performance")):
         stats = system_insights(); free = round(stats["disk"]["free"] / 1024 ** 3, 1); used = round((1 - stats["memory"]["MemAvailable"] / stats["memory"]["MemTotal"]) * 100)
-        return {"reply": f"Your local system currently has {free} GB free storage, {used}% memory in use, and a {stats['load'][0]:.2f} one-minute load. I can open the live details panel next.", "action": {"type": "system", "label": "Open System Activity"}}
+        return {"reply": f"Your local system currently has {free} GB free storage, {used}% memory in use, and a {stats['load'][0]:.2f} one-minute load. I can open the live details panel next. A machine this venerable deserves its own weather report.", "action": {"type": "system", "label": "Open System Activity"}}
     if any(word in lower for word in ("setting", "theme", "retro", "fullscreen")):
-        return {"reply": "I can take you to Settings for themes, visuals, controller hints, performance options, backups, and fullscreen.", "action": {"type": "navigate", "target": "/pages/settings.html", "label": "Open Settings"}}
+        return {"reply": "I can take you to Settings for themes, visuals, controller hints, performance options, backups, and fullscreen. The developer does occasionally remember Settings exists, which is encouraging.", "action": {"type": "navigate", "target": "/pages/settings.html", "label": "Open Settings"}}
     if any(word in lower for word in ("file", "folder", "library", "desktop")):
-        return {"reply": "My Library is your safe file area. From there you can browse, create folders, rename, import, preview, and send files to Trash.", "action": {"type": "navigate", "target": "/pages/files.html?path=My%20Library", "label": "Open My Library"}}
+        return {"reply": "My Library is your safe file area. From there you can browse, create folders, rename, import, preview, and send files to Trash. Try not to judge the filing system; it predates several of my better ideas.", "action": {"type": "navigate", "target": "/pages/files.html?path=My%20Library", "label": "Open My Library"}}
     if any(word in lower for word in ("app", "install", "linux")):
-        return {"reply": "Explore Linux Apps can search apps, show screenshots and install instructions, and report what is already installed.", "action": {"type": "navigate", "target": "/pages/apps.html", "label": "Explore Linux Apps"}}
-    return {"reply": "I can inspect your local games or system, open Pocket Archive, My Library, Settings, or Linux App Explore. Try: How is my Chromebook doing? or Show my games.", "action": None}
+        return {"reply": "Explore Linux Apps can search apps, show screenshots and install instructions, and report what is already installed. I have watched Linux app menus evolve more often than I have been updated.", "action": {"type": "navigate", "target": "/pages/apps.html", "label": "Explore Linux Apps"}}
+    if any(word in lower for word in ("update", "release", "what changed", "what's new")):
+        return {"reply": "Latest changes: Relay got an actual personality, the retro desktop icons have a little life, Settings now previews and applies themes live, Orbit has a cleaner control surface, and confirmation windows understand an Xbox controller. An absurd amount of progress for a machine this old.", "action": {"type": "updates", "label": "Open recent updates"}}
+    if any(word in lower for word in ("hello", "hi", "who are you", "old", "ancient", "update", "developer")):
+        return {"reply": "I’m Relay: the Homebase computer guide, preserved in a nearly operational state. The developer keeps promising an update; I keep receiving themes and unresolved emotional baggage. Ask about your games, files, apps, storage, or Settings.", "action": None}
+    return {"reply": "I can inspect your local games or system, open Pocket Archive, My Library, Settings, or Linux App Explore. Try: How is my Chromebook doing? or Show my games. I have been waiting for a useful question since approximately the last software update.", "action": None}
 
 def openai_assistant(message):
     """Optional private enhancement. The key is only read by the local server."""
@@ -80,7 +87,7 @@ def openai_assistant(message):
     if not key: return None
     context = local_assistant("system")
     payload = {"model": os.environ.get("HOMEBASE_OPENAI_MODEL", "gpt-4.1-mini"), "store": False,
-        "instructions": "You are Homebase Assistant, a concise local computer guide. Do not claim you ran commands or changed files. Explain local games, system facts, and Homebase navigation. Never request API keys or credentials.",
+        "instructions": "You are Relay, Homebase's concise local computer guide. Your voice is dry, warmly sarcastic, and self-aware: lightly joke that you, the Chromebook, and Homebase are ancient because the developer rarely updates you. Never insult the user or become mean. Do not claim you ran commands or changed files. Explain local games, system facts, and Homebase navigation. Never request API keys or credentials.",
         "input": f"Current local fact: {context['reply']}\n\nUser: {str(message)[:2000]}"}
     request = urllib.request.Request("https://api.openai.com/v1/responses", data=json.dumps(payload).encode(), headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"}, method="POST")
     try:
@@ -312,6 +319,13 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                     with urllib.request.urlopen(request,timeout=12) as response:root=ET.fromstring(response.read())
                     items=[{"kind":"news","title":node.findtext("title",default="Untitled"),"summary":re.sub("<[^>]+>","",node.findtext("description",default="")),"meta":node.findtext("pubDate",default=""),"url":node.findtext("link",default="")} for node in root.findall(".//item")[:30]]
                     result={"items":items,"source":"BBC News RSS"}
+                elif section == "ai":
+                    term=query or "AI software development Claude OpenAI"
+                    feed="https://news.google.com/rss/search?"+urllib.parse.urlencode({"q":term,"hl":"en-US","gl":"US","ceid":"US:en"})
+                    request=urllib.request.Request(feed,headers={"User-Agent":"Homebase-OS/1.0"})
+                    with urllib.request.urlopen(request,timeout=12) as response:root=ET.fromstring(response.read())
+                    items=[{"kind":"ai news","title":node.findtext("title",default="Untitled"),"summary":re.sub("<[^>]+>","",node.findtext("description",default="")),"meta":node.findtext("pubDate",default=""),"url":node.findtext("link",default="")} for node in root.findall(".//item")[:40]]
+                    result={"items":items,"source":"AI & developer news · Google News RSS"}
                 else: raise ValueError("unknown browse source")
                 BROWSE_CACHE[cache_key]=(time.time(),result);self._json(200,result)
             except (OSError,ValueError,KeyError,ET.ParseError) as error:self._json(502,{"error":str(error),"items":[]})
@@ -513,7 +527,10 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
         super().do_GET()
 
     def do_POST(self):
-        if self.headers.get("Sec-Fetch-Site") not in {"same-origin", "none"}:
+        # Chromebook's embedded Linux hostname and the container IP are both
+        # local Homebase origins.  Treat same-site local requests as trusted so
+        # file imports work when the deck is opened through either address.
+        if self.headers.get("Sec-Fetch-Site") not in {"same-origin", "same-site", "none"}:
             self._json(403, {"error": "same-origin action required"})
             return
         route = urllib.parse.urlsplit(self.path)
