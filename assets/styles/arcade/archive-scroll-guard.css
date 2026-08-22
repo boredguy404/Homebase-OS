@@ -1,0 +1,2 @@
+/* A fixed taskbar must not turn the browseable archive into a fixed-height canvas. */
+html:has(#library),body:has(#library){height:auto!important;min-height:100%!important;overflow-y:auto!important;overscroll-behavior-y:auto!important}body:has(#library){touch-action:pan-y!important}.archive-taskbar{pointer-events:auto}
