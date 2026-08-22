@@ -1,0 +1,2 @@
+/* Archive owns normal document scrolling when no game player is open. */
+(()=>{const restore=()=>{const player=document.querySelector('#player'),browsing=!player||getComputedStyle(player).display==='none';if(!browsing)return;document.documentElement.style.overflowY='auto';document.body.style.overflowY='auto';document.body.style.touchAction='pan-y';document.body.style.overscrollBehaviorY='auto'};addEventListener('DOMContentLoaded',restore);addEventListener('pageshow',restore);setInterval(restore,800)})();
