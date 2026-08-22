@@ -136,7 +136,7 @@ def create_relay_app(description, framework):
     blocked=re.compile(r"<\s*script|<\s*iframe|\b(fetch|xmlhttprequest|websocket|eval|import\s*\(|document\.cookie)\b",re.I)
     if any(blocked.search(value) for value in parts.values()): raise ValueError("Relay generated an unsafe browser capability; nothing was saved")
     folder.mkdir(parents=True)
-    page="<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>"+html.escape(name)+" · Homebase</title><link rel=\"stylesheet\" href=\"/assets/styles/shared/ultra-retro.css\"><script src=\"/assets/scripts/shared/theme-sync.js\"></script><style>body{margin:0;background:#101719;color:#edf5f2;font:16px system-ui}.app{max-width:900px;margin:auto;padding:30px 20px 80px}button,input,textarea{font:inherit}button{min-height:44px;cursor:pointer} "+parts["css"]+"</style></head><body><main class=\"app\">"+parts["html"]+"</main><script>"+parts["js"]+"<\/script></body></html>"
+    page="<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>"+html.escape(name)+" · Homebase</title><link rel=\"stylesheet\" href=\"/assets/styles/shared/ultra-retro.css\"><script src=\"/assets/scripts/shared/theme-sync.js\"></script><style>body{margin:0;background:#101719;color:#edf5f2;font:16px system-ui}.app{max-width:900px;margin:auto;padding:30px 20px 80px}button,input,textarea{font:inherit}button{min-height:44px;cursor:pointer} "+parts["css"]+"</style></head><body><main class=\"app\">"+parts["html"]+"</main><script>"+parts["js"]+"</script></body></html>"
     (folder/"index.html").write_text(page,encoding="utf-8")
     (folder/"app.json").write_text(json.dumps({"name":name,"description":str(app.get("description") or "Relay-generated local app.")[:180],"icon":"✦","entry":"index.html","framework":framework},indent=2),encoding="utf-8")
     return next(app for app in user_apps() if app["id"]==str(folder.relative_to(USER_APPS)).replace(os.sep,"/"))
@@ -362,7 +362,7 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                     term=(query or "").casefold(); records=[]; source="APIs.guru · public OpenAPI directory"
                     try:
                         request=urllib.request.Request("https://api.apis.guru/v2/list.json",headers={"User-Agent":"Homebase-OS/1.0"})
-                        with urllib.request.urlopen(request,timeout=12) as response:data=json.load(response)
+                        with urllib.request.urlopen(request,timeout=5) as response:data=json.load(response)
                         for service,versions in data.items():
                             for version,entry in versions.get("versions",{}).items():
                                 info=entry.get("info",{}); title=info.get("title") or service; summary=info.get("description") or "Documented OpenAPI service."

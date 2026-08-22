@@ -1,3 +1,4 @@
+if(!document.querySelector('link[data-settings-header-surface]')){const surface=document.createElement('link');surface.rel='stylesheet';surface.href='/assets/styles/settings/settings-header-surface.css?v=96';surface.dataset.settingsHeaderSurface='true';document.head.append(surface)}
 const status = document.querySelector('#status');
 let theme = localStorage.getItem('nightglass-theme') || 'ultra-retro';
 let visual = localStorage.getItem('nightglass-visual') || '0';
@@ -207,3 +208,4 @@ document.querySelector('[data-setting="homebase-dancer-enabled"]')?.addEventList
 });
 
 syncVisualPreview();
+document.querySelector('[data-setting="homebase-dancer-enabled"]')?.closest('label')?.remove();document.querySelector('#reset-dancer')?.remove();

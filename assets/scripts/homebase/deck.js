@@ -4,7 +4,9 @@ document.head.insertAdjacentHTML('beforeend','<script src="/assets/scripts/homeb
 document.head.insertAdjacentHTML('beforeend','<script src="/assets/scripts/shared/retro-windows.js?v=61" data-retro-windows><\/script><script src="/assets/scripts/homebase/fortify-behavior.js?v=68"><\/script><script src="/assets/scripts/homebase/relay-drag.js?v=85"><\/script><link rel="stylesheet" href="/assets/styles/homebase/fortify-terminal.css">');
 addEventListener('DOMContentLoaded',()=>{const clock=document.querySelector('#clock');if(clock&&!document.querySelector('.quick-fullscreen'))clock.insertAdjacentHTML('afterend','<button class="quick-fullscreen" onclick="toggleFullscreen()" aria-label="Enter or leave fullscreen" title="Fullscreen">⛶</button>');[...document.querySelectorAll('.tile')].find(tile=>tile.querySelector('b')?.textContent.includes('Fullscreen'))?.classList.add('fullscreen-feature');fetch('/api/user-apps').then(r=>r.json()).then(data=>{const grid=document.querySelector('.grid');for(const app of data.apps||[]){if(document.querySelector('[data-user-app="'+app.id+'"]'))continue;const tile=document.createElement('button');tile.className='tile';tile.dataset.userApp=app.id;tile.innerHTML='<i></i><b></b><span></span>';tile.querySelector('i').textContent=app.icon;tile.querySelector('b').textContent=app.name;tile.querySelector('span').textContent=app.description;tile.onclick=()=>openPanel(app.url);grid?.append(tile)}}).catch(()=>{})});
 
-document.head.insertAdjacentHTML('beforeend','<link rel="stylesheet" href="/assets/styles/homebase/retro-icon-motion.css?v=94"><link rel="stylesheet" href="/assets/styles/homebase/game-fullscreen.css?v=94">');
+document.head.insertAdjacentHTML('beforeend','<link rel="stylesheet" href="/assets/styles/homebase/retro-icon-motion.css?v=94"><link rel="stylesheet" href="/assets/styles/homebase/retro-icon-frame.css?v=95"><link rel="stylesheet" href="/assets/styles/homebase/game-fullscreen.css?v=94">');
+document.head.insertAdjacentHTML('beforeend','<link rel="stylesheet" href="/assets/styles/homebase/orbit-mini-drag.css?v=96">');
+if(!document.querySelector('script[data-orbit-mini-drag]')){const script=document.createElement('script');script.src='/assets/scripts/homebase/orbit-mini-drag.js?v=96';script.dataset.orbitMiniDrag='true';document.head.append(script)}if(!document.querySelector('script[data-orbit-pixel-soft]')){const script=document.createElement('script');script.src='/assets/scripts/homebase/orbit-pixel-soft.js?v=96';script.dataset.orbitPixelSoft='true';document.head.append(script)}
 const requestedTheme=new URLSearchParams(location.search).get('theme');if(['slate-glass','tidal','cobalt','paper-glass','ultra-retro'].includes(requestedTheme)){localStorage.setItem('nightglass-theme',requestedTheme);localStorage.setItem('homebase-visual-version','3')}
 document.head.insertAdjacentHTML('beforeend','<link rel="stylesheet" href="/assets/styles/homebase/relay-window-fix.css?v=85"><link rel="stylesheet" href="/assets/styles/homebase/desktop-cleanup.css?v=85"><link rel="stylesheet" href="/assets/styles/homebase/modal-pop.css"><script src="/assets/scripts/homebase/relay-resize.js?v=69"><\/script><script src="/assets/scripts/homebase/modal-pop.js?v=77"><\/script>');
 document.addEventListener('click',event=>{const tile=event.target.closest?.('.tile');if(tile&&localStorage.getItem('homebase-confirm-launches')==='false'){tile.dataset.confirmed='yes';setTimeout(()=>tile.dataset.confirmed='',0)}},true);
@@ -149,6 +151,7 @@ requestAnimationFrame(drawDenseOrbitPixel);
 
 if(!document.querySelector('link[data-wallpaper-explorer]')){const wallpaperSheet=document.createElement('link');wallpaperSheet.rel='stylesheet';wallpaperSheet.href='/assets/styles/homebase/wallpaper-explorer.css?v=91';wallpaperSheet.dataset.wallpaperExplorer='true';document.head.append(wallpaperSheet)}
 if(!document.querySelector('link[data-wallpaper-explorer-extra]')){const wallpaperExtra=document.createElement('link');wallpaperExtra.rel='stylesheet';wallpaperExtra.href='/assets/styles/homebase/wallpaper-explorer-extra.css?v=92';wallpaperExtra.dataset.wallpaperExplorerExtra='true';document.head.append(wallpaperExtra)}
+if(!document.querySelector('link[data-wallpaper-explorer-light]')){const wallpaperLight=document.createElement('link');wallpaperLight.rel='stylesheet';wallpaperLight.href='/assets/styles/homebase/wallpaper-explorer-light.css?v=96';wallpaperLight.dataset.wallpaperExplorerLight='true';document.head.append(wallpaperLight)}
 
 /* Optional, low-key system click. Web Audio is created only after a user tap,
    and only when the Retro Sounds preference is on. */
@@ -160,6 +163,7 @@ if(!document.querySelector('link[data-wallpaper-explorer-extra]')){const wallpap
     try{audio??=new AudioContext();const oscillator=audio.createOscillator(),gain=audio.createGain();oscillator.type='square';oscillator.frequency.setValueAtTime(event.target.closest('.cancel,[aria-label*=Close]')?170:620,audio.currentTime);gain.gain.setValueAtTime(.028,audio.currentTime);gain.gain.exponentialRampToValueAtTime(.001,audio.currentTime+.045);oscillator.connect(gain).connect(audio.destination);oscillator.start();oscillator.stop(audio.currentTime+.05)}catch{}
   },true);
 })();
+(()=>{const removeDancer=()=>document.querySelectorAll('.desktop-dancer-spot').forEach(node=>node.remove());localStorage.removeItem('homebase-dancer-enabled');localStorage.removeItem('homebase-dancer-hidden');removeDancer();new MutationObserver(removeDancer).observe(document.documentElement,{childList:true,subtree:true})})();
 
 /* Floating controls are wired here, not via an injected script tag.  This page
    is a single desktop surface, so document-capture pointer events reliably
@@ -216,3 +220,7 @@ if(!document.querySelector('link[data-wallpaper-explorer-extra]')){const wallpap
   new MutationObserver(applySaved).observe(document.documentElement,{childList:true,subtree:true});
   addEventListener('DOMContentLoaded',applySaved);setTimeout(applySaved,300);
 })();
+
+/* Light Wallpaper Explorer choices are intentionally accepted only after the
+   legacy wallpaper listeners have finished, so older dark selections cannot win. */
+addEventListener('message',event=>{if(event.data?.type!=='homebase-retro-wallpaper')return;const light=['classic','aqua','graph','parchment','office','mint','floppy','museum','paper','garage','cloud','pearl','skygrid','notebook','aqua-grid','blueprint-light','sand','ice','lilac','terracotta','meadow','typewriter','powder','seafoam'];if(light.includes(event.data.id)){localStorage.setItem('homebase-retro-wallpaper',event.data.id);document.documentElement.dataset.retroWallpaper=event.data.id}});

@@ -1,0 +1,5 @@
+.orbit-player:not(.expanded).mini-docked{transition:left .28s cubic-bezier(.22,.82,.25,1),top .28s cubic-bezier(.22,.82,.25,1),width .28s cubic-bezier(.2,.8,.2,1),height .28s cubic-bezier(.2,.8,.2,1)!important}
+.orbit-player:not(.expanded).mini-dragging{transition:none!important;cursor:grabbing!important;user-select:none;will-change:left,top;box-shadow:inset 0 1px #ffffff24,0 30px 76px #000b!important}
+.orbit-player:not(.expanded) .orbit-mini{cursor:grab;touch-action:none}
+.orbit-player:not(.expanded) .orbit-mini button{cursor:pointer;touch-action:manipulation}
+[data-theme="ultra-retro"] .orbit-player:not(.expanded).mini-dragging{outline:2px dotted #000080;outline-offset:4px}

@@ -1,0 +1,6 @@
+/* Deliberately chunky, low-frame-rate desktop icons: old machine movement, no flashing. */
+html[data-theme="ultra-retro"] .homebase-desktop .tile i{position:relative!important;border:3px solid #111!important;border-radius:0!important;box-shadow:inset 2px 2px #fff,inset -2px -2px #555,4px 4px 0 #000!important;image-rendering:pixelated!important;outline:1px dotted #ddd;outline-offset:-5px;animation:retroIconNudge 3.8s steps(2,end) infinite!important}
+html[data-theme="ultra-retro"] .homebase-desktop .tile:nth-child(3n) i{animation-delay:-1.2s!important}html[data-theme="ultra-retro"] .homebase-desktop .tile:nth-child(4n) i{animation-delay:-2.4s!important}
+@keyframes retroIconNudge{0%,72%,100%{transform:translate(0,0);filter:contrast(1) saturate(.92)}73%,84%{transform:translate(-1px,-1px);filter:contrast(1.08) saturate(1)}}
+html[data-theme="ultra-retro"] .homebase-desktop .tile:hover i,html[data-theme="ultra-retro"] .homebase-desktop .tile:focus-visible i{animation:none!important;transform:translate(1px,1px)!important;filter:contrast(1.1)!important;box-shadow:inset 3px 3px #555,inset -2px -2px #fff,2px 2px 0 #000!important}
+@media(prefers-reduced-motion:reduce){html[data-theme="ultra-retro"] .homebase-desktop .tile i{animation:none!important}}
