@@ -5,6 +5,7 @@ document.head.insertAdjacentHTML('beforeend','<script src="/assets/scripts/share
 addEventListener('DOMContentLoaded',()=>{const clock=document.querySelector('#clock');if(clock&&!document.querySelector('.quick-fullscreen'))clock.insertAdjacentHTML('afterend','<button class="quick-fullscreen" onclick="toggleFullscreen()" aria-label="Enter or leave fullscreen" title="Fullscreen">⛶</button>');[...document.querySelectorAll('.tile')].find(tile=>tile.querySelector('b')?.textContent.includes('Fullscreen'))?.classList.add('fullscreen-feature')});
 
 const requestedTheme=new URLSearchParams(location.search).get('theme');if(['slate-glass','tidal','cobalt','paper-glass','ultra-retro'].includes(requestedTheme)){localStorage.setItem('nightglass-theme',requestedTheme);localStorage.setItem('homebase-visual-version','3')}
+document.head.insertAdjacentHTML('beforeend','<link rel="stylesheet" href="/assets/styles/homebase/relay-window-fix.css"><script src="/assets/scripts/homebase/relay-resize.js?v=69"><\/script>');
 document.addEventListener('click',event=>{const tile=event.target.closest?.('.tile');if(tile&&localStorage.getItem('homebase-confirm-launches')==='false'){tile.dataset.confirmed='yes';setTimeout(()=>tile.dataset.confirmed='',0)}},true);
 function openPanel(url) {
   const layer = document.querySelector('#pocket-layer');
