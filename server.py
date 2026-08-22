@@ -313,9 +313,13 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
         if browse_route.path == "/api/agent/query":
             params=urllib.parse.parse_qs(browse_route.query);scope=(params.get("scope",["games"])[0] or "games").casefold();term=(params.get("q",[""])[0] or "").casefold().strip()[:100];items=[]
             if scope == "games":
-                for name,data in read_game_catalog().items():
-                    text=" ".join([name,str(data.get("title", "")),str(data.get("description", "")),str(data.get("system", "")),str(data.get("genre", ""))]).casefold()
-                    if not term or term in text: items.append({"name":data.get("title") or name,"system":data.get("system") or "Local game","genre":data.get("genre") or "Game","description":data.get("description") or ""})
+                catalog=read_game_catalog();seen=set()
+                for folder in (ROOT / "roms", HOME_ROOT / "My Library"):
+                    if not folder.exists(): continue
+                    for file in folder.rglob("*"):
+                        if not file.is_file() or file.suffix.casefold() not in ROM_CORES or str(file.resolve()) in seen: continue
+                        seen.add(str(file.resolve()));data=catalog.get(file.name,{});core,system=ROM_CORES[file.suffix.casefold()];name=data.get("title") or re.sub(r"[_-]+"," ",file.stem).strip().title();text=" ".join([file.name,name,str(data.get("description","")),str(data.get("system",system)),str(data.get("genre","Game"))]).casefold()
+                        if not term or term in text:items.append({"name":name,"system":data.get("system") or system,"genre":data.get("genre") or "Game","description":data.get("description") or "A private game in your local library.","core":core})
             elif scope == "apps":
                 for app in user_apps():
                     if not term or term in (app["name"]+" "+app["description"]).casefold():items.append(app)

@@ -1,0 +1,20 @@
+{
+  "id": "relay",
+  "name": "Relay",
+  "version": 1,
+  "purpose": "Local-first assistant interface and controlled bridge to Homebase capabilities.",
+  "entry": "/pages/console.html",
+  "owners": {
+    "ui": "assets/scripts/homebase/console.js",
+    "sharedClient": "assets/scripts/agent/client.js",
+    "thinkingComponent": "assets/scripts/components/thinking-indicator.js",
+    "toolCatalog": "/api/agent/tools",
+    "semanticSearch": "/api/agent/query"
+  },
+  "rules": [
+    "Use HomebaseAgent instead of duplicating fetch wrappers.",
+    "Local agent tools return metadata, not ROM bytes, saves, credentials, or arbitrary shell access.",
+    "Every state-changing action stays visible and requires an explicit user interaction.",
+    "Generated apps remain inside user-apps and do not gain core-file write access."
+  ]
+}
