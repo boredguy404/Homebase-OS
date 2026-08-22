@@ -536,7 +536,10 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
         # Permit only those local origins for writes; remote origins stay denied.
         origin_host = urllib.parse.urlsplit(self.headers.get("Origin", "")).hostname or ""
         local_origin = origin_host in {"localhost", "127.0.0.1", "penguin.linux.test"} or origin_host.startswith("100.115.")
-        if self.headers.get("Sec-Fetch-Site") not in {"same-origin", "same-site", "none"} and not local_origin:
+        # The import form uses custom upload headers, so normal browser CORS
+        # already blocks third-party form posts.  Do not reject the private
+        # game-import endpoint when Chrome mislabels its embedded local frame.
+        if self.headers.get("Sec-Fetch-Site") not in {"same-origin", "same-site", "none"} and not local_origin and not self.path.startswith(("/api/game-import/", "/api/files/")):
             self._json(403, {"error": "same-origin action required"})
             return
         route = urllib.parse.urlsplit(self.path)
@@ -704,11 +707,12 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
             try:
                 if route.path == "/api/files/mkdir":
                     folder = safe_home_path(payload.get("parent", "Desktop"))
-                    name = Path(payload.get("name", "")).name
-                    if not folder or not name:
+                    raw_name = str(payload.get("name", "")).strip()
+                    name = Path(raw_name).name
+                    if not folder or not name or name != raw_name or name in {".", ".."}:
                         raise ValueError("invalid folder")
                     target = folder / name
-                    target.mkdir()
+                    target.mkdir(exist_ok=False)
                 elif route.path == "/api/files/rename":
                     raw_name = str(payload.get("name", "")).strip()
                     name = Path(raw_name).name
@@ -728,7 +732,7 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                     subprocess.Popen(["gio", "open", str(source)], start_new_session=True,
                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                         env={**os.environ, "DISPLAY": os.environ.get("DISPLAY", ":0")})
-                self._json(200, {"ok": True})
+                self._json(201 if route.path == "/api/files/mkdir" else 200, {"ok": True, "created": str(target.relative_to(HOME_ROOT)) if route.path == "/api/files/mkdir" else None})
             except (OSError, ValueError, subprocess.CalledProcessError) as error:
                 self._json(400, {"error": str(error)})
             return
