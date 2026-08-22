@@ -157,12 +157,15 @@ document.querySelectorAll('[data-retro-wallpaper]').forEach(button => {
 });
 
 document.querySelector('#reset-dancer')?.addEventListener('click', () => {
-  localStorage.removeItem('homebase-dancer-hidden');
+  localStorage.setItem('homebase-dancer-enabled', 'true');
+  localStorage.setItem('homebase-dancer-hidden', 'false');
+  const enabled = document.querySelector('[data-setting="homebase-dancer-enabled"]');
+  if (enabled) enabled.checked = true;
   const positions = (() => { try { return JSON.parse(localStorage.getItem('homebase-desktop-positions') || '{}'); } catch { return {}; } })();
   delete positions['orbit-dancer'];
   localStorage.setItem('homebase-desktop-positions', JSON.stringify(positions));
   tellDesktop({ type: 'homebase-reset-dancer' });
-  status.textContent = 'Orbit dancer restored to its default desktop position.';
+  status.textContent = 'Orbit character enabled and restored to its default desktop position.';
 });
 
 const preferences = () => Object.fromEntries(Object.keys(localStorage)
@@ -197,6 +200,10 @@ document.querySelectorAll('[data-setting]').forEach(input => {
   const key = input.dataset.setting, stored = localStorage.getItem(key);
   if (stored !== null) input.checked = stored === 'true';
   input.onchange = () => { localStorage.setItem(key, String(input.checked)); status.textContent = 'Setting saved.'; };
+});
+
+document.querySelector('[data-setting="homebase-dancer-enabled"]')?.addEventListener('change', event => {
+  tellDesktop({ type: 'homebase-dancer-enabled', enabled: event.currentTarget.checked });
 });
 
 syncVisualPreview();

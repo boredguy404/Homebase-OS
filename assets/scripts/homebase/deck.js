@@ -64,7 +64,7 @@ addEventListener('message',event=>{if(event.data?.type==='orbit-ready'){const th
 addEventListener('message',event=>{if(event.data?.type!=='homebase-theme-choice')return;const id=event.data.id;if(!['slate-glass','tidal','cobalt','paper-glass','ultra-retro'].includes(id))return;localStorage.setItem('nightglass-theme',id);document.documentElement.dataset.theme=id;if(id!=='ultra-retro'){document.querySelectorAll('.retro-taskbar,.retro-menubar,.retro-bulletin').forEach(node=>node.remove())}else{document.querySelectorAll('.retro-taskbar,.retro-menubar').forEach((node,index,nodes)=>{if(nodes.indexOf(node)!==index)node.remove()});ensureRetroTaskbar();enhanceRetroTaskbar();ensureRetroMenuBar()}const style=getComputedStyle(document.documentElement);document.querySelector('#pocket-frame')?.contentWindow.postMessage({type:'homebase-theme-choice',id},'*');document.querySelector('#orbit-player iframe')?.contentWindow.postMessage({type:'orbit-theme',id,signal:style.getPropertyValue('--signal-rgb'),alt:style.getPropertyValue('--signal-alt-rgb')},'*')});
 addEventListener('message',event=>{if(event.data?.type!=='homebase-visual-choice')return;const index=Math.max(0,Math.min(2,Number(event.data.index)||0));localStorage.setItem('nightglass-visual',String(index));localStorage.setItem('homebase-visual-version','3');const stage=document.querySelector('.gyro-stage');if(stage)stage.dataset.visual=String(index);dispatchEvent(new CustomEvent('nightglass-visual',{detail:{index}}))});
 addEventListener('message',event=>{if(event.data?.type!=='homebase-retro-wallpaper')return;const id=['classic','parchment','midnight','aqua','graph','blueprint','terminal','office','space','sunset','mint'].includes(event.data.id)?event.data.id:'classic';localStorage.setItem('homebase-retro-wallpaper',id);document.documentElement.dataset.retroWallpaper=id});
-addEventListener('message',event=>{if(event.data?.type!=='homebase-reset-dancer')return;localStorage.removeItem('homebase-dancer-hidden');const dancer=document.querySelector('.desktop-dancer-spot');if(dancer){dancer.classList.remove('is-hidden');dancer.style.removeProperty('left');dancer.style.removeProperty('top');dancer.style.removeProperty('right');dancer.style.removeProperty('bottom')}});
+addEventListener('message',event=>{if(event.data?.type==='homebase-dancer-enabled'){localStorage.setItem('homebase-dancer-enabled',String(!!event.data.enabled));const dancer=document.querySelector('.desktop-dancer-spot');if(dancer)dancer.classList.toggle('is-hidden',!event.data.enabled);return}if(event.data?.type!=='homebase-reset-dancer')return;localStorage.setItem('homebase-dancer-enabled','true');localStorage.setItem('homebase-dancer-hidden','false');const dancer=document.querySelector('.desktop-dancer-spot');if(dancer){dancer.classList.remove('is-hidden');dancer.style.removeProperty('left');dancer.style.removeProperty('top');dancer.style.removeProperty('right');dancer.style.removeProperty('bottom')}});
 addEventListener('nightglass-theme',event=>document.querySelector('#orbit-player iframe')?.contentWindow.postMessage({type:'orbit-theme',id:event.detail.id,signal:event.detail.signal,alt:event.detail.alt},'*'));
 
 addEventListener('DOMContentLoaded',()=>{
@@ -167,9 +167,10 @@ requestAnimationFrame(drawDenseOrbitPixel);
     const dancer=document.querySelector('.desktop-dancer-spot'),saved=positions()['orbit-dancer'];
     if(dancer&&!dancer.dataset.directPosition){
       dancer.dataset.directPosition='true';
-      /* Old releases hid this automatically. Show it once in its new clear
-         top-left home so it is actually reachable and draggable. */
-      if(!localStorage.getItem('homebase-dancer-drag-v1')){localStorage.setItem('homebase-dancer-drag-v1','true');localStorage.setItem('homebase-dancer-hidden','false');dancer.classList.remove('is-hidden')}
+      /* The character is opt-in. Settings controls visibility; its known
+         top-left home is retained so it is easy to find when enabled. */
+      const enabled=localStorage.getItem('homebase-dancer-enabled')==='true';
+      dancer.classList.toggle('is-hidden',!enabled);
       const point=saved||{left:22,top:76};
       dancer.style.left=point.left+'px';dancer.style.top=point.top+'px';dancer.style.right='auto';dancer.style.bottom='auto';
     }
