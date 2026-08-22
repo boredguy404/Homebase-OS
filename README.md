@@ -6,6 +6,10 @@ I wanted an easy way to get more out of a low-power Chromebook without bouncing 
 
 Here is the more organized AI-slop explanation.
 
+![Homebase in its default Ultra Retro desktop](media/ultra-retro.png)
+
+**Ultra Retro is Homebase’s advertised default:** a full desktop-style shell with a taskbar, menu bar, windows, and pixel-era visual language. For a contemporary alternative, switch to **Cobalt + Radar** in Settings.
+
 ## Install Homebase
 
 You do not need to be a developer. Pick your computer, paste the highlighted line once, and Homebase handles the project download and startup.
@@ -44,8 +48,6 @@ Homebase ships without commercial games. To add a backup you legally made:
 ![Pocket Archive game shelf](media/pocket-archive.png)
 
 Supported systems include Game Boy, GBC, GBA, NES, SNES, Genesis, N64, and PlayStation. The in-app **Add your games** guide explains filenames, artwork, privacy, and recommended GIF sizes. ROMs, BIOS files, saves, and private artwork are ignored by Git and remain local.
-
-![Homebase dashboard](media/homebase.png)
 
 ## What it feels like
 
@@ -120,6 +122,12 @@ EmulatorJS saves live in browser IndexedDB, so Homebase also includes a separate
 | ![Homebase Ultra Retro desktop](media/ultra-retro.png) | ![Orbit Radio in Ultra Retro](media/orbit-retro.png) |
 
 Ultra Retro is a complete alternate shell inspired by late-'80s and '90s home computers—not a color filter. It turns Homebase into a teal desktop with a working menu bar and taskbar, chunky desktop icons, draggable system windows, era-matched loading states, and dedicated monochrome display programs for Orbit. Games return to full color when launched.
+
+### Optional modern view: Cobalt + Radar
+
+![Cobalt modern dashboard](media/homebase.png)
+
+Cobalt is the optional modern view: a calmer blue glass dashboard paired with the Radar visual. It is kept as an alternative—not the project’s public identity—while Ultra Retro remains the first screenshot and the main presentation theme.
 
 ### System insight and Homebase Control
 
