@@ -330,19 +330,28 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                     defaults={"ai":"AI software development Claude OpenAI","dev":"software development open source Linux","games":"game development industry indie games"}
                     labels={"ai":"AI & developer news","dev":"Developer news","games":"Game development news"}
                     term=query or defaults[section]
-                    feed="https://news.google.com/rss/search?"+urllib.parse.urlencode({"q":term,"hl":"en-US","gl":"US","ceid":"US:en"})
+                    feed="https://news.google.com/rss/search?"+urllib.parse.urlencode({"q":term,"hl":"en-US","gl":"US","ceid":"US:en","num":100})
                     request=urllib.request.Request(feed,headers={"User-Agent":"Homebase-OS/1.0"})
                     with urllib.request.urlopen(request,timeout=12) as response:root=ET.fromstring(response.read())
                     items=[{"kind":section+" news","title":node.findtext("title",default="Untitled"),"summary":re.sub("<[^>]+>","",node.findtext("description",default="")),"meta":node.findtext("pubDate",default=""),"url":node.findtext("link",default="")} for node in root.findall(".//item")[:40]]
-                    if section == "dev":
+                    if section in {"ai", "dev"}:
                         try:
-                            hn_url="https://hn.algolia.com/api/v1/search_by_date?"+urllib.parse.urlencode({"query":term,"tags":"story","hitsPerPage":24})
+                            hn_url="https://hn.algolia.com/api/v1/search_by_date?"+urllib.parse.urlencode({"query":term,"tags":"story","hitsPerPage":48})
                             hn_request=urllib.request.Request(hn_url,headers={"User-Agent":"Homebase-OS/1.0"})
                             with urllib.request.urlopen(hn_request,timeout=10) as response:hn=json.load(response)
                             items.extend({"kind":"developer discussion","title":x.get("title") or "Untitled","summary":str(x.get("points",0))+" points · "+str(x.get("num_comments",0))+" comments on Hacker News","meta":str(x.get("created_at","")).replace("T"," ")[:16],"url":x.get("url") or "https://news.ycombinator.com/item?id="+str(x.get("objectID",""))} for x in hn.get("hits",[]) if x.get("title"))
                         except (OSError, ValueError, KeyError):
                             pass
-                    result={"items":items,"source":labels[section]+(" · Google News RSS + Hacker News API" if section=="dev" else " · Google News RSS")}
+                    if section == "dev":
+                        try:
+                            devto_url="https://dev.to/api/articles?"+urllib.parse.urlencode({"per_page":36,"top":14})
+                            devto_request=urllib.request.Request(devto_url,headers={"User-Agent":"Homebase-OS/1.0"})
+                            with urllib.request.urlopen(devto_request,timeout=10) as response:devto=json.load(response)
+                            items.extend({"kind":"developer article","title":x.get("title") or "Untitled","summary":x.get("description") or "A current developer article from DEV Community.","meta":(x.get("readable_publish_date") or "DEV Community")+" · "+str(x.get("positive_reactions_count",0))+" reactions","image":x.get("cover_image") or "","url":x.get("url") or ""} for x in devto if x.get("title"))
+                        except (OSError, ValueError, KeyError):
+                            pass
+                    seen_titles=set();items=[item for item in items if item.get("title") and not (item["title"].casefold() in seen_titles or seen_titles.add(item["title"].casefold()))]
+                    result={"items":items,"source":labels[section]+(" · Google News RSS + Hacker News + DEV Community" if section=="dev" else " · Google News RSS + Hacker News")}
                 else: raise ValueError("unknown browse source")
                 BROWSE_CACHE[cache_key]=(time.time(),result);self._json(200,result)
             except (OSError,ValueError,KeyError,ET.ParseError) as error:self._json(502,{"error":str(error),"items":[]})
