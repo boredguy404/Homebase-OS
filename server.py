@@ -311,7 +311,11 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                     params=urllib.parse.urlencode({"q":query or "chromebook utilities","sort":"stars","order":"desc","per_page":48})
                     request=urllib.request.Request("https://api.github.com/search/repositories?"+params,headers={"Accept":"application/vnd.github+json","User-Agent":"Homebase-OS/1.0"})
                     with urllib.request.urlopen(request,timeout=12) as response:data=json.load(response)
-                    items=[{"kind":"project","title":x["full_name"],"summary":re.sub(r"[`*_>#]","",x.get("description") or "No description provided."),"meta":str(x.get("stargazers_count",0))+" stars · "+(x.get("language") or "mixed"),"image":x["owner"].get("avatar_url",""),"url":x["html_url"],"homepage":x.get("homepage") or "","license":(x.get("license") or {}).get("spdx_id") or "Not declared","language":x.get("language") or "Mixed","stars":x.get("stargazers_count",0),"forks":x.get("forks_count",0),"issues":x.get("open_issues_count",0),"updated":x.get("updated_at",""),"topics":x.get("topics",[])[:10],"owner":x["owner"].get("login","")} for x in data.get("items",[])]
+                    def clean_project_description(value):
+                        text=re.sub(r"```.*?```", "", value or "No description provided.", flags=re.S)
+                        text=re.sub(r"`[^`]*`", "", text)
+                        return re.sub(r"\s+", " ", re.sub(r"[*_>#]", "", text)).strip()[:420]
+                    items=[{"kind":"project","title":x["full_name"],"summary":clean_project_description(x.get("description")),"meta":str(x.get("stargazers_count",0))+" stars · "+(x.get("language") or "mixed"),"image":x["owner"].get("avatar_url",""),"url":x["html_url"],"homepage":x.get("homepage") or "","license":(x.get("license") or {}).get("spdx_id") or "Not declared","language":x.get("language") or "Mixed","stars":x.get("stargazers_count",0),"forks":x.get("forks_count",0),"issues":x.get("open_issues_count",0),"updated":x.get("updated_at",""),"topics":x.get("topics",[])[:10],"owner":x["owner"].get("login","")} for x in data.get("items",[])]
                     result={"items":items,"source":"GitHub"}
                 elif section == "news":
                     feeds={"top":"https://feeds.bbci.co.uk/news/rss.xml","world":"https://feeds.bbci.co.uk/news/world/rss.xml","technology":"https://feeds.bbci.co.uk/news/technology/rss.xml","science":"https://feeds.bbci.co.uk/news/science_and_environment/rss.xml"}
