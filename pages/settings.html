@@ -4,20 +4,21 @@
 <script src="/assets/scripts/shared/theme-sync.js"></script><script src="/assets/scripts/settings/settings.js" defer></script><script src="/assets/scripts/settings/settings-restore.js" defer></script><script src="/assets/scripts/arcade/browser-saves.js" defer></script><script src="/assets/scripts/settings/settings-options.js" defer></script>
 </head><body><main>
 <button class="back" onclick="parent!==window?parent.closePocket():history.back()">← Homebase</button>
-<header><small>HOMEBASE</small><h1>Settings.</h1><p>Appearance, performance, controllers, privacy, and complete portable data.</p></header>
-<section><h2>Appearance</h2><p>Selections save on this device and are included with preferences backups.</p>
+<header><small>HOMEBASE</small><h1>Settings.</h1><p>Appearance, performance, controllers, privacy, and complete portable data.</p></header><nav class="settings-nav" aria-label="Settings sections"><a href="#appearance">Appearance</a><a href="#play">Play &amp; input</a><a href="#device">Device</a><a href="#saves">Saves</a><a href="#backup">Backup</a></nav>
+<section id="appearance"><h2>Appearance</h2><p>Selections save on this device and are included with preferences backups.</p>
 <div class="choices"><button data-theme-choice="slate-glass">Slate Glass</button><button data-theme-choice="tidal">Tidal Glass</button><button data-theme-choice="cobalt">Cobalt</button><button data-theme-choice="paper-glass">Paper Glass</button><button data-theme-choice="ultra-retro">Ultra Retro</button></div>
 <div class="choices"><button data-visual-choice="0">Topographic Flow</button><button data-visual-choice="1">Radar</button><button data-visual-choice="2">Particle Tunnel</button></div></section>
-<section><h2>Performance &amp; input</h2><div class="checks">
+<section id="play"><h2>Play &amp; input</h2><div class="checks">
 <label><input type="checkbox" data-setting="homebase-performance-hud">Performance HUD</label>
 <label><input type="checkbox" data-setting="homebase-reduced-effects">Reduce background effects</label>
 <label><input type="checkbox" data-setting="homebase-crt-lines" checked>CRT lines on lighter systems</label>
 <label><input type="checkbox" data-setting="homebase-controller-ui" checked>Xbox navigation hints</label>
+<label><input type="checkbox" data-setting="homebase-confirm-launches" checked>Confirm Retro desktop launches</label>
 </div><aside><b>N64 protection</b><p>Fullscreen N64 automatically removes the expensive transparent CRT compositor while keeping the bezel. This prevents the ARM GPU from drawing every frame twice.</p></aside></section>
-<section><h2>Device &amp; permissions</h2><p>Review detected hardware, automatic-scan folders, private-file boundaries, demo content, and PWA installation.</p><div class="actions"><button class="primary" onclick="parent.openFirstRun?parent.openFirstRun(true):location.href='/?setup=1'">Run welcome setup</button></div></section>
-<section><h2>Browser emulator saves</h2><p>Export or merge the actual EmulatorJS IndexedDB saves and states from this Homebase origin. This closes the gap that the server-side ZIP cannot reach.</p>
+<section id="device"><h2>Device &amp; permissions</h2><p>Review detected hardware, automatic-scan folders, private-file boundaries, demo content, and PWA installation.</p><div class="actions"><button class="primary" onclick="parent.openFirstRun?parent.openFirstRun(true):location.href='/?setup=1'">Run welcome setup</button></div></section>
+<section id="saves"><h2>Browser emulator saves</h2><p>Export or merge the actual EmulatorJS IndexedDB saves and states from this Homebase origin. This closes the gap that the server-side ZIP cannot reach.</p>
 <div class="actions"><button id="export-browser-saves" class="primary">Export browser saves</button><button id="import-browser-saves">Import browser saves</button><input id="browser-save-file" type="file" accept=".json,application/json" hidden></div><p id="browser-save-status"></p></section>
-<section><h2>Portable Homebase backup</h2><p>Choose exactly what belongs in the archive. ROMs and imports remain private and are never included in GitHub.</p>
+<section id="backup"><h2>Portable Homebase backup</h2><p>Choose exactly what belongs in the archive. ROMs and imports remain private and are never included in GitHub.</p>
 <div class="checks"><label><input type="checkbox" value="box" checked>My Library and notes</label><label><input type="checkbox" value="roms">User-provided ROMs</label><label><input type="checkbox" value="saves" checked>Native save files</label><label><input type="checkbox" value="artwork">Artwork and previews</label><label><input type="checkbox" value="imports">Original import archives</label><label><input type="checkbox" value="mgba" checked>mGBA app data</label><label><input type="checkbox" value="orbit" checked>Orbit app data and playlists</label><label><input type="checkbox" value="flatpak">Flatpak app data (can be large)</label><label><input type="checkbox" value="preferences" checked>Homebase preferences</label><label><input type="checkbox" value="apps" checked>Installed-app inventory</label></div>
 <div class="actions"><button id="export" class="primary">Export selected data</button><button id="import">Inspect and import backup</button><input id="backup" type="file" accept=".zip,application/zip" hidden></div><p id="status"></p>
 <aside><b>Safe merge by default</b><p>Import shows every available group first. Matching files are preserved unless you explicitly enable replacement; unrelated data is never erased.</p></aside></section>
