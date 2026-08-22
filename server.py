@@ -527,10 +527,12 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
         super().do_GET()
 
     def do_POST(self):
-        # Chromebook's embedded Linux hostname and the container IP are both
-        # local Homebase origins.  Treat same-site local requests as trusted so
-        # file imports work when the deck is opened through either address.
-        if self.headers.get("Sec-Fetch-Site") not in {"same-origin", "same-site", "none"}:
+        # Chromebook's embedded Linux hostname and the container IP may be
+        # classified as cross-site despite both resolving to this local server.
+        # Permit only those local origins for writes; remote origins stay denied.
+        origin_host = urllib.parse.urlsplit(self.headers.get("Origin", "")).hostname or ""
+        local_origin = origin_host in {"localhost", "127.0.0.1", "penguin.linux.test"} or origin_host.startswith("100.115.")
+        if self.headers.get("Sec-Fetch-Site") not in {"same-origin", "same-site", "none"} and not local_origin:
             self._json(403, {"error": "same-origin action required"})
             return
         route = urllib.parse.urlsplit(self.path)
