@@ -122,3 +122,20 @@ addEventListener('DOMContentLoaded',()=>setTimeout(()=>{ensureRetroTaskbar();enh
 function dedupeDesktopChrome(){for(const selector of ['.retro-taskbar','.retro-menubar']){const nodes=[...document.querySelectorAll(selector)];nodes.slice(1).forEach(node=>node.remove())}const frame=document.querySelector('#pocket-frame');try{for(const selector of ['.retro-taskbar','.retro-menubar']){const nodes=[...(frame?.contentDocument?.querySelectorAll(selector)||[])];nodes.forEach(node=>node.remove())}}catch{}}
 new MutationObserver(dedupeDesktopChrome).observe(document.documentElement,{childList:true,subtree:true});
 addEventListener('DOMContentLoaded',()=>{const computer=document.querySelectorAll('.grid')[1];if(!computer||document.querySelector('[data-utility-desk]'))return;const tile=document.createElement('button');tile.className='tile';tile.dataset.utilityDesk='true';tile.innerHTML='<i>⌗</i><b>Utility Desk</b><span>Local notes, calculator, and clipboard handoff—no account required.</span>';tile.onclick=()=>openPanel('/pages/utility-desk.html');computer.insertBefore(tile,computer.firstChild)});
+
+/* This lives after drawOrbitMini on purpose.  The regular renderer draws every
+   frame first; this pass owns Pixel Field in the expanded compact player. */
+function drawDenseOrbitPixel(time){
+  const player=document.querySelector('#orbit-player:not(.expanded).peek');
+  const canvas=player?.querySelector('.orbit-mini-canvas');
+  if(canvas&&player.dataset.visual==='pixel'){
+    const box=canvas.getBoundingClientRect(),ratio=Math.min(devicePixelRatio||1,2),w=Math.max(1,Math.round(box.width)),h=Math.max(1,Math.round(box.height));
+    if(canvas.width!==w*ratio||canvas.height!==h*ratio){canvas.width=w*ratio;canvas.height=h*ratio}
+    const ctx=canvas.getContext('2d'),retro=document.documentElement.dataset.theme==='ultra-retro',e=Math.max(0,Math.min(1,orbitMiniSignal.energy||0)),bass=Math.max(0,Math.min(1,orbitMiniSignal.bass||0)),treble=Math.max(0,Math.min(1,orbitMiniSignal.treble||0)),beat=Math.max(0,Math.min(1,orbitMiniSignal.beat||0)),rgb=(getComputedStyle(document.documentElement).getPropertyValue('--signal-rgb')||'91,213,255').trim();
+    ctx.setTransform(ratio,0,0,ratio,0,0);ctx.globalAlpha=1;ctx.fillStyle=retro?'#9eb6c9':'#071019';ctx.fillRect(0,0,w,h);
+    const threshold=.47-e*.3-bass*.2-beat*.12;
+    for(let y=0;y<h;y+=2)for(let x=0;x<w;x+=2){const field=e+bass*Math.sin(x*.18+time*(.004+bass*.012))+treble*Math.cos(y*.28-time*.007)+beat*Math.sin((x+y)*.12+time*.019);if(field>threshold+((x+y)%14)*.01){ctx.fillStyle=retro?(field>threshold+.32?'#000080':'#111'):`rgba(${rgb},${Math.min(1,.15+(field-threshold)*1.6+beat*.18)})`;ctx.fillRect(x,y,1,1)}}
+  }
+  requestAnimationFrame(drawDenseOrbitPixel);
+}
+requestAnimationFrame(drawDenseOrbitPixel);
