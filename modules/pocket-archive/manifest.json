@@ -1,0 +1,52 @@
+{
+  "id": "pocket-archive",
+  "name": "Pocket Archive",
+  "version": 1,
+  "purpose": "Local ROM library, metadata shelf, controller guidance, and emulator launch surface.",
+  "entry": "/pages/arcade.html",
+  "owners": {
+    "shell": "pages/arcade.html",
+    "libraryBehavior": "assets/scripts/arcade/",
+    "libraryStyles": "assets/styles/arcade/",
+    "localGameIndex": "/api/games",
+    "emulationRuntime": "/emulatorjs/data/"
+  },
+  "features": {
+    "filters": {
+      "entry": "assets/scripts/arcade/archive-filters.js",
+      "style": "inline feature style until shell extraction",
+      "responsibility": "Filter local titles by detected system and type."
+    },
+    "scrollGuard": {
+      "entry": "assets/scripts/arcade/archive-scroll-guard.js",
+      "style": "assets/styles/arcade/archive-scroll-guard.css",
+      "responsibility": "Keep the archive document scrollable while the emulator is closed."
+    },
+    "detailModal": {
+      "entry": "assets/scripts/arcade/game-details.js",
+      "style": "assets/styles/arcade/game-details.css",
+      "responsibility": "Show local metadata, gallery, controls, save choice, and supported two-player boot."
+    },
+    "controllerGuide": {
+      "entry": "assets/scripts/arcade/game-controls.js",
+      "style": "assets/styles/arcade/archive.css",
+      "responsibility": "Render per-game Xbox control guidance."
+    }
+  },
+  "data": {
+    "private": ["roms/", "imports/", "bios/", "saves/", "covers/"],
+    "publicContracts": ["/api/games", "/api/user-apps"],
+    "rule": "ROMs and their art are user-owned local runtime data and must not be committed."
+  },
+  "changeRules": [
+    "Add new behavior as a named file in assets/scripts/arcade or assets/styles/arcade, then register it here.",
+    "Do not add new executable behavior to pages/arcade.html.",
+    "A feature owns one concern: input, filtering, modal, import, performance, or display.",
+    "Preserve touch, mouse, keyboard, and Xbox paths when changing a feature.",
+    "Keep local-only code usable without a remote API."
+  ],
+  "migration": {
+    "status": "incremental",
+    "next": ["extract the remaining inline launch/runtime script", "extract inline shell CSS", "give each feature a module-local test fixture"]
+  }
+}

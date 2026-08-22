@@ -293,6 +293,40 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         browse_route = urllib.parse.urlsplit(self.path)
+        if self.path == "/api/taxonomy":
+            manifests = {}
+            for file in sorted((ROOT / "modules").glob("*/manifest.json")):
+                try: manifests[file.parent.name] = json.loads(file.read_text(encoding="utf-8"))
+                except (OSError, ValueError): continue
+            self._json(200, {"version": 1, "core_contract": "/docs/CORE_TAXONOMY.md", "manifests": manifests})
+            return
+        if browse_route.path == "/api/agent/tools":
+            self._json(200, {"version": 1, "tools": [
+                {"id":"system","method":"GET","path":"/api/system","purpose":"Live storage, memory, and load summary."},
+                {"id":"games","method":"GET","path":"/api/games","purpose":"Private local game index with system and control metadata."},
+                {"id":"apps","method":"GET","path":"/api/user-apps","purpose":"User-created app inventory."},
+                {"id":"taxonomy","method":"GET","path":"/api/taxonomy","purpose":"Editable core product and module contracts."},
+                {"id":"query","method":"GET","path":"/api/agent/query?scope=games|apps|taxonomy&q=...","purpose":"Local semantic search over safe metadata only."},
+                {"id":"browse","method":"GET","path":"/api/browse/<source>?q=...","purpose":"Read-only external-source cards for Browse."}
+            ]})
+            return
+        if browse_route.path == "/api/agent/query":
+            params=urllib.parse.parse_qs(browse_route.query);scope=(params.get("scope",["games"])[0] or "games").casefold();term=(params.get("q",[""])[0] or "").casefold().strip()[:100];items=[]
+            if scope == "games":
+                for name,data in read_game_catalog().items():
+                    text=" ".join([name,str(data.get("title", "")),str(data.get("description", "")),str(data.get("system", "")),str(data.get("genre", ""))]).casefold()
+                    if not term or term in text: items.append({"name":data.get("title") or name,"system":data.get("system") or "Local game","genre":data.get("genre") or "Game","description":data.get("description") or ""})
+            elif scope == "apps":
+                for app in user_apps():
+                    if not term or term in (app["name"]+" "+app["description"]).casefold():items.append(app)
+            elif scope == "taxonomy":
+                for file in sorted((ROOT / "modules").glob("*/manifest.json")):
+                    try:
+                        data=json.loads(file.read_text(encoding="utf-8"));text=json.dumps(data).casefold()
+                        if not term or term in text:items.append({"id":data.get("id",file.parent.name),"name":data.get("name",file.parent.name),"purpose":data.get("purpose","")})
+                    except (OSError, ValueError):continue
+            self._json(200,{"scope":scope,"query":term,"items":items[:60],"local_only":scope in {"games","apps","taxonomy"}})
+            return
         if self.path == "/api/status":
             self._json(200, {"service": "homebase-v61", "multiplayer": True})
             return
