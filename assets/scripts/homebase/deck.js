@@ -128,7 +128,10 @@ addEventListener('DOMContentLoaded',()=>{const computer=document.querySelectorAl
 function drawDenseOrbitPixel(time){
   const player=document.querySelector('#orbit-player:not(.expanded).peek');
   const canvas=player?.querySelector('.orbit-mini-canvas');
-  if(canvas&&player.dataset.visual==='pixel'){
+  if(canvas&&(player.dataset.visual==='pixel'||player.dataset.visual==='pixel-dense')){
+    /* Keep the legacy compact renderer out of this canvas. It has a fixed
+       ~22-column grid and was repainting four oversized rows on top. */
+    player.dataset.visual='pixel-dense';
     const box=canvas.getBoundingClientRect(),ratio=Math.min(devicePixelRatio||1,2),w=Math.max(1,Math.round(box.width)),h=Math.max(1,Math.round(box.height));
     if(canvas.width!==w*ratio||canvas.height!==h*ratio){canvas.width=w*ratio;canvas.height=h*ratio}
     const ctx=canvas.getContext('2d'),retro=document.documentElement.dataset.theme==='ultra-retro',e=Math.max(0,Math.min(1,orbitMiniSignal.energy||0)),bass=Math.max(0,Math.min(1,orbitMiniSignal.bass||0)),treble=Math.max(0,Math.min(1,orbitMiniSignal.treble||0)),beat=Math.max(0,Math.min(1,orbitMiniSignal.beat||0)),rgb=(getComputedStyle(document.documentElement).getPropertyValue('--signal-rgb')||'91,213,255').trim();
@@ -139,3 +142,62 @@ function drawDenseOrbitPixel(time){
   requestAnimationFrame(drawDenseOrbitPixel);
 }
 requestAnimationFrame(drawDenseOrbitPixel);
+
+/* Optional, low-key system click. Web Audio is created only after a user tap,
+   and only when the Retro Sounds preference is on. */
+(()=>{
+  let audio=null,last=0;
+  document.addEventListener('pointerup',event=>{
+    if(document.documentElement.dataset.theme!=='ultra-retro'||localStorage.getItem('homebase-retro-sounds')!=='true'||!event.target.closest?.('button,a[href],.tile'))return;
+    const now=performance.now();if(now-last<55)return;last=now;
+    try{audio??=new AudioContext();const oscillator=audio.createOscillator(),gain=audio.createGain();oscillator.type='square';oscillator.frequency.setValueAtTime(event.target.closest('.cancel,[aria-label*=Close]')?170:620,audio.currentTime);gain.gain.setValueAtTime(.028,audio.currentTime);gain.gain.exponentialRampToValueAtTime(.001,audio.currentTime+.045);oscillator.connect(gain).connect(audio.destination);oscillator.start();oscillator.stop(audio.currentTime+.05)}catch{}
+  },true);
+})();
+
+/* Floating controls are wired here, not via an injected script tag.  This page
+   is a single desktop surface, so document-capture pointer events reliably
+   cover mouse, touch, and pen without competing with iframe content. */
+(()=>{
+  const positionsKey='homebase-desktop-positions',relayKey='homebase-relay-position';
+  const positions=()=>{try{return JSON.parse(localStorage.getItem(positionsKey)||'{}')}catch{return{}}};
+  const savePositions=value=>localStorage.setItem(positionsKey,JSON.stringify(value));
+  let active=null,suppressDancerClick=false;
+  const applySaved=()=>{
+    const dancer=document.querySelector('.desktop-dancer-spot'),saved=positions()['orbit-dancer'];
+    if(dancer&&saved&&!dancer.dataset.directPosition){dancer.dataset.directPosition='true';dancer.style.left=saved.left+'px';dancer.style.top=saved.top+'px';dancer.style.right='auto';dancer.style.bottom='auto'}
+    const relay=document.querySelector('#assistant-window');
+    if(relay&&!relay.dataset.directPosition){try{const point=JSON.parse(localStorage.getItem(relayKey)||'null');if(point){relay.dataset.directPosition='true';relay.style.left=point.left+'px';relay.style.top=point.top+'px';relay.style.right='auto';relay.style.bottom='auto'}}catch{}}
+  };
+  document.addEventListener('pointerdown',event=>{
+    const handle=event.target.closest?.('.desktop-dancer-spot,#assistant-window>header');
+    if(!handle||event.target.closest('button'))return;
+    const node=handle.matches('.desktop-dancer-spot')?handle:handle.parentElement,box=node.getBoundingClientRect();
+    active={id:event.pointerId,node,handle,kind:node.id==='assistant-window'?'relay':'dancer',x:event.clientX,y:event.clientY,left:box.left,top:box.top,moved:false};
+    handle.style.touchAction='none';handle.setPointerCapture?.(event.pointerId);node.style.right='auto';node.style.bottom='auto';
+    event.preventDefault();event.stopImmediatePropagation();
+  },true);
+  document.addEventListener('pointermove',event=>{
+    if(!active||event.pointerId!==active.id)return;
+    const dx=event.clientX-active.x,dy=event.clientY-active.y;
+    if(!active.moved&&Math.hypot(dx,dy)<5)return;
+    active.moved=true;const node=active.node;
+    node.classList.add(active.kind==='relay'?'relay-dragging':'desktop-dragging');
+    node.style.left=Math.round(Math.max(6,Math.min(innerWidth-node.offsetWidth-6,active.left+dx)))+'px';
+    node.style.top=Math.round(Math.max(34,Math.min(innerHeight-node.offsetHeight-6,active.top+dy)))+'px';
+    event.preventDefault();event.stopImmediatePropagation();
+  },true);
+  const finish=event=>{
+    if(!active||event.pointerId!==active.id)return;
+    const current=active,node=current.node;current.handle.releasePointerCapture?.(current.id);
+    node.classList.remove('relay-dragging','desktop-dragging');
+    if(current.moved){
+      if(current.kind==='relay')localStorage.setItem(relayKey,JSON.stringify({left:Math.round(node.offsetLeft),top:Math.round(node.offsetTop)}));
+      else{const saved=positions();saved['orbit-dancer']={left:Math.round(node.offsetLeft),top:Math.round(node.offsetTop)};savePositions(saved);suppressDancerClick=true;setTimeout(()=>suppressDancerClick=false,500)}
+    }
+    active=null;
+  };
+  document.addEventListener('pointerup',finish,true);document.addEventListener('pointercancel',finish,true);
+  document.addEventListener('click',event=>{if(suppressDancerClick&&event.target.closest?.('.desktop-dancer-spot')){event.preventDefault();event.stopImmediatePropagation()}},true);
+  new MutationObserver(applySaved).observe(document.documentElement,{childList:true,subtree:true});
+  addEventListener('DOMContentLoaded',applySaved);setTimeout(applySaved,300);
+})();
