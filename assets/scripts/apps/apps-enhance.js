@@ -1,6 +1,9 @@
 document.head.insertAdjacentHTML('beforeend','<link rel="stylesheet" href="/assets/styles/shared/ultra-retro.css"><link rel="stylesheet" href="/assets/styles/shared/modal-global.css">');document.documentElement.dataset.theme=localStorage.getItem('nightglass-theme')||'solaris';addEventListener('storage',event=>{if(event.key==='nightglass-theme')document.documentElement.dataset.theme=localStorage.getItem('nightglass-theme')||'solaris'});
 document.head.insertAdjacentHTML('beforeend','<link rel="stylesheet" href="/assets/styles/settings/settings-layer.css">');
 addEventListener('DOMContentLoaded',()=>{
+  const extraQueries=['emulators','retro games','audio editor','photo editor','3D modeling','screen recorder','password manager','file manager','terminal','network tools','writing','accessibility'];
+  const chips=document.querySelector('.chips');
+  if(chips&&!chips.dataset.expanded){chips.dataset.expanded='true';extraQueries.forEach(query=>{const button=document.createElement('button');button.className='chip';button.dataset.query=query;button.textContent=query;button.onclick=()=>{document.querySelector('#query').value=query;document.querySelector('#catalog-search')?.dispatchEvent(new Event('submit',{cancelable:true}))};chips.append(button)})}
   const makeSkeleton=target=>{if(target?.querySelector('.empty'))target.innerHTML='<i class="skeleton"></i><i class="skeleton"></i><i class="skeleton"></i><i class="skeleton"></i>'};
   makeSkeleton(document.querySelector('#installed'));makeSkeleton(document.querySelector('#catalog'));
   document.body.insertAdjacentHTML('beforeend','<section id="app-detail" class="detail" hidden role="dialog" aria-modal="true" aria-label="App details"><div class="detail-inner"><button class="detail-x" aria-label="Close app details">×</button><button class="detail-close">← Back to apps</button><div id="detail-body"></div></div></section>');
