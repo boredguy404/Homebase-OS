@@ -42,6 +42,7 @@
 [data-theme="ultra-retro"] .retro-menu-pop[hidden]{display:none}
 [data-theme="ultra-retro"] .retro-menu-pop button{display:flex;justify-content:space-between;gap:24px;width:100%;min-height:38px!important;padding:0 12px!important;border:0!important;background:transparent!important;box-shadow:none!important;text-align:left!important;white-space:nowrap}
 [data-theme="ultra-retro"] .retro-menu-pop button:hover,[data-theme="ultra-retro"] .retro-menu-pop button:focus-visible{color:#fff!important;background:#000080!important;outline:1px dotted #fff!important;outline-offset:-3px!important}
+[data-theme="ultra-retro"] .retro-menu-pop button:hover *,[data-theme="ultra-retro"] .retro-menu-pop button:focus-visible *,[data-theme="ultra-retro"] .retro-menu.open>button *{color:#fff!important}
 [data-theme="ultra-retro"] .retro-menu-pop hr{height:2px;margin:3px;border:0;border-top:1px solid #777;border-bottom:1px solid #fff}
 [data-theme="ultra-retro"] .retro-menu-status{margin-left:auto;display:flex;align-items:center;padding:0 8px;font-weight:400}
 [data-theme="ultra-retro"] dialog.retro-window-ready{padding-top:42px!important;overflow:auto!important}

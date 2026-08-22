@@ -29,7 +29,7 @@ async function openOrbit() {
     player.className = 'orbit-player expanded';
     player.innerHTML = '<div class="orbit-controls"><b>Homebase / Orbit</b><button onclick="minimizeOrbit()">— Minimize</button><button onclick="closeOrbit()">Close</button></div><iframe title="Orbit Radio" allow="autoplay" src="about:blank"></iframe><div class="orbit-mini"><canvas class="orbit-mini-canvas" aria-hidden="true"></canvas><div class="orbit-mini-copy"><span>ORBIT RADIO</span><b>Choose a signal</b></div><div class="orbit-mini-actions"><button onclick="orbitCommand(\'previous\')" aria-label="Previous">◀</button><button class="orbit-mini-play" onclick="orbitCommand(\'play\')" aria-label="Play or pause">▶</button><button onclick="orbitCommand(\'next\')" aria-label="Next">▶</button><button onclick="openOrbit()" aria-label="Expand">↗</button><button onclick="closeOrbit()" aria-label="Close">×</button></div></div>';
     document.body.appendChild(player);
-    player.querySelector('iframe').src='/modules/radio-orbit/index.html?v=61';
+    player.querySelector('iframe').src='/modules/radio-orbit/index.html?v=64';
   } else {
     player.classList.add('expanded');
     player.querySelector('iframe')?.contentWindow.postMessage({type:'orbit-compact',compact:false},'*');

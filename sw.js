@@ -1,4 +1,4 @@
-const CACHE='homebase-v63';
+const CACHE='homebase-v64';
 const SHELL=[
   '/', '/index.html', '/manifest.webmanifest', '/assets/icons/homebase-icon.svg',
   '/pages/arcade.html', '/pages/discover.html', '/pages/files.html', '/pages/apps.html',
