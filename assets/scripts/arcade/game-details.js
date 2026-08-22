@@ -1,5 +1,5 @@
 (() => {
-  document.head.insertAdjacentHTML('beforeend', '<link rel="stylesheet" href="/assets/styles/arcade/game-details.css">');
+  document.head.insertAdjacentHTML('beforeend', '<link rel="stylesheet" href="/assets/styles/arcade/game-details.css?v=82">');
   const dialog = document.createElement('dialog');
   dialog.className = 'game-detail-modal';
   dialog.innerHTML = '<button class="game-detail-x" aria-label="Close">×</button><div class="game-detail-gallery"><button class="gallery-left" aria-label="Previous">‹</button><div class="game-detail-track"></div><button class="gallery-right" aria-label="Next">›</button><div class="game-detail-dots"></div></div><div class="game-detail-copy"><small></small><h2></h2><p></p><div class="game-facts"></div><div class="game-save-choice" hidden><b>Autoboot save</b><span>Choose what loads when this game starts.</span><div><button data-save="complete">Complete career</button><button data-save="browser">My browser save</button></div></div><div class="game-detail-actions"><button class="game-more">Controller layout</button><button class="game-play">Play</button></div></div>';
