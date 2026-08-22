@@ -165,7 +165,14 @@ requestAnimationFrame(drawDenseOrbitPixel);
   let active=null,suppressDancerClick=false;
   const applySaved=()=>{
     const dancer=document.querySelector('.desktop-dancer-spot'),saved=positions()['orbit-dancer'];
-    if(dancer&&saved&&!dancer.dataset.directPosition){dancer.dataset.directPosition='true';dancer.style.left=saved.left+'px';dancer.style.top=saved.top+'px';dancer.style.right='auto';dancer.style.bottom='auto'}
+    if(dancer&&!dancer.dataset.directPosition){
+      dancer.dataset.directPosition='true';
+      /* Old releases hid this automatically. Show it once in its new clear
+         top-left home so it is actually reachable and draggable. */
+      if(!localStorage.getItem('homebase-dancer-drag-v1')){localStorage.setItem('homebase-dancer-drag-v1','true');localStorage.setItem('homebase-dancer-hidden','false');dancer.classList.remove('is-hidden')}
+      const point=saved||{left:22,top:76};
+      dancer.style.left=point.left+'px';dancer.style.top=point.top+'px';dancer.style.right='auto';dancer.style.bottom='auto';
+    }
     const relay=document.querySelector('#assistant-window');
     if(relay&&!relay.dataset.directPosition){try{const point=JSON.parse(localStorage.getItem(relayKey)||'null');if(point){relay.dataset.directPosition='true';relay.style.left=point.left+'px';relay.style.top=point.top+'px';relay.style.right='auto';relay.style.bottom='auto'}}catch{}}
   };
