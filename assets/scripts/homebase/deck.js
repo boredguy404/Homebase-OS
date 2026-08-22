@@ -112,3 +112,4 @@ addEventListener('DOMContentLoaded',()=>setTimeout(()=>{ensureRetroTaskbar();enh
 /* A panel navigation must never accumulate desktop chrome. */
 function dedupeDesktopChrome(){for(const selector of ['.retro-taskbar','.retro-menubar']){const nodes=[...document.querySelectorAll(selector)];nodes.slice(1).forEach(node=>node.remove())}}
 new MutationObserver(dedupeDesktopChrome).observe(document.documentElement,{childList:true,subtree:true});
+addEventListener('DOMContentLoaded',()=>{const computer=document.querySelectorAll('.grid')[1];if(!computer||document.querySelector('[data-utility-desk]'))return;const tile=document.createElement('button');tile.className='tile';tile.dataset.utilityDesk='true';tile.innerHTML='<i>⌗</i><b>Utility Desk</b><span>Local notes, calculator, and clipboard handoff—no account required.</span>';tile.onclick=()=>openPanel('/pages/utility-desk.html');computer.insertBefore(tile,computer.firstChild)});

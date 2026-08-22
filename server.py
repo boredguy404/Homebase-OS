@@ -318,18 +318,28 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                     items=[{"kind":"project","title":x["full_name"],"summary":clean_project_description(x.get("description")),"meta":str(x.get("stargazers_count",0))+" stars · "+(x.get("language") or "mixed"),"image":x["owner"].get("avatar_url",""),"url":x["html_url"],"homepage":x.get("homepage") or "","license":(x.get("license") or {}).get("spdx_id") or "Not declared","language":x.get("language") or "Mixed","stars":x.get("stargazers_count",0),"forks":x.get("forks_count",0),"issues":x.get("open_issues_count",0),"updated":x.get("updated_at",""),"topics":x.get("topics",[])[:10],"owner":x["owner"].get("login","")} for x in data.get("items",[])]
                     result={"items":items,"source":"GitHub"}
                 elif section == "news":
-                    feeds={"top":"https://feeds.bbci.co.uk/news/rss.xml","world":"https://feeds.bbci.co.uk/news/world/rss.xml","technology":"https://feeds.bbci.co.uk/news/technology/rss.xml","science":"https://feeds.bbci.co.uk/news/science_and_environment/rss.xml"}
+                    feeds={"top":"https://feeds.bbci.co.uk/news/rss.xml","world":"https://feeds.bbci.co.uk/news/world/rss.xml","technology":"https://feeds.bbci.co.uk/news/technology/rss.xml","science":"https://feeds.bbci.co.uk/news/science_and_environment/rss.xml","business":"https://feeds.bbci.co.uk/news/business/rss.xml"}
                     request=urllib.request.Request(feeds.get(query.casefold(),feeds["top"]),headers={"User-Agent":"Homebase-OS/1.0"})
                     with urllib.request.urlopen(request,timeout=12) as response:root=ET.fromstring(response.read())
                     items=[{"kind":"news","title":node.findtext("title",default="Untitled"),"summary":re.sub("<[^>]+>","",node.findtext("description",default="")),"meta":node.findtext("pubDate",default=""),"url":node.findtext("link",default="")} for node in root.findall(".//item")[:30]]
                     result={"items":items,"source":"BBC News RSS"}
-                elif section == "ai":
-                    term=query or "AI software development Claude OpenAI"
+                elif section in {"ai", "dev", "games"}:
+                    defaults={"ai":"AI software development Claude OpenAI","dev":"software development open source Linux","games":"game development industry indie games"}
+                    labels={"ai":"AI & developer news","dev":"Developer news","games":"Game development news"}
+                    term=query or defaults[section]
                     feed="https://news.google.com/rss/search?"+urllib.parse.urlencode({"q":term,"hl":"en-US","gl":"US","ceid":"US:en"})
                     request=urllib.request.Request(feed,headers={"User-Agent":"Homebase-OS/1.0"})
                     with urllib.request.urlopen(request,timeout=12) as response:root=ET.fromstring(response.read())
-                    items=[{"kind":"ai news","title":node.findtext("title",default="Untitled"),"summary":re.sub("<[^>]+>","",node.findtext("description",default="")),"meta":node.findtext("pubDate",default=""),"url":node.findtext("link",default="")} for node in root.findall(".//item")[:40]]
-                    result={"items":items,"source":"AI & developer news · Google News RSS"}
+                    items=[{"kind":section+" news","title":node.findtext("title",default="Untitled"),"summary":re.sub("<[^>]+>","",node.findtext("description",default="")),"meta":node.findtext("pubDate",default=""),"url":node.findtext("link",default="")} for node in root.findall(".//item")[:40]]
+                    if section == "dev":
+                        try:
+                            hn_url="https://hn.algolia.com/api/v1/search_by_date?"+urllib.parse.urlencode({"query":term,"tags":"story","hitsPerPage":24})
+                            hn_request=urllib.request.Request(hn_url,headers={"User-Agent":"Homebase-OS/1.0"})
+                            with urllib.request.urlopen(hn_request,timeout=10) as response:hn=json.load(response)
+                            items.extend({"kind":"developer discussion","title":x.get("title") or "Untitled","summary":str(x.get("points",0))+" points · "+str(x.get("num_comments",0))+" comments on Hacker News","meta":str(x.get("created_at","")).replace("T"," ")[:16],"url":x.get("url") or "https://news.ycombinator.com/item?id="+str(x.get("objectID",""))} for x in hn.get("hits",[]) if x.get("title"))
+                        except (OSError, ValueError, KeyError):
+                            pass
+                    result={"items":items,"source":labels[section]+(" · Google News RSS + Hacker News API" if section=="dev" else " · Google News RSS")}
                 else: raise ValueError("unknown browse source")
                 BROWSE_CACHE[cache_key]=(time.time(),result);self._json(200,result)
             except (OSError,ValueError,KeyError,ET.ParseError) as error:self._json(502,{"error":str(error),"items":[]})
