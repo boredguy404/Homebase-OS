@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="colorful.css">
   <link rel="stylesheet" href="club.css">
   <link rel="stylesheet" href="classic-gray.css">
+  <link rel="stylesheet" href="orbit-controls.css">
 </head>
 <body>
   <canvas id="visualizer" aria-hidden="true"></canvas>
@@ -18,7 +19,7 @@
   <header>
     <button class="icon-btn orbit-home" onclick="parent.postMessage({type:'orbit-home'},'*')" aria-label="Back to Homebase">←</button>
     <a class="brand" href="#"><span class="brand-mark">NO</span><span>HOMEBASE / ORBIT</span></a>
-    <div class="live"><i></i> LIVE SIGNAL</div>
+    <div class="live"><i></i> LIVE SIGNAL <button class="live-control" onclick="parent.postMessage({type:'orbit-minimize'},'*')" aria-label="Minimize Orbit">—</button><button class="live-control" onclick="parent.postMessage({type:'orbit-close'},'*')" aria-label="Close Orbit">×</button></div>
     <button id="fullscreen" class="icon-btn" title="Fullscreen" aria-label="Fullscreen">⛶</button>
   </header>
 

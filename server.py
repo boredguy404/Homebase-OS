@@ -544,6 +544,17 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                 self._json(200, response)
             except (ValueError, TypeError) as error: self._json(400, {"error": str(error)})
             return
+        if route.path == "/api/assistant/key":
+            length = min(int(self.headers.get("Content-Length", "0")), 16 * 1024)
+            try:
+                payload = json.loads(self.rfile.read(length) or b"{}"); key = str(payload.get("key", "")).strip()
+                if not re.fullmatch(r"sk-[A-Za-z0-9_-]{20,}", key): raise ValueError("that does not look like an API key")
+                ASSISTANT_KEY_FILE.parent.mkdir(parents=True, exist_ok=True)
+                ASSISTANT_KEY_FILE.write_text(key + "\n", encoding="utf-8")
+                os.chmod(ASSISTANT_KEY_FILE, 0o600)
+                self._json(200, {"saved": True})
+            except (OSError, ValueError, TypeError) as error: self._json(400, {"error": str(error)})
+            return
         if route.path == "/api/game-import/file":
             kind = urllib.parse.parse_qs(route.query).get("kind", [""])[0]; raw_name = urllib.parse.unquote(self.headers.get("X-File-Name", "")); name = Path(raw_name).name; slug = game_slug(self.headers.get("X-Game-Slug", Path(name).stem)); length=min(int(self.headers.get("Content-Length","0")),4*1024**3)
             suffix=Path(name).suffix.casefold()

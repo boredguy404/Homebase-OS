@@ -16,7 +16,7 @@ addEventListener('DOMContentLoaded', () => {
     const data = await fetch('/api/insights', {cache: 'no-store'}).then(r => r.json());
     const load = data.load[0];
     const rating = load < data.cpu_count * .55 ? 'Running comfortably' : load < data.cpu_count ? 'Working, but healthy' : 'Under heavy load';
-    dialog.querySelector('#insight-rating').textContent = rating + ' · ' + load.toFixed(2) + ' load across ' + data.cpu_count + ' CPU threads';
+    const view=Number(dialog.dataset.view||2);dialog.querySelector('#insight-rating').textContent = view===0?'Storage is split by Homebase areas; large-file details are shown below.':view===1?'Memory usage is live; this view focuses on the processes using resources.':rating + ' · ' + load.toFixed(2) + ' load across ' + data.cpu_count + ' CPU threads';
     const usedMemory = data.memory.MemTotal - data.memory.MemAvailable;
     dialog.querySelector('#live-facts').innerHTML = '<div><b>' + human(usedMemory) + '</b><span>memory in use</span></div><div><b>' + human(data.disk.free) + '</b><span>storage free</span></div><div><b>' + duration(data.uptime_seconds) + '</b><span>Linux uptime</span></div><div><b>' + data.processes.length + '</b><span>top processes shown</span></div>';
     const total = Object.values(data.composition).reduce((a,b) => a + b, 0) || 1;
@@ -28,12 +28,12 @@ addEventListener('DOMContentLoaded', () => {
     largest.classList.remove('skeleton-list');
     largest.innerHTML = data.largest.map(file => '<div><b>' + file.name + '</b><span>' + file.path + ' · ' + human(file.bytes) + '</span></div>').join('') || '<p>No personal files yet.</p>';
   }
-  async function open() { dialog.showModal(); await refresh(); }
+  async function open(index = 2) { const views=[['Storage details','Storage composition and the largest files taking space on this device.'],['Memory details','Live memory pressure and the processes using the most resources.'],['System load details','Live CPU load, uptime, and the busiest current processes.']];const view=views[index]||views[2];dialog.querySelector('h2').textContent=view[0];dialog.querySelector('#insight-rating').textContent=view[1];dialog.dataset.view=index;dialog.showModal();await refresh();const sections=[...dialog.querySelectorAll('section')];sections[0].hidden=index===1;sections[1].hidden=index===0;sections[2].hidden=index!==0; }
   cards.forEach(card => {
     card.tabIndex = 0;
     card.setAttribute('role', 'button');
     card.setAttribute('aria-label', card.textContent.trim() + '. Open live system details');
-    card.onclick = open;
-    card.onkeydown = event => (event.key === 'Enter' || event.key === ' ') && open();
+    const index=cards.indexOf(card);card.onclick = () => open(index);
+    card.onkeydown = event => (event.key === 'Enter' || event.key === ' ') && open(index);
   });
 });
