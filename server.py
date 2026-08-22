@@ -187,8 +187,11 @@ def installed_apps():
                 if entry.get("Type") != "Application" or entry.getboolean("NoDisplay", fallback=False):
                     continue
                 name = entry.get("Name", desktop.stem).strip()
+                summary = entry.get("Comment", entry.get("GenericName", "")).strip()
                 apps[desktop.stem] = {"id": desktop.stem, "name": name, "path": str(desktop),
-                                      "icon": entry.get("Icon", "")}
+                                      "icon": entry.get("Icon", ""), "summary": summary,
+                                      "generic_name": entry.get("GenericName", "").strip(),
+                                      "categories": entry.get("Categories", "").strip()}
             except (OSError, configparser.Error):
                 continue
     return dict(sorted(apps.items(), key=lambda item: item[1]["name"].casefold()))
@@ -392,6 +395,9 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
         if self.path == "/api/apps":
             flatpaks = flatpak_scopes()
             self._json(200, [{"id": app["id"], "name": app["name"], "icon": "/api/app-icon/" + app["id"],
+                              "summary": app.get("summary") or app.get("generic_name") or "Linux application",
+                              "categories": app.get("categories", ""),
+                              "source": "Flatpak" if app["id"] in flatpaks else "Linux desktop app",
                               "uninstallable": app["id"] in flatpaks}
                              for app in installed_apps().values()])
             return

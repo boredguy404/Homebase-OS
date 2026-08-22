@@ -115,6 +115,8 @@ File access is confined to the current user’s home folder by the local server.
 
 Settings can export or merge independent data groups: My Library, user-provided ROMs, native saves, artwork, imports, mGBA data, Orbit playlists, Flatpak data, browser preferences, and an installed-app inventory. Restore defaults to merge-and-skip; replacing matching files requires an explicit choice.
 
+The README keeps the sharp real capture above for documentation. A lightly blurred version of that exact capture is also included at [`media/settings-backup-blur.png`](media/settings-backup-blur.png) for soft-focus presentation backdrops—no invented interface imagery.
+
 EmulatorJS saves live in browser IndexedDB, so Homebase also includes a separate browser-save export/import tool for that protected data.
 
 ### Ultra Retro

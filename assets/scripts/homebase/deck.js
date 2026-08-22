@@ -17,6 +17,8 @@ function openPanel(url) {
   document.body.classList.add('app-open');
   minimizeOrbit();
   requestAnimationFrame(dedupeDesktopChrome);
+  setTimeout(dedupeDesktopChrome, 80);
+  setTimeout(dedupeDesktopChrome, 420);
 }
 
 function closePocket() {
@@ -24,6 +26,8 @@ function closePocket() {
   const frame=document.querySelector('#pocket-frame');if(frame)frame.src='about:blank';
   document.body.classList.remove('app-open');
   dedupeDesktopChrome();
+  setTimeout(dedupeDesktopChrome, 80);
+  setTimeout(dedupeDesktopChrome, 420);
 }
 
 async function openOrbit() {
@@ -110,6 +114,6 @@ function showRetroBulletin(){const key='homebase-retro-bulletin-v61';if(new URLS
 const updateRetroReleaseNotes=dialog=>{if(!dialog?.classList?.contains('retro-bulletin')||dialog.dataset.releaseNotes)return;dialog.dataset.releaseNotes='true';dialog.querySelector('.bulletin-paper small').textContent='HOMEBASE UPDATE 62 · RELEASE NOTES';dialog.querySelector('.bulletin-paper label').insertAdjacentHTML('beforebegin','<h3>NEW IN THIS RELEASE</h3><ul><li>Homebase Assistant: local-first chat for device facts, games, files, apps, and safe navigation</li><li>Optional local-only AI connection at <code>local/openai-api-key.txt</code>; it is ignored by Git</li><li>Tony Hawk auto-boot save chooser: complete career or your browser save</li><li>Orbit’s display programs are now a scroll-to warm control strip, never an overlay</li><li>Pocket Archive background glow removed for a cleaner game shelf</li></ul>')};new MutationObserver(records=>records.forEach(record=>record.addedNodes.forEach(updateRetroReleaseNotes))).observe(document.body,{childList:true});
 addEventListener('DOMContentLoaded',()=>setTimeout(()=>{ensureRetroTaskbar();enhanceRetroTaskbar();ensureRetroMenuBar();if(document.documentElement.dataset.theme==='ultra-retro')showRetroBulletin()},100));addEventListener('nightglass-theme',event=>{if(event.detail.id==='ultra-retro'){ensureRetroTaskbar();enhanceRetroTaskbar();ensureRetroMenuBar();showRetroBulletin()}else{document.querySelector('.retro-taskbar')?.remove();document.querySelector('.retro-menubar')?.remove();document.querySelector('.retro-bulletin')?.remove()}});
 /* A panel navigation must never accumulate desktop chrome. */
-function dedupeDesktopChrome(){for(const selector of ['.retro-taskbar','.retro-menubar']){const nodes=[...document.querySelectorAll(selector)];nodes.slice(1).forEach(node=>node.remove())}}
+function dedupeDesktopChrome(){for(const selector of ['.retro-taskbar','.retro-menubar']){const nodes=[...document.querySelectorAll(selector)];nodes.slice(1).forEach(node=>node.remove())}const frame=document.querySelector('#pocket-frame');try{for(const selector of ['.retro-taskbar','.retro-menubar']){const nodes=[...(frame?.contentDocument?.querySelectorAll(selector)||[])];nodes.forEach(node=>node.remove())}}catch{}}
 new MutationObserver(dedupeDesktopChrome).observe(document.documentElement,{childList:true,subtree:true});
 addEventListener('DOMContentLoaded',()=>{const computer=document.querySelectorAll('.grid')[1];if(!computer||document.querySelector('[data-utility-desk]'))return;const tile=document.createElement('button');tile.className='tile';tile.dataset.utilityDesk='true';tile.innerHTML='<i>⌗</i><b>Utility Desk</b><span>Local notes, calculator, and clipboard handoff—no account required.</span>';tile.onclick=()=>openPanel('/pages/utility-desk.html');computer.insertBefore(tile,computer.firstChild)});
