@@ -138,8 +138,8 @@ function drawDenseOrbitPixel(time){
     if(canvas.width!==w*ratio||canvas.height!==h*ratio){canvas.width=w*ratio;canvas.height=h*ratio}
     const ctx=canvas.getContext('2d'),retro=document.documentElement.dataset.theme==='ultra-retro',e=Math.max(0,Math.min(1,orbitMiniSignal.energy||0)),bass=Math.max(0,Math.min(1,orbitMiniSignal.bass||0)),treble=Math.max(0,Math.min(1,orbitMiniSignal.treble||0)),beat=Math.max(0,Math.min(1,orbitMiniSignal.beat||0)),rgb=(getComputedStyle(document.documentElement).getPropertyValue('--signal-rgb')||'91,213,255').trim();
     ctx.setTransform(ratio,0,0,ratio,0,0);ctx.globalAlpha=1;ctx.fillStyle=retro?'#9eb6c9':'#071019';ctx.fillRect(0,0,w,h);
-    const threshold=.47-e*.3-bass*.2-beat*.12;
-    for(let y=0;y<h;y+=2)for(let x=0;x<w;x+=2){const field=e+bass*Math.sin(x*.18+time*(.004+bass*.012))+treble*Math.cos(y*.28-time*.007)+beat*Math.sin((x+y)*.12+time*.019);if(field>threshold+((x+y)%14)*.01){ctx.fillStyle=retro?(field>threshold+.32?'#000080':'#111'):`rgba(${rgb},${Math.min(1,.15+(field-threshold)*1.6+beat*.18)})`;ctx.fillRect(x,y,1,1)}}
+    const cell=5,threshold=.61-e*.23-bass*.14-beat*.08;
+    for(let y=0;y<h;y+=cell)for(let x=0;x<w;x+=cell){const field=e+bass*Math.sin(x*.075+time*.0012)+treble*Math.cos(y*.11-time*.0008)+beat*Math.sin((x+y)*.045+time*.002);if(field>threshold+((x/cell+y/cell)%6)*.018){ctx.fillStyle=retro?(field>threshold+.24?'#000080':'#1c3651'):`rgba(${rgb},${Math.min(.9,.22+(field-threshold)*1.15+beat*.1)})`;ctx.fillRect(x+1,y+1,cell-2,cell-2)}}
   }
   requestAnimationFrame(drawDenseOrbitPixel);
 }
