@@ -12,7 +12,7 @@
   function makeDraggable(dialog,title){
     let drag=null;
     title.addEventListener('pointerdown',event=>{
-      if(event.target.closest('button')||!isRetro())return;
+      if(event.target.closest('button'))return;
       const box=dialog.getBoundingClientRect();
       dialog.style.position='fixed';dialog.style.margin='0';dialog.style.left=box.left+'px';dialog.style.top=box.top+'px';dialog.style.right='auto';dialog.style.bottom='auto';
       drag={x:event.clientX,y:event.clientY,left:box.left,top:box.top};
@@ -32,7 +32,7 @@
     let title=dialog.querySelector(':scope>.bulletin-title,:scope>.retro-window-title');
     if(!title){title=document.createElement('div');title.className='retro-window-title';title.innerHTML='<span></span>';title.querySelector('span').textContent=labelFor(dialog).toUpperCase();dialog.prepend(title)}
     let close=title.querySelector('button');if(!close&&existingClose){close=existingClose;title.append(close)}if(!close){close=document.createElement('button');close.type='button';close.setAttribute('aria-label','Close window');close.textContent='×';title.append(close);close.addEventListener('click',()=>closeDialog(dialog))}makeDraggable(dialog,title);
-    dialog.addEventListener('click',event=>{if(!isRetro())return;const box=dialog.getBoundingClientRect();if(event.target===dialog&&(event.clientX<box.left||event.clientX>box.right||event.clientY<box.top||event.clientY>box.bottom))closeDialog(dialog)});
+    dialog.addEventListener('click',event=>{const box=dialog.getBoundingClientRect();if(event.target===dialog&&(event.clientX<box.left||event.clientX>box.right||event.clientY<box.top||event.clientY>box.bottom))closeDialog(dialog)});
   }
   const scan=root=>{if(root.matches?.('dialog'))enhance(root);root.querySelectorAll?.('dialog').forEach(enhance)};
   scan(document);new MutationObserver(records=>records.forEach(record=>record.addedNodes.forEach(node=>node.nodeType===1&&scan(node)))).observe(document.documentElement,{childList:true,subtree:true});
