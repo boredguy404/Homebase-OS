@@ -50,6 +50,44 @@ HOMEBASE_CONFIG = HOME_ROOT / ".config" / "homebase" / "setup.json"
 SCAN_CHOICES = {"My Library": HOME_ROOT / "My Library", "Downloads": HOME_ROOT / "Downloads", "Desktop": HOME_ROOT / "Desktop", "Documents": HOME_ROOT / "Documents", "Pictures": HOME_ROOT / "Pictures"}
 ROM_CORES = {".gba": ("gba", "GBA"), ".gb": ("gb", "Game Boy"), ".gbc": ("gb", "GBC"), ".nes": ("nes", "NES"), ".sfc": ("snes", "SNES"), ".smc": ("snes", "SNES"), ".md": ("segaMD", "Genesis"), ".gen": ("segaMD", "Genesis"), ".z64": ("n64", "N64"), ".n64": ("n64", "N64"), ".v64": ("n64", "N64"), ".cue": ("psx", "PlayStation"), ".chd": ("psx", "PlayStation"), ".iso": ("psx", "PlayStation")}
 GAME_CATALOG = ROOT / "imports" / "homebase-game-catalog.json"
+ASSISTANT_KEY_FILE = ROOT / "local" / "openai-api-key.txt"
+
+def local_assistant(message):
+    """Safe built-in assistant: facts and explicit UI actions only, never shell commands."""
+    text = str(message or "").strip()
+    lower = text.casefold()
+    games = []
+    for folder in (ROOT / "roms", HOME_ROOT / "My Library"):
+        if folder.exists():
+            games.extend(path for path in folder.rglob("*") if path.is_file() and path.suffix.casefold() in ROM_CORES)
+    if any(word in lower for word in ("game", "rom", "play")):
+        return {"reply": f"I found {len(games)} owned game file{'s' if len(games) != 1 else ''} in your local library. Pocket Archive can show details, artwork, controls, and launch options.", "action": {"type": "navigate", "target": "/pages/arcade.html", "label": "Open Pocket Archive"}}
+    if any(word in lower for word in ("storage", "memory", "pc", "system", "performance")):
+        stats = system_insights(); free = round(stats["disk"]["free"] / 1024 ** 3, 1); used = round((1 - stats["memory"]["MemAvailable"] / stats["memory"]["MemTotal"]) * 100)
+        return {"reply": f"Your local system currently has {free} GB free storage, {used}% memory in use, and a {stats['load'][0]:.2f} one-minute load. I can open the live details panel next.", "action": {"type": "system", "label": "Open System Activity"}}
+    if any(word in lower for word in ("setting", "theme", "retro", "fullscreen")):
+        return {"reply": "I can take you to Settings for themes, visuals, controller hints, performance options, backups, and fullscreen.", "action": {"type": "navigate", "target": "/pages/settings.html", "label": "Open Settings"}}
+    if any(word in lower for word in ("file", "folder", "library", "desktop")):
+        return {"reply": "My Library is your safe file area. From there you can browse, create folders, rename, import, preview, and send files to Trash.", "action": {"type": "navigate", "target": "/pages/files.html?path=My%20Library", "label": "Open My Library"}}
+    if any(word in lower for word in ("app", "install", "linux")):
+        return {"reply": "Explore Linux Apps can search apps, show screenshots and install instructions, and report what is already installed.", "action": {"type": "navigate", "target": "/pages/apps.html", "label": "Explore Linux Apps"}}
+    return {"reply": "I can inspect your local games or system, open Pocket Archive, My Library, Settings, or Linux App Explore. Try: How is my Chromebook doing? or Show my games.", "action": None}
+
+def openai_assistant(message):
+    """Optional private enhancement. The key is only read by the local server."""
+    try: key = ASSISTANT_KEY_FILE.read_text(encoding="utf-8").strip()
+    except OSError: return None
+    if not key: return None
+    context = local_assistant("system")
+    payload = {"model": os.environ.get("HOMEBASE_OPENAI_MODEL", "gpt-4.1-mini"), "store": False,
+        "instructions": "You are Homebase Assistant, a concise local computer guide. Do not claim you ran commands or changed files. Explain local games, system facts, and Homebase navigation. Never request API keys or credentials.",
+        "input": f"Current local fact: {context['reply']}\n\nUser: {str(message)[:2000]}"}
+    request = urllib.request.Request("https://api.openai.com/v1/responses", data=json.dumps(payload).encode(), headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"}, method="POST")
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response: data = json.load(response)
+        answer = data.get("output_text") or "".join(part.get("text", "") for item in data.get("output", []) for part in item.get("content", []) if part.get("type") == "output_text")
+        return answer.strip()[:600] or None
+    except (OSError, ValueError, KeyError): return None
 
 def game_slug(value):
     return re.sub(r"(^-|-$)", "", re.sub(r"[^a-z0-9]+", "-", value.casefold()))[:80] or "game"
@@ -202,6 +240,12 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
         browse_route = urllib.parse.urlsplit(self.path)
         if self.path == "/api/status":
             self._json(200, {"service": "homebase-v61", "multiplayer": True})
+            return
+        if self.path == "/api/assistant/status":
+            connected = False
+            try: connected = bool(ASSISTANT_KEY_FILE.read_text(encoding="utf-8").strip())
+            except OSError: pass
+            self._json(200, {"connected": connected, "key_path": "local/openai-api-key.txt", "model": os.environ.get("HOMEBASE_OPENAI_MODEL", "gpt-4.1-mini")})
             return
         if self.path == "/api/setup/status":
             disk = shutil.disk_usage(HOME_ROOT)
@@ -488,6 +532,17 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                 self._json(200, {"saved": True, "approved_folders": approved, "demo_created": demo_created})
             except (OSError, ValueError, TypeError) as error:
                 self._json(400, {"error": str(error)})
+            return
+        if route.path == "/api/assistant":
+            length = min(int(self.headers.get("Content-Length", "0")), 16 * 1024)
+            try:
+                payload = json.loads(self.rfile.read(length) or b"{}"); message = str(payload.get("message", "")).strip()
+                if not message: raise ValueError("write a request first")
+                response = local_assistant(message); enhanced = openai_assistant(message)
+                if enhanced: response["reply"] = enhanced
+                response["enhanced"] = bool(enhanced)
+                self._json(200, response)
+            except (ValueError, TypeError) as error: self._json(400, {"error": str(error)})
             return
         if route.path == "/api/game-import/file":
             kind = urllib.parse.parse_qs(route.query).get("kind", [""])[0]; raw_name = urllib.parse.unquote(self.headers.get("X-File-Name", "")); name = Path(raw_name).name; slug = game_slug(self.headers.get("X-Game-Slug", Path(name).stem)); length=min(int(self.headers.get("Content-Length","0")),4*1024**3)

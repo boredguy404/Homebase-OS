@@ -2,7 +2,7 @@
   document.head.insertAdjacentHTML('beforeend', '<link rel="stylesheet" href="/assets/styles/arcade/game-details.css">');
   const dialog = document.createElement('dialog');
   dialog.className = 'game-detail-modal';
-  dialog.innerHTML = '<button class="game-detail-x" aria-label="Close">×</button><div class="game-detail-gallery"><button class="gallery-left" aria-label="Previous">‹</button><div class="game-detail-track"></div><button class="gallery-right" aria-label="Next">›</button><div class="game-detail-dots"></div></div><div class="game-detail-copy"><small></small><h2></h2><p></p><div class="game-facts"></div><div class="game-detail-actions"><button class="game-more">Controller layout</button><button class="game-play">Play</button></div></div>';
+  dialog.innerHTML = '<button class="game-detail-x" aria-label="Close">×</button><div class="game-detail-gallery"><button class="gallery-left" aria-label="Previous">‹</button><div class="game-detail-track"></div><button class="gallery-right" aria-label="Next">›</button><div class="game-detail-dots"></div></div><div class="game-detail-copy"><small></small><h2></h2><p></p><div class="game-facts"></div><div class="game-save-choice" hidden><b>Autoboot save</b><span>Choose what loads when this game starts.</span><div><button data-save="complete">Complete career</button><button data-save="browser">My browser save</button></div></div><div class="game-detail-actions"><button class="game-more">Controller layout</button><button class="game-play">Play</button></div></div>';
   document.body.appendChild(dialog);
   let active = null, slide = 0, media = [];
   const slug = name => name.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -26,6 +26,8 @@
     dialog.querySelector('h2').textContent = card.dataset.name;
     dialog.querySelector('.game-detail-copy>p').textContent = card.querySelector('.copy p')?.textContent || 'A game from your private local library.';
     dialog.querySelector('.game-facts').innerHTML = '<span><b>' + ((card.dataset.core || 'gba').toUpperCase()) + '</b>System</span><span><b>Xbox</b>Controller ready</span><span><b>Offline</b>Local runtime</span><span><b>Autosave</b>Every 7 seconds</span>';
+    const saveChoice=dialog.querySelector('.game-save-choice'),isTony=/tony hawk/i.test(card.dataset.name);saveChoice.hidden=!isTony;
+    if(isTony){const key='homebase-autoboot-save:'+id,choice=localStorage.getItem(key)||'complete';saveChoice.querySelectorAll('[data-save]').forEach(button=>{button.classList.toggle('selected',button.dataset.save===choice);button.onclick=()=>{localStorage.setItem(key,button.dataset.save);saveChoice.querySelectorAll('[data-save]').forEach(item=>item.classList.toggle('selected',item===button));toast('Autoboot save set to '+(button.dataset.save==='complete'?'complete career':'your browser save'))}})}
     draw();dialog.scrollTop=0;dialog.querySelector('.game-detail-track').scrollLeft=0;dialog.showModal();requestAnimationFrame(()=>{dialog.scrollTop=0;dialog.querySelector('.game-detail-track').scrollLeft=0});
   }
   dialog.querySelector('.game-detail-x').onclick = () => dialog.close();

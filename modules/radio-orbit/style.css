@@ -9,8 +9,7 @@ footer{min-height:82px!important;height:auto!important;padding:10px 3vw!importan
 .modes button.active{color:#10120e!important;background:var(--acid)!important;border-color:var(--acid)!important;box-shadow:0 0 0 3px #ffffff0b,0 8px 24px #0007}
 @media(max-width:850px){footer{position:sticky;bottom:0;padding-inline:12px!important}.modes{width:100%}.modes>span,.clock{display:none}}
 @media(max-width:480px){.modes button{min-width:104px;min-height:52px;padding:0 15px!important}}
-body{padding-bottom:94px}
-footer{position:fixed!important;z-index:30!important;left:0;right:0;bottom:0;margin:0!important}
-footer{background:linear-gradient(90deg,rgba(var(--signal-rgb),.14),#ffffff0d,rgba(var(--signal-alt-rgb),.12))!important;border-top:1px solid #ffffff26!important;box-shadow:0 -14px 45px #0003!important;backdrop-filter:blur(18px) saturate(1.25)!important}
-main{padding-bottom:12px}
-@media(max-width:850px){footer{position:fixed!important}}
+body{padding-bottom:0}
+footer{position:relative!important;z-index:2!important;left:auto;right:auto;bottom:auto;margin:0!important;background:#b88357!important;border-top:2px solid #3d291f!important;box-shadow:none!important;backdrop-filter:none!important}
+main{padding-bottom:0}
+@media(max-width:850px){footer{position:relative!important}}

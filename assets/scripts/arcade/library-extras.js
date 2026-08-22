@@ -10,7 +10,7 @@
     if(core==='psx'){window.EJS_disableCue=false;window.EJS_threads=false;window.EJS_CacheLimit=800*1024*1024}
     originalLaunch(url, name, core);
     if (core === 'n64') window.EJS_defaultOptions = {...window.EJS_defaultOptions, 'mupen64plus-pak1': 'memory'};
-    if (name !== "Tony Hawk's Pro Skater 3" || sessionStorage.getItem('homebase-thps3-complete-v2')) return;
+    if (name !== "Tony Hawk's Pro Skater 3" || localStorage.getItem('homebase-autoboot-save:tony-hawk-s-pro-skater-3') === 'browser' || sessionStorage.getItem('homebase-thps3-complete-v2')) return;
     let attempts = 0;
     const timer = setInterval(async () => {
       const manager = window.EJS_emulator?.gameManager;

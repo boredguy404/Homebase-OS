@@ -30,7 +30,7 @@ html[data-theme="ultra-retro"] footer{z-index:5!important}html[data-theme="ultra
 @keyframes classicBlink{50%{opacity:0}}
 @media(max-width:850px){html[data-theme="ultra-retro"] main{grid-template-columns:1fr}html[data-theme="ultra-retro"] .browser{max-height:none}}
 @media(prefers-reduced-motion:reduce){html[data-theme="ultra-retro"] .live i{animation:none}}
-html[data-theme="ultra-retro"] footer{position:fixed!important;left:8px!important;right:8px!important;bottom:8px!important;min-height:62px!important;height:62px!important;margin:0!important;padding:5px 8px!important;z-index:30!important}
+html[data-theme="ultra-retro"] footer{position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;min-height:62px!important;height:62px!important;margin:8px!important;padding:5px 8px!important;z-index:2!important}
 html[data-theme="ultra-retro"] .modes{width:100%;overflow-x:auto;white-space:nowrap;gap:7px;scrollbar-color:#111 #aaa}
 html[data-theme="ultra-retro"] .modes>span{display:none}
 html[data-theme="ultra-retro"] .modes button{flex:0 0 auto;min-width:102px;min-height:42px;padding:0 12px!important;font-size:10px!important}

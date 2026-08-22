@@ -1,9 +1,9 @@
-const CACHE='homebase-v61';
+const CACHE='homebase-v62';
 const SHELL=[
   '/', '/index.html', '/manifest.webmanifest', '/assets/icons/homebase-icon.svg',
   '/pages/arcade.html', '/pages/discover.html', '/pages/files.html', '/pages/apps.html',
   '/pages/settings.html', '/pages/github-setup.html', '/pages/readme-studio.html',
-  '/pages/browse.html', '/pages/game-setup.html', '/assets/styles/discovery/browse.css', '/assets/scripts/discovery/browse.js',
+  '/pages/browse.html', '/pages/game-setup.html', '/pages/console.html', '/version.json', '/assets/styles/discovery/browse.css', '/assets/scripts/discovery/browse.js',
   '/assets/styles/homebase/visual-deck.css', '/assets/styles/homebase/shell.css',
   '/assets/styles/homebase/tiles.css', '/assets/styles/homebase/clock.css',
   '/assets/styles/homebase/gestures.css', '/assets/styles/homebase/indicators.css',
@@ -19,7 +19,7 @@ const SHELL=[
   '/assets/styles/apps/apps-install-modal.css', '/assets/styles/settings/settings.css',
   '/assets/styles/settings/settings-dialog.css', '/assets/styles/shared/modal-global.css',
   '/assets/styles/shared/ultra-retro.css', '/assets/scripts/homebase/deck.js',
-  '/assets/scripts/homebase/deck-gestures.js', '/assets/scripts/homebase/gyro3d.js',
+  '/assets/scripts/homebase/deck-gestures.js', '/assets/scripts/homebase/gyro3d.js', '/assets/scripts/homebase/console.js', '/assets/scripts/homebase/update-check.js', '/assets/styles/homebase/console.css',
   '/assets/scripts/homebase/clock.js', '/assets/scripts/homebase/system-insights.js',
   '/assets/scripts/homebase/scroll-motion.js', '/assets/scripts/arcade/game-controls.js',
   '/assets/scripts/arcade/game-capture.js', '/assets/scripts/arcade/game-details.js',
