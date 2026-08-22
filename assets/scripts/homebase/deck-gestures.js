@@ -2,7 +2,8 @@ addEventListener('DOMContentLoaded',()=>{
   const stage=document.querySelector('.gyro-stage');if(!stage)return;
   stage.setAttribute('role','region');stage.setAttribute('aria-label','Nightglass visual switcher. Swipe left or right for themes. Swipe up or down for visuals.');
   stage.insertAdjacentHTML('beforeend','<div class="gesture-hint"><b>SWIPE</b><span>↕ Visual&nbsp;&nbsp;↔ Theme</span></div>');
-  const gesturePad=document.createElement('div');gesturePad.className='gesture-pad';gesturePad.setAttribute('aria-label','Swipe to change Nightglass visual or theme');document.body.appendChild(gesturePad);
+  /* Use the actual background stage as the gesture surface; never add an empty glass box. */
+  const gesturePad=stage;gesturePad.setAttribute('aria-label','Swipe to change Homebase visual or theme');gesturePad.style.pointerEvents='auto';
   const themes=[
     {id:'cobalt',name:'Cobalt',signal:'69,137,255',alt:'66,190,255'},
     {id:'tidal',name:'Tidal Glass',signal:'8,189,178',alt:'103,226,211'},

@@ -89,6 +89,8 @@ function drawPreview(time = 0) {
 function syncVisualPreview() {
   if (!preview) return;
   const retro = theme === 'ultra-retro';
+  if (visualChoices) visualChoices.hidden = retro;
+  document.querySelector('.retro-wallpapers').hidden = !retro;
   preview.dataset.visual = visual;
   preview.dataset.retro = String(retro);
   preview.querySelector('b').textContent = retro ? `ULTRA RETRO · ${wallpaper.toUpperCase()} DESKTOP` : `DESKTOP VISUAL · ${visualNames[Number(visual)]}`;
