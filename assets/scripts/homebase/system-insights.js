@@ -1,5 +1,8 @@
 addEventListener('DOMContentLoaded', () => {
+  document.head.insertAdjacentHTML('beforeend', '<style>.status{grid-template-columns:repeat(5,minmax(0,1fr))!important}@media(max-width:820px){.status{grid-template-columns:repeat(3,minmax(0,1fr))!important}}@media(max-width:600px){.status{grid-template-columns:repeat(2,minmax(0,1fr))!important}}</style>');
   document.head.insertAdjacentHTML('beforeend', '<style>.metric:after{content:"TAP FOR LIVE DETAILS";display:block;margin-top:9px;color:rgb(var(--signal-alt-rgb));font-size:7px;letter-spacing:.12em}.live-facts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:18px 0}.live-facts div{padding:13px;border:1px solid #ffffff18;border-radius:12px;background:#ffffff08}.live-facts b,.live-facts span{display:block}.live-facts span{margin-top:4px;color:#a8a8a8;font-size:9px}.insight-list small{color:#777;font-size:8px}.explain{font-size:11px}@media(max-width:650px){.live-facts{grid-template-columns:1fr 1fr}}</style>');
+  const status = document.querySelector('.status');
+  if (status && !document.querySelector('#uptime-metric')) status.insertAdjacentHTML('beforeend', '<div class="metric" id="uptime-metric"><b>—</b><span>Linux uptime</span></div><div class="metric" id="process-metric"><b>—</b><span>Live processes</span></div>');
   const cards = [...document.querySelectorAll('.metric')];
   const dialog = document.createElement('dialog');
   dialog.className = 'insight-dialog';
@@ -14,6 +17,7 @@ addEventListener('DOMContentLoaded', () => {
   const duration = seconds => seconds > 86400 ? Math.floor(seconds / 86400) + 'd' : seconds > 3600 ? Math.floor(seconds / 3600) + 'h' : Math.floor(seconds / 60) + 'm';
   async function refresh() {
     const data = await fetch('/api/insights', {cache: 'no-store'}).then(r => r.json());
+    const uptimeCard=document.querySelector('#uptime-metric b'),processCard=document.querySelector('#process-metric b');if(uptimeCard)uptimeCard.textContent=duration(data.uptime_seconds);if(processCard)processCard.textContent=data.processes.length;
     const load = data.load[0];
     const rating = load < data.cpu_count * .55 ? 'Running comfortably' : load < data.cpu_count ? 'Working, but healthy' : 'Under heavy load';
     const view=Number(dialog.dataset.view||2);dialog.querySelector('#insight-rating').textContent = view===0?'Storage is split by Homebase areas; large-file details are shown below.':view===1?'Memory usage is live; this view focuses on the processes using resources.':rating + ' · ' + load.toFixed(2) + ' load across ' + data.cpu_count + ' CPU threads';

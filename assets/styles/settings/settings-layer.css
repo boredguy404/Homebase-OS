@@ -1,0 +1,5 @@
+/* Settings has a persistent parent desktop menu in retro mode.  Make its own
+   home control a proper, opaque scroll-layer so content cannot cross it. */
+main{position:relative;isolation:isolate}
+.back{position:sticky;top:10px;z-index:30;display:inline-flex;align-items:center}
+[data-theme="ultra-retro"] main>.back{top:35px!important;background:#d4d4d4!important;box-shadow:inset 2px 2px #fff,inset -2px -2px #666,2px 2px #111!important}

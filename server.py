@@ -501,9 +501,12 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                         image = sizes[-1].get("src")
                     if image:
                         shots.append({"src": image, "caption": shot.get("caption", "")})
+                urls = app.get("urls") or {}
+                official = next((value for key, value in urls.items() if key in {"homepage", "website", "bugtracker"} and isinstance(value, str) and value.startswith("https://")), "")
                 self._json(200, {"app_id": app_id, "name": app.get("name"), "summary": app.get("summary"),
                     "description": app.get("description"), "developer_name": app.get("developer_name"),
-                    "icon": app.get("icon"), "screenshots": shots})
+                    "icon": app.get("icon"), "screenshots": shots, "official_url": official,
+                    "flathub_url": "https://flathub.org/apps/" + urllib.parse.quote(app_id, safe=".")})
             except (OSError, ValueError) as error:
                 self._json(502, {"error": str(error)})
             return
