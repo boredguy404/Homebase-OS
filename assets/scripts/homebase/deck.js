@@ -122,6 +122,7 @@ addEventListener('DOMContentLoaded',()=>setTimeout(()=>{ensureRetroTaskbar();enh
 function dedupeDesktopChrome(){for(const selector of ['.retro-taskbar','.retro-menubar']){const nodes=[...document.querySelectorAll(selector)];nodes.slice(1).forEach(node=>node.remove())}const frame=document.querySelector('#pocket-frame');try{for(const selector of ['.retro-taskbar','.retro-menubar']){const nodes=[...(frame?.contentDocument?.querySelectorAll(selector)||[])];nodes.forEach(node=>node.remove())}}catch{}}
 new MutationObserver(dedupeDesktopChrome).observe(document.documentElement,{childList:true,subtree:true});
 addEventListener('DOMContentLoaded',()=>{const computer=document.querySelectorAll('.grid')[1];if(!computer||document.querySelector('[data-utility-desk]'))return;const tile=document.createElement('button');tile.className='tile';tile.dataset.utilityDesk='true';tile.innerHTML='<i>⌗</i><b>Utility Desk</b><span>Local notes, calculator, and clipboard handoff—no account required.</span>';tile.onclick=()=>openPanel('/pages/utility-desk.html');computer.insertBefore(tile,computer.firstChild)});
+addEventListener('DOMContentLoaded',()=>document.querySelectorAll('.tile').forEach(tile=>{if(tile.querySelector('b')?.textContent.trim()==='Explore Linux apps')tile.remove()}));
 
 /* This lives after drawOrbitMini on purpose.  The regular renderer draws every
    frame first; this pass owns Pixel Field in the expanded compact player. */
