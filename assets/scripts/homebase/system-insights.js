@@ -6,6 +6,10 @@ addEventListener('DOMContentLoaded', () => {
   dialog.innerHTML = '<button class="insight-x">×</button><small>LIVE · TAP ANY STATUS CARD</small><h2>System activity</h2><p id="insight-rating">Reading this Chromebook…</p><div id="live-facts" class="live-facts"></div><section><h3>Storage composition</h3><div id="composition" class="composition"></div></section><section><h3>Real running processes</h3><p class="explain">Sorted by CPU use. Read-only for touch safety.</p><div id="processes" class="insight-list skeleton-list"></div></section><section><h3>Largest personal files</h3><div id="largest" class="insight-list skeleton-list"></div></section>';
   document.body.appendChild(dialog);
   dialog.querySelector('.insight-x').onclick = () => dialog.close();
+  dialog.addEventListener('click', event => {
+    const box = dialog.getBoundingClientRect();
+    if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) dialog.close();
+  });
   const human = bytes => bytes > 1073741824 ? (bytes / 1073741824).toFixed(1) + ' GB' : (bytes / 1048576).toFixed(1) + ' MB';
   const duration = seconds => seconds > 86400 ? Math.floor(seconds / 86400) + 'd' : seconds > 3600 ? Math.floor(seconds / 3600) + 'h' : Math.floor(seconds / 60) + 'm';
   async function refresh() {

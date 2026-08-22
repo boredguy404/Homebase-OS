@@ -1,0 +1,36 @@
+html[data-theme="ultra-retro"]{--acid:#000;--ink:#aaa;--paper:#080808;--muted:#444;--line:#111;color-scheme:light;font-family:Chicago,Geneva,"MS Sans Serif",Tahoma,system-ui,sans-serif}
+html[data-theme="ultra-retro"] body{color:#050505;font-family:Chicago,Geneva,"MS Sans Serif",Tahoma,system-ui,sans-serif;background-color:#aaa;background-image:linear-gradient(45deg,#888 25%,transparent 25%),linear-gradient(-45deg,#888 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#888 75%),linear-gradient(-45deg,transparent 75%,#888 75%);background-position:0 0,0 4px,4px -4px,-4px 0;background-size:8px 8px}
+html[data-theme="ultra-retro"] canvas{z-index:1;filter:grayscale(1) contrast(1.8);opacity:.78;image-rendering:pixelated}
+html[data-theme="ultra-retro"] .grain{opacity:.18;mix-blend-mode:multiply}
+html[data-theme="ultra-retro"] header,html[data-theme="ultra-retro"] footer{color:#000;border:2px solid #000;background:#ddd;box-shadow:inset 2px 2px #fff,inset -2px -2px #666}
+html[data-theme="ultra-retro"] header{height:70px;margin:8px 8px 0;background:repeating-linear-gradient(#111 0 1px,#eee 1px 3px)}
+html[data-theme="ultra-retro"] header:after{content:"RADIO ORBIT";position:absolute;left:50%;transform:translateX(-50%);padding:2px 12px;background:#ddd;color:#000;font-size:12px;font-weight:700}
+html[data-theme="ultra-retro"] .brand,html[data-theme="ultra-retro"] .live{color:#000;background:#ddd;padding:4px}
+html[data-theme="ultra-retro"] .brand-mark{color:#fff;background:#000;box-shadow:none;border:1px solid #fff;border-radius:0}
+html[data-theme="ultra-retro"] .live i{background:#000;box-shadow:none;border-radius:0;animation:classicBlink 1s steps(1,end) infinite}
+html[data-theme="ultra-retro"] main{grid-template-columns:minmax(0,1.25fr) minmax(390px,.75fr);gap:10px;padding:10px}
+html[data-theme="ultra-retro"] .hero,html[data-theme="ultra-retro"] .browser{color:#000;border:2px solid #000;background:repeating-linear-gradient(135deg,#d8d8d8e0 0 3px,#c4c4c4dc 3px 6px);box-shadow:inset 2px 2px #fff,inset -2px -2px #666,4px 4px #111;backdrop-filter:blur(1px)}
+html[data-theme="ultra-retro"] .browser{max-height:calc(100vh - 160px)}
+html[data-theme="ultra-retro"] h1,html[data-theme="ultra-retro"] h2,html[data-theme="ultra-retro"] h3{color:#000;text-shadow:1px 1px #fff}
+html[data-theme="ultra-retro"] .hero h1 em{color:#fff;-webkit-text-stroke:2px #000;text-shadow:2px 2px #000}
+html[data-theme="ultra-retro"] .hero>p,html[data-theme="ultra-retro"] .station p,html[data-theme="ultra-retro"] .track span,html[data-theme="ultra-retro"] .status,html[data-theme="ultra-retro"] .volume-row{color:#333}
+html[data-theme="ultra-retro"] .eyebrow,html[data-theme="ultra-retro"] .number{color:#000;border-color:#000}
+html[data-theme="ultra-retro"] button,html[data-theme="ultra-retro"] input,html[data-theme="ultra-retro"] .local-audio{color:#000!important;border:2px solid #111!important;border-radius:0!important;background:#d4d4d4!important;box-shadow:inset 2px 2px #fff,inset -2px -2px #666,2px 2px #111!important;font-family:"MS Sans Serif",Tahoma,system-ui,sans-serif!important}
+html[data-theme="ultra-retro"] button:active{transform:translate(2px,2px);box-shadow:inset 2px 2px #666,inset -2px -2px #fff!important}
+html[data-theme="ultra-retro"] .play{border-radius:0;width:54px;height:54px}
+html[data-theme="ultra-retro"] .search{border:2px inset #eee;background:#fff;padding:0 8px}
+html[data-theme="ultra-retro"] .search input{color:#000!important;border:0!important;box-shadow:none!important;background:#fff!important}
+html[data-theme="ultra-retro"] .station{color:#000;border-top:1px solid #777}
+html[data-theme="ultra-retro"] .station:hover,html[data-theme="ultra-retro"] .station.active{color:#fff;background:#000;outline:1px dotted #fff;outline-offset:-4px}
+html[data-theme="ultra-retro"] .station.active h3,html[data-theme="ultra-retro"] .station.active p,html[data-theme="ultra-retro"] .station.active .go{color:#fff}
+html[data-theme="ultra-retro"] footer{margin:0 8px 8px}.modes button.active{color:#fff!important;background:#000!important;border-color:#000!important}
+html[data-theme="ultra-retro"] .local-cover{filter:grayscale(1) contrast(1.25);border:2px solid #000;border-radius:0;box-shadow:4px 4px #111;image-rendering:pixelated}
+html[data-theme="ultra-retro"] #beat-reactor{filter:grayscale(1);border-radius:0!important;border-style:dotted!important;box-shadow:none!important}
+html[data-theme="ultra-retro"] footer{z-index:5!important}html[data-theme="ultra-retro"] .modes{overflow-x:auto;white-space:nowrap}html[data-theme="ultra-retro"] .modes button{flex:0 0 auto}
+@keyframes classicBlink{50%{opacity:0}}
+@media(max-width:850px){html[data-theme="ultra-retro"] main{grid-template-columns:1fr}html[data-theme="ultra-retro"] .browser{max-height:none}}
+@media(prefers-reduced-motion:reduce){html[data-theme="ultra-retro"] .live i{animation:none}}
+html[data-theme="ultra-retro"] footer{position:fixed!important;left:8px!important;right:8px!important;bottom:8px!important;min-height:62px!important;height:62px!important;margin:0!important;padding:5px 8px!important;z-index:30!important}
+html[data-theme="ultra-retro"] .modes{width:100%;overflow-x:auto;white-space:nowrap;gap:7px;scrollbar-color:#111 #aaa}
+html[data-theme="ultra-retro"] .modes>span{display:none}
+html[data-theme="ultra-retro"] .modes button{flex:0 0 auto;min-width:102px;min-height:42px;padding:0 12px!important;font-size:10px!important}

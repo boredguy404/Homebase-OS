@@ -3,3 +3,25 @@
 .orbit-player.expanded{animation:orbitFullIn .18s ease-out}
 @keyframes orbitMiniIn{from{opacity:.4;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
 @keyframes orbitFullIn{from{opacity:.75}to{opacity:1}}
+
+/* The compact canvas owns the mini preview; pseudo layers remain disabled. */
+.orbit-player:not(.expanded) .orbit-mini:before,.orbit-player:not(.expanded) .orbit-mini:after{content:none!important;display:none!important}
+.orbit-mini-canvas{position:absolute;z-index:1;left:15px;top:16px;width:42px;height:72px;border-radius:11px;background:#0a0e12;pointer-events:none}
+[data-theme="ultra-retro"] .orbit-mini-canvas{border:2px inset #eee;border-radius:0;background:#ddd;image-rendering:pixelated}
+.orbit-player[data-visual]:not(.expanded) .orbit-mini:before{content:""!important;display:block!important;left:16px!important;top:18px!important;width:40px!important;height:68px!important;border:0!important;border-radius:12px!important;mask:none!important;filter:none!important;box-shadow:none!important;transform-origin:center!important}
+.orbit-player[data-visual="wave"] .orbit-mini:before{background:repeating-linear-gradient(165deg,transparent 0 7px,rgba(var(--signal-rgb),.8) 8px 10px)!important;animation:miniWave 1.35s ease-in-out infinite alternate!important}
+.orbit-player[data-visual="bars"] .orbit-mini:before{background:repeating-linear-gradient(90deg,rgba(var(--signal-alt-rgb),.9) 0 4px,transparent 4px 7px)!important;animation:miniBars .8s steps(5) infinite alternate!important}
+.orbit-player[data-visual="tunnel"] .orbit-mini:before{border-radius:50%!important;background:repeating-radial-gradient(circle,transparent 0 5px,rgba(var(--signal-alt-rgb),.78) 6px 8px)!important;animation:miniTunnel 1.8s ease-in-out infinite!important}
+.orbit-player[data-visual="orbit"] .orbit-mini:before{border-radius:50%!important;background:repeating-radial-gradient(circle,rgba(var(--signal-rgb),.82) 0 2px,transparent 3px 8px)!important;animation:miniOrbit 2.4s linear infinite!important}
+.orbit-player[data-visual="radar"] .orbit-mini:before{border-radius:50%!important;background:conic-gradient(from 0deg,transparent 0 72%,rgba(var(--signal-rgb),.9),transparent)!important;outline:1px solid rgba(var(--signal-rgb),.35)!important;animation:miniOrbit 1.8s linear infinite!important}
+.orbit-player[data-visual="nebula"] .orbit-mini:before{border-radius:50%!important;background:radial-gradient(circle at 35% 30%,#fff,rgba(var(--signal-rgb),.72) 9%,transparent 36%),radial-gradient(circle at 70% 65%,rgba(var(--signal-alt-rgb),.75),transparent 45%)!important;animation:miniNebula 2.2s ease-in-out infinite alternate!important}
+.orbit-player[data-visual="club"] .orbit-mini:before{border-radius:50%!important;background:conic-gradient(#00d9ff,#ff315c,#ffe44b,#53e6bb,#00d9ff)!important;animation:miniOrbit 1.2s linear infinite!important}
+@keyframes miniWave{to{transform:scaleY(.48) skewY(8deg)}}@keyframes miniBars{to{transform:scaleY(.45)}}@keyframes miniTunnel{50%{transform:scale(.72);opacity:.55}}@keyframes miniOrbit{to{transform:rotate(1turn)}}@keyframes miniNebula{to{transform:scale(1.12) rotate(14deg)}}
+[data-theme="ultra-retro"] .orbit-player[data-visual]:not(.expanded) .orbit-mini:before{border-radius:0!important;outline:1px solid #000!important;filter:grayscale(1)!important;background-color:#eee!important}
+[data-theme="ultra-retro"] .orbit-player[data-visual="wave"] .orbit-mini:before{background:repeating-linear-gradient(0deg,transparent 0 7px,#111 8px 9px),repeating-linear-gradient(90deg,#ddd 0 7px,#888 8px 9px)!important}
+[data-theme="ultra-retro"] .orbit-player[data-visual="bars"] .orbit-mini:before{background:repeating-linear-gradient(90deg,#111 0 4px,#eee 4px 7px)!important}
+[data-theme="ultra-retro"] .orbit-player[data-visual="tunnel"] .orbit-mini:before{background:repeating-radial-gradient(ellipse,#eee 0 5px,#111 6px 7px)!important}
+[data-theme="ultra-retro"] .orbit-player[data-visual="orbit"] .orbit-mini:before{background:radial-gradient(#111 0 1px,transparent 2px),repeating-radial-gradient(circle,#eee 0 7px,#111 8px 9px)!important}
+[data-theme="ultra-retro"] .orbit-player[data-visual="radar"] .orbit-mini:before{border-radius:50%!important;background:conic-gradient(transparent 0 75%,#111)!important}
+[data-theme="ultra-retro"] .orbit-player[data-visual="nebula"] .orbit-mini:before{background:repeating-radial-gradient(circle at 35% 45%,#111 0 1px,#eee 2px 5px)!important}
+body .orbit-player[data-visual]:not(.expanded) .orbit-mini:before,body .orbit-player[data-visual]:not(.expanded) .orbit-mini:after{content:none!important;display:none!important;animation:none!important;background:none!important}

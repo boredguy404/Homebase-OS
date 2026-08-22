@@ -6,6 +6,45 @@ I wanted an easy way to get more out of a low-power Chromebook without bouncing 
 
 Here is the more organized AI-slop explanation.
 
+## Install Homebase
+
+You do not need to be a developer. Pick your computer, paste the highlighted line once, and Homebase handles the project download and startup.
+
+### Chromebook or Linux
+
+1. On Chromebook, turn on **Settings → Advanced → Developers → Linux development environment**.
+2. Open the **Terminal** app.
+3. Copy and paste this whole line, then press Enter:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/boredguy404/Homebase-OS/main/install.sh | bash
+```
+
+### Windows
+
+1. Install [Python 3](https://www.python.org/downloads/windows/) and check **Add Python to PATH** during installation.
+2. Open **PowerShell**.
+3. Copy and paste this whole line, then press Enter:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/boredguy404/Homebase-OS/main/install-windows.ps1 | iex"
+```
+
+Homebase opens automatically. In Chrome or Edge, choose **Install Homebase** to make it fullscreen and remove the address bar. Your games, saves, music, and personal files stay on your computer and are not uploaded to GitHub.
+
+### Add games you own
+
+Homebase ships without commercial games. To add a backup you legally made:
+
+1. Open the installed `Homebase-OS` folder.
+2. Put game files in `roms/` and required PlayStation BIOS files in `bios/`.
+3. Optionally put your own cover PNGs or real gameplay GIFs in `covers/`.
+4. Reload Pocket Archive, open a game card, then use **Play** or **Controller layout**.
+
+![Pocket Archive game shelf](media/pocket-archive.png)
+
+Supported systems include Game Boy, GBC, GBA, NES, SNES, Genesis, N64, and PlayStation. The in-app **Add your games** guide explains filenames, artwork, privacy, and recommended GIF sizes. ROMs, BIOS files, saves, and private artwork are ignored by Git and remain local.
+
 ![Homebase dashboard](media/homebase.png)
 
 ## What it feels like
@@ -76,9 +115,11 @@ EmulatorJS saves live in browser IndexedDB, so Homebase also includes a separate
 
 ### Ultra Retro
 
-![Ultra Retro pixel-era theme](media/ultra-retro.png)
+| Desktop | Orbit Radio |
+| --- | --- |
+| ![Homebase Ultra Retro desktop](media/ultra-retro.png) | ![Orbit Radio in Ultra Retro](media/orbit-retro.png) |
 
-Ultra Retro is a full alternate presentation inspired by pixel-era home computers and arcade menus—not a color filter. It replaces the normal glass language with a pixel grid, stepped shadows, chamfered panels, scanlines, arcade typography, sprite-like icon motion, square controls, and a high-score clock treatment. It contains no purple.
+Ultra Retro is a complete alternate shell inspired by late-'80s and '90s home computers—not a color filter. It turns Homebase into a teal desktop with a working menu bar and taskbar, chunky desktop icons, draggable system windows, era-matched loading states, and dedicated monochrome display programs for Orbit. Games return to full color when launched.
 
 ### System insight and Homebase Control
 
@@ -98,7 +139,7 @@ The dashboard reports real storage, memory, load, and uptime. Detail views add s
 On a Chromebook, enable Linux development environment, open Terminal, and review/run:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/boredguy404/homebase/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/boredguy404/Homebase-OS/main/install.sh | bash
 ```
 
 To boot an existing checkout:
@@ -107,7 +148,7 @@ To boot an existing checkout:
 ./launch-homebase.sh
 ```
 
-Homebase prints the Linux container URL and opens it in Chrome. Install the page as a PWA from Chrome to remove the URL bar. See [the one-block boot guide](docs/HOWTO.txt) for the shortest local instructions.
+Homebase prints the Linux container URL and opens it in Chrome. Install the page as a PWA from Chrome to remove the URL bar. See [the one-block boot guide](HOWTO.txt) for the shortest local instructions.
 
 ### Windows
 
@@ -184,7 +225,11 @@ Homebase began on an ARM Chromebook, so ChromeOS/Crostini is the best-tested pat
 
 ## Support
 
-If Homebase made an older Chromebook more useful, you can [buy development a coffee through Cash App](https://cash.app/$sitedeveloper). The source remains free.
+<a href="https://cash.app/$sitedeveloper"><img src="media/support-coffee.png" alt="A warm coffee beside a Chromebook running Homebase" width="100%"></a>
+
+Homebase started as one person trying to get more life out of a low-power Chromebook. If it made your computer more useful—or you just want to help fund another late-night build—you can [buy development a coffee through Cash App](https://cash.app/$sitedeveloper).
+
+No pressure and no feature paywalls. Contributions, bug reports, screenshots, and thoughtful ideas help just as much.
 
 ## Contributing and license
 

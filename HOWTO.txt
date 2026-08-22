@@ -1,0 +1,25 @@
+HOMEBASE — THE ONE LOCAL LAUNCH GUIDE
+=====================================
+
+CHROMEBOOK / LINUX — COPY AND PASTE THIS BLOCK:
+
+cd "$HOME/homebase" && ./homebase-maintenance.sh open
+
+That starts Homebase, waits until it is ready, and opens the current local URL.
+
+If Homebase is not installed yet, use the installer command at the very top of
+README.md once. After installation, always use the command above.
+
+Recovery:
+
+  cd "$HOME/homebase" && ./homebase-maintenance.sh restart
+  cd "$HOME/homebase" && ./homebase-maintenance.sh status
+  cd "$HOME/homebase" && ./homebase-maintenance.sh logs
+
+WINDOWS:
+
+Right-click install-windows.ps1, choose Run with PowerShell, then use the
+Homebase shortcut it creates. README.md covers the first installation.
+
+Your ROMs, BIOS files, saves, music, and My Library content stay local and are
+excluded from the public Git repository.

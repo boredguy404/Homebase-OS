@@ -26,7 +26,7 @@
     dialog.querySelector('h2').textContent = card.dataset.name;
     dialog.querySelector('.game-detail-copy>p').textContent = card.querySelector('.copy p')?.textContent || 'A game from your private local library.';
     dialog.querySelector('.game-facts').innerHTML = '<span><b>' + ((card.dataset.core || 'gba').toUpperCase()) + '</b>System</span><span><b>Xbox</b>Controller ready</span><span><b>Offline</b>Local runtime</span><span><b>Autosave</b>Every 7 seconds</span>';
-    draw(); dialog.showModal();
+    draw();dialog.scrollTop=0;dialog.querySelector('.game-detail-track').scrollLeft=0;dialog.showModal();requestAnimationFrame(()=>{dialog.scrollTop=0;dialog.querySelector('.game-detail-track').scrollLeft=0});
   }
   dialog.querySelector('.game-detail-x').onclick = () => dialog.close();
   dialog.querySelector('.gallery-left').onclick = () => move(-1);

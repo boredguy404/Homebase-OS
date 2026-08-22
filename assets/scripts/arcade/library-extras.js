@@ -1,5 +1,6 @@
 (() => {
   const publicCapture = new URLSearchParams(location.search).has('public');
+  const apps=document.querySelector('#apps .app-grid');if(apps&&!document.querySelector('[data-game-setup]'))apps.insertAdjacentHTML('afterbegin','<button class="app-card" data-game-setup onclick="parent.openPanel?parent.openPanel(\'/pages/game-setup.html\'):location.href=\'/pages/game-setup.html\'"><i>＋</i><b>Add your games</b><span>Simple private-file guide for ROMs, BIOS files, cover art, real gameplay GIFs, and controller layouts.</span></button>');
   if(publicCapture)document.head.insertAdjacentHTML('beforeend','<style>.public-system-art{width:100%;height:100%;display:grid;place-content:center;gap:7px;text-align:center;background:radial-gradient(circle at 25% 15%,rgba(var(--signal-rgb),.28),transparent 45%),linear-gradient(145deg,#18252d,#090d11)}.public-system-art b{font-size:28px;letter-spacing:.12em}.public-system-art span{color:#afbdc5;font-size:10px;text-transform:uppercase;letter-spacing:.08em}</style>');
   const originalLaunch = window.launch;
   if (typeof originalLaunch !== 'function') return;
@@ -9,7 +10,7 @@
     if(core==='psx'){window.EJS_disableCue=false;window.EJS_threads=false;window.EJS_CacheLimit=800*1024*1024}
     originalLaunch(url, name, core);
     if (core === 'n64') window.EJS_defaultOptions = {...window.EJS_defaultOptions, 'mupen64plus-pak1': 'memory'};
-    if (name !== "Tony Hawk's Pro Skater 3" || localStorage.getItem('homebase-thps3-complete-v1')) return;
+    if (name !== "Tony Hawk's Pro Skater 3" || sessionStorage.getItem('homebase-thps3-complete-v2')) return;
     let attempts = 0;
     const timer = setInterval(async () => {
       const manager = window.EJS_emulator?.gameManager;
@@ -25,8 +26,9 @@
         manager.FS.writeFile(path, save);
         manager.loadSaveFiles();
         manager.saveSaveFiles();
-        localStorage.setItem('homebase-thps3-complete-v1', '1');
-        toast('Complete career loaded · all levels and hidden skaters');
+        const written=manager.FS.analyzePath(path);if(!written.exists||manager.FS.stat(path).size!==save.length)throw new Error('save verification failed');
+        sessionStorage.setItem('homebase-thps3-complete-v2', '1');
+        toast('THPS3 complete career loaded · all levels and skaters');
       } catch { toast('Complete career import needs retry'); }
     }, 100);
   };

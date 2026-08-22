@@ -1,3 +1,4 @@
+document.head.insertAdjacentHTML('beforeend','<link rel="stylesheet" href="/assets/styles/shared/ultra-retro.css"><link rel="stylesheet" href="/assets/styles/shared/modal-global.css">');document.documentElement.dataset.theme=localStorage.getItem('nightglass-theme')||'solaris';addEventListener('storage',event=>{if(event.key==='nightglass-theme')document.documentElement.dataset.theme=localStorage.getItem('nightglass-theme')||'solaris'});
 addEventListener('DOMContentLoaded',()=>{
   const makeSkeleton=target=>{if(target?.querySelector('.empty'))target.innerHTML='<i class="skeleton"></i><i class="skeleton"></i><i class="skeleton"></i><i class="skeleton"></i>'};
   makeSkeleton(document.querySelector('#installed'));makeSkeleton(document.querySelector('#catalog'));

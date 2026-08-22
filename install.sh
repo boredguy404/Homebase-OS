@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-repo="https://github.com/boredguy404/homebase.git"
+repo="https://github.com/boredguy404/Homebase-OS.git"
 target="${HOME}/homebase"
 
 if ! command -v git >/dev/null || ! command -v curl >/dev/null || ! command -v 7z >/dev/null; then

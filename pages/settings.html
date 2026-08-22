@@ -14,6 +14,7 @@
 <label><input type="checkbox" data-setting="homebase-crt-lines" checked>CRT lines on lighter systems</label>
 <label><input type="checkbox" data-setting="homebase-controller-ui" checked>Xbox navigation hints</label>
 </div><aside><b>N64 protection</b><p>Fullscreen N64 automatically removes the expensive transparent CRT compositor while keeping the bezel. This prevents the ARM GPU from drawing every frame twice.</p></aside></section>
+<section><h2>Device &amp; permissions</h2><p>Review detected hardware, automatic-scan folders, private-file boundaries, demo content, and PWA installation.</p><div class="actions"><button class="primary" onclick="parent.openFirstRun?parent.openFirstRun(true):location.href='/?setup=1'">Run welcome setup</button></div></section>
 <section><h2>Browser emulator saves</h2><p>Export or merge the actual EmulatorJS IndexedDB saves and states from this Homebase origin. This closes the gap that the server-side ZIP cannot reach.</p>
 <div class="actions"><button id="export-browser-saves" class="primary">Export browser saves</button><button id="import-browser-saves">Import browser saves</button><input id="browser-save-file" type="file" accept=".json,application/json" hidden></div><p id="browser-save-status"></p></section>
 <section><h2>Portable Homebase backup</h2><p>Choose exactly what belongs in the archive. ROMs and imports remain private and are never included in GitHub.</p>

@@ -14,6 +14,8 @@ import zipfile
 import time
 import threading
 import uuid
+import platform
+import xml.etree.ElementTree as ET
 from functools import lru_cache
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -39,10 +41,22 @@ ACTIONS = {
     "minecraft": ["flatpak", "run", "io.mrarm.mcpelauncher"],
 }
 CATALOG_CACHE = {}
+BROWSE_CACHE = {}
 INSIGHT_CACHE = {"time": 0, "data": None}
 JOBS = {}
 JOBS_LOCK = threading.Lock()
 BACKUP_AREAS = {"box": HOME_ROOT / "My Library", "roms": ROOT / "roms", "saves": ROOT / "saves", "artwork": ROOT / "covers", "imports": ROOT / "imports", "mgba": HOME_ROOT / ".config" / "mgba", "orbit": HOME_ROOT / ".config" / "radio-orbit", "flatpak": HOME_ROOT / ".var" / "app"}
+HOMEBASE_CONFIG = HOME_ROOT / ".config" / "homebase" / "setup.json"
+SCAN_CHOICES = {"My Library": HOME_ROOT / "My Library", "Downloads": HOME_ROOT / "Downloads", "Desktop": HOME_ROOT / "Desktop", "Documents": HOME_ROOT / "Documents", "Pictures": HOME_ROOT / "Pictures"}
+ROM_CORES = {".gba": ("gba", "GBA"), ".gb": ("gb", "Game Boy"), ".gbc": ("gb", "GBC"), ".nes": ("nes", "NES"), ".sfc": ("snes", "SNES"), ".smc": ("snes", "SNES"), ".md": ("segaMD", "Genesis"), ".gen": ("segaMD", "Genesis"), ".z64": ("n64", "N64"), ".n64": ("n64", "N64"), ".v64": ("n64", "N64"), ".cue": ("psx", "PlayStation"), ".chd": ("psx", "PlayStation"), ".iso": ("psx", "PlayStation")}
+GAME_CATALOG = ROOT / "imports" / "homebase-game-catalog.json"
+
+def game_slug(value):
+    return re.sub(r"(^-|-$)", "", re.sub(r"[^a-z0-9]+", "-", value.casefold()))[:80] or "game"
+
+def read_game_catalog():
+    try: return json.loads(GAME_CATALOG.read_text(encoding="utf-8"))
+    except (OSError, ValueError): return {}
 
 def start_job(kind, app_id, command):
     job_id = uuid.uuid4().hex[:12]
@@ -185,8 +199,78 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_GET(self):
+        browse_route = urllib.parse.urlsplit(self.path)
         if self.path == "/api/status":
-            self._json(200, {"service": "homebase-v57", "multiplayer": True})
+            self._json(200, {"service": "homebase-v61", "multiplayer": True})
+            return
+        if self.path == "/api/setup/status":
+            disk = shutil.disk_usage(HOME_ROOT)
+            saved = {}
+            try: saved = json.loads(HOMEBASE_CONFIG.read_text(encoding="utf-8"))
+            except (OSError, ValueError): pass
+            controllers = list(Path("/dev/input").glob("js*")) if Path("/dev/input").exists() else []
+            system = platform.system() or "Unknown"
+            chromeos = bool(os.environ.get("CROS_USER_ID_HASH")) or Path("/mnt/chromeos").exists()
+            self._json(200, {"os": "ChromeOS Linux" if chromeos else system, "architecture": platform.machine() or "unknown",
+                "python": platform.python_version(), "storage_free_gb": round(disk.free / 1024 ** 3, 1),
+                "controllers": len(controllers), "folders": [{"name": name, "available": path.exists()} for name,path in SCAN_CHOICES.items()],
+                "configured": HOMEBASE_CONFIG.exists(), "approved_folders": saved.get("approved_folders", [])})
+            return
+        if browse_route.path == "/api/games":
+            metadata = read_game_catalog(); games = []
+            sources=[(ROOT/"roms","roms"),(HOME_ROOT/"My Library","library")]
+            seen=set()
+            for source,source_kind in sources:
+                if not source.exists():continue
+                candidates=source.iterdir() if source_kind=="roms" else source.rglob("*")
+                for rom in sorted(candidates, key=lambda path:str(path).casefold()):
+                    if not rom.is_file() or rom.suffix.casefold() not in ROM_CORES: continue
+                    identity=str(rom.resolve());
+                    if identity in seen:continue
+                    seen.add(identity)
+                    core, system = ROM_CORES[rom.suffix.casefold()]; saved = metadata.get(rom.name, {}); title = saved.get("title") or re.sub(r"[_-]+", " ", rom.stem).strip().title(); slug = saved.get("slug") or game_slug(title)
+                    media=[]
+                    for candidate in [f"{slug}-cover.png",f"{slug}-cover.jpg",f"{slug}-cover.webp",f"{slug}-gameplay.gif",f"{slug}-gameplay-2.gif",f"{slug}-gameplay-3.gif"]:
+                        if (ROOT / "covers" / candidate).is_file(): media.append("/covers/"+candidate)
+                    game_url="/roms/"+rom.name if source_kind=="roms" else "/api/file?path="+urllib.parse.quote(str(rom.relative_to(HOME_ROOT)))
+                    games.append({"rom":game_url,"name":title,"slug":slug,"core":core,"system":saved.get("system") or system,"description":saved.get("description") or "A private game from your local library.","genre":saved.get("genre") or "Game","year":saved.get("year") or "","players":saved.get("players") or "Single player","controls":saved.get("controls") or "Standard Xbox mapping","media":media,"bytes":rom.stat().st_size,"source":source_kind,"needs_details":not bool(saved)})
+            self._json(200,{"games":games,"local_only":True});return
+        if browse_route.path.startswith("/api/browse/"):
+            section = browse_route.path.rsplit("/", 1)[-1]
+            query = urllib.parse.parse_qs(browse_route.query).get("q", [""])[0].strip()[:100]
+            cache_key = (section, query.casefold())
+            cached = BROWSE_CACHE.get(cache_key)
+            if cached and time.time() - cached[0] < 900:
+                self._json(200, cached[1]); return
+            try:
+                if section == "books":
+                    params=urllib.parse.urlencode({"q":query or "computer history","limit":24,"fields":"key,title,author_name,first_publish_year,cover_i"})
+                    request=urllib.request.Request("https://openlibrary.org/search.json?"+params,headers={"User-Agent":"Homebase-OS/1.0 (github.com/boredguy404/Homebase-OS)"})
+                    with urllib.request.urlopen(request,timeout=12) as response:data=json.load(response)
+                    items=[{"kind":"book","title":x.get("title","Untitled"),"summary":", ".join(x.get("author_name",[])[:3]),"meta":str(x.get("first_publish_year","")),"image":"https://covers.openlibrary.org/b/id/"+str(x["cover_i"])+"-M.jpg" if x.get("cover_i") else "","url":"https://openlibrary.org"+x.get("key","")} for x in data.get("docs",[])]
+                    result={"items":items,"source":"Open Library"}
+                elif section == "reference":
+                    params=urllib.parse.urlencode({"action":"query","format":"json","generator":"search","gsrsearch":query or "personal computer","gsrlimit":24,"prop":"extracts|pageimages","exintro":1,"explaintext":1,"exchars":500,"piprop":"thumbnail","pithumbsize":500})
+                    request=urllib.request.Request("https://en.wikipedia.org/w/api.php?"+params,headers={"User-Agent":"Homebase-OS/1.0 (github.com/boredguy404/Homebase-OS)"})
+                    with urllib.request.urlopen(request,timeout=12) as response:data=json.load(response)
+                    pages=sorted(data.get("query",{}).get("pages",{}).values(),key=lambda x:x.get("index",999))
+                    items=[{"kind":"reference","title":x.get("title","Untitled"),"summary":x.get("extract",""),"image":x.get("thumbnail",{}).get("source",""),"url":"https://en.wikipedia.org/?curid="+str(x.get("pageid",""))} for x in pages]
+                    result={"items":items,"source":"Wikipedia"}
+                elif section == "projects":
+                    params=urllib.parse.urlencode({"q":query or "chromebook utilities","sort":"stars","order":"desc","per_page":48})
+                    request=urllib.request.Request("https://api.github.com/search/repositories?"+params,headers={"Accept":"application/vnd.github+json","User-Agent":"Homebase-OS/1.0"})
+                    with urllib.request.urlopen(request,timeout=12) as response:data=json.load(response)
+                    items=[{"kind":"project","title":x["full_name"],"summary":re.sub(r"[`*_>#]","",x.get("description") or "No description provided."),"meta":str(x.get("stargazers_count",0))+" stars · "+(x.get("language") or "mixed"),"image":x["owner"].get("avatar_url",""),"url":x["html_url"],"homepage":x.get("homepage") or "","license":(x.get("license") or {}).get("spdx_id") or "Not declared","language":x.get("language") or "Mixed","stars":x.get("stargazers_count",0),"forks":x.get("forks_count",0),"issues":x.get("open_issues_count",0),"updated":x.get("updated_at",""),"topics":x.get("topics",[])[:10],"owner":x["owner"].get("login","")} for x in data.get("items",[])]
+                    result={"items":items,"source":"GitHub"}
+                elif section == "news":
+                    feeds={"top":"https://feeds.bbci.co.uk/news/rss.xml","world":"https://feeds.bbci.co.uk/news/world/rss.xml","technology":"https://feeds.bbci.co.uk/news/technology/rss.xml","science":"https://feeds.bbci.co.uk/news/science_and_environment/rss.xml"}
+                    request=urllib.request.Request(feeds.get(query.casefold(),feeds["top"]),headers={"User-Agent":"Homebase-OS/1.0"})
+                    with urllib.request.urlopen(request,timeout=12) as response:root=ET.fromstring(response.read())
+                    items=[{"kind":"news","title":node.findtext("title",default="Untitled"),"summary":re.sub("<[^>]+>","",node.findtext("description",default="")),"meta":node.findtext("pubDate",default=""),"url":node.findtext("link",default="")} for node in root.findall(".//item")[:30]]
+                    result={"items":items,"source":"BBC News RSS"}
+                else: raise ValueError("unknown browse source")
+                BROWSE_CACHE[cache_key]=(time.time(),result);self._json(200,result)
+            except (OSError,ValueError,KeyError,ET.ParseError) as error:self._json(502,{"error":str(error),"items":[]})
             return
         if self.path == "/api/github-status":
             if not shutil.which("gh"):
@@ -386,6 +470,55 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
             self._json(403, {"error": "same-origin action required"})
             return
         route = urllib.parse.urlsplit(self.path)
+        if route.path == "/api/setup":
+            length = min(int(self.headers.get("Content-Length", "0")), 64 * 1024)
+            try:
+                payload = json.loads(self.rfile.read(length) or b"{}")
+                approved = [name for name in payload.get("approved_folders", []) if name in SCAN_CHOICES]
+                HOMEBASE_CONFIG.parent.mkdir(parents=True, exist_ok=True)
+                HOMEBASE_CONFIG.write_text(json.dumps({"approved_folders": approved, "demo_library": bool(payload.get("demo_library")), "updated": int(time.time())}, indent=2), encoding="utf-8")
+                demo_created = False
+                if payload.get("demo_library"):
+                    demo = HOME_ROOT / "My Library" / "Welcome to Homebase"
+                    demo.mkdir(parents=True, exist_ok=True)
+                    readme = demo / "START HERE.txt"
+                    if not readme.exists():
+                        readme.write_text("Welcome to Homebase.\n\nDrop your own files into My Library. Add legally obtained games through Pocket Archive > Add your games. Your private files stay on this device and are ignored by Git.\n", encoding="utf-8")
+                    demo_created = True
+                self._json(200, {"saved": True, "approved_folders": approved, "demo_created": demo_created})
+            except (OSError, ValueError, TypeError) as error:
+                self._json(400, {"error": str(error)})
+            return
+        if route.path == "/api/game-import/file":
+            kind = urllib.parse.parse_qs(route.query).get("kind", [""])[0]; raw_name = urllib.parse.unquote(self.headers.get("X-File-Name", "")); name = Path(raw_name).name; slug = game_slug(self.headers.get("X-Game-Slug", Path(name).stem)); length=min(int(self.headers.get("Content-Length","0")),4*1024**3)
+            suffix=Path(name).suffix.casefold()
+            if name!=raw_name or not length or kind=="rom" and suffix not in ROM_CORES or kind not in {"rom","cover","preview1","preview2","preview3"}:
+                self._json(400,{"error":"unsupported or invalid import file"});return
+            if kind=="rom": destination=ROOT/"roms"/name
+            else:
+                allowed={".png",".jpg",".jpeg",".webp",".gif"}
+                if suffix not in allowed:self._json(400,{"error":"artwork must be PNG, JPG, WebP, or GIF"});return
+                suffix=".jpg" if suffix==".jpeg" else suffix;label="cover" if kind=="cover" else "gameplay"+("" if kind=="preview1" else "-"+kind[-1]);destination=ROOT/"covers"/(slug+"-"+label+suffix)
+            destination.parent.mkdir(parents=True,exist_ok=True)
+            if destination.exists():self._json(409,{"error":"that file is already imported","path":str(destination.relative_to(ROOT))});return
+            try:
+                with destination.open("wb") as output:
+                    remaining=length
+                    while remaining:
+                        chunk=self.rfile.read(min(1024*1024,remaining))
+                        if not chunk:break
+                        output.write(chunk);remaining-=len(chunk)
+                self._json(201,{"path":str(destination.relative_to(ROOT)),"bytes":destination.stat().st_size})
+            except OSError as error:self._json(500,{"error":str(error)})
+            return
+        if route.path == "/api/game-import/metadata":
+            length=min(int(self.headers.get("Content-Length","0")),128*1024)
+            try:
+                payload=json.loads(self.rfile.read(length) or b"{}");rom_name=Path(str(payload.get("rom_name", ""))).name
+                if rom_name!=payload.get("rom_name") or not (ROOT/"roms"/rom_name).is_file():raise ValueError("imported ROM was not found")
+                catalog=read_game_catalog();catalog[rom_name]={key:str(payload.get(key,""))[:500] for key in ("title","slug","system","description","genre","year","players","controls")};GAME_CATALOG.parent.mkdir(parents=True,exist_ok=True);temporary=GAME_CATALOG.with_suffix(".tmp");temporary.write_text(json.dumps(catalog,indent=2),encoding="utf-8");temporary.replace(GAME_CATALOG);self._json(200,{"saved":True,"game":catalog[rom_name]})
+            except (OSError,ValueError,TypeError) as error:self._json(400,{"error":str(error)})
+            return
         if route.path == "/api/backup/export":
             length=min(int(self.headers.get("Content-Length","0")),5*1024*1024)
             try: payload=json.loads(self.rfile.read(length) or b"{}")
@@ -485,10 +618,13 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                     target = folder / name
                     target.mkdir()
                 elif route.path == "/api/files/rename":
-                    name = Path(payload.get("name", "")).name
-                    if not source or source == HOME_ROOT or not name:
+                    raw_name = str(payload.get("name", "")).strip()
+                    name = Path(raw_name).name
+                    if not source or source == HOME_ROOT or not name or name != raw_name or name in {".", ".."}:
                         raise ValueError("invalid rename")
                     target = source.with_name(name)
+                    if target.exists() and target != source:
+                        raise ValueError("a file or folder with that name already exists")
                     source.rename(target)
                 elif route.path == "/api/files/trash":
                     if not source or source == HOME_ROOT:
@@ -554,5 +690,4 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    icon_index()
     ThreadingHTTPServer(("0.0.0.0", 8765), PocketArchiveHandler).serve_forever()
