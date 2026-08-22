@@ -37,7 +37,7 @@
       } catch { toast('Complete career import needs retry'); }
     }, 100);
   };
-  const library = document.querySelector('#library .games');
+  const library = document.querySelector('#library .grid:not(.featured)');
   const realArt={'/roms/mario-kart-64.z64':'mario-kart-64-real.png','/roms/super-mario-64.z64':'super-mario-64-real.png','/roms/ocarina-of-time.z64':'ocarina-of-time-real.png','/roms/tekken-3.chd':'tekken-3-real.png'};
   if(publicCapture)document.querySelectorAll('.game[data-rom]').forEach(card=>{const system=card.dataset.core==='n64'?'N64':card.dataset.core==='psx'?'PS1':card.dataset.core==='nes'?'NES':'GBA';card.querySelector('.art').innerHTML='<div class="public-system-art"><b>'+system+'</b><span>User adds their own legal copy</span></div>'});
   else Object.entries(realArt).forEach(([rom,file])=>{const art=document.querySelector('[data-rom="'+rom+'"] .art');if(art)art.innerHTML='<img src="/covers/'+file+'" alt="Real in-game screenshot">'});

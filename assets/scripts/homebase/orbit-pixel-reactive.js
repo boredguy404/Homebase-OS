@@ -18,7 +18,8 @@
       const energy = Math.max(0, Math.min(1, Number(signal.energy) || 0));
       const bass = Math.max(0, Math.min(1, Number(signal.bass) || 0));
       const treble = Math.max(0, Math.min(1, Number(signal.treble) || 0));
-      const size = Math.max(2, Math.round(width / 44)), threshold = .42 - energy * .24 - bass * .17;
+      const size = player.classList.contains('peek') ? Math.max(2, Math.round(width / 105)) : Math.max(2, Math.round(width / 44));
+      const threshold = .42 - energy * .24 - bass * .17;
       ctx.fillStyle = retro ? '#ddd' : '#071019'; ctx.fillRect(0, 0, width, height);
       ctx.fillStyle = color;
       for (let y = 0; y < height; y += size) for (let x = 0; x < width; x += size) {
