@@ -2,6 +2,8 @@
 
 Homebase is a little OS-style home screen for a Chromebook or PC: one fullscreen place for apps, files, music, system information, and games you add yourself.
 
+> **What this is:** an installable local dashboard that sits on top of ChromeOS/Linux or Windows. It organizes the apps and files already on your computer, provides a private game shelf for games you add yourself, and adds touch/controller-friendly controls. It is **not** a replacement operating system, cloud service, or game download site.
+
 I wanted an easy way to get more out of a low-power Chromebook without bouncing between a pile of unrelated windows, so I made this. It is designed first for touch and an Xbox controller, but mouse and keyboard work normally too.
 
 Here is the more organized AI-slop explanation.
@@ -125,9 +127,11 @@ Ultra Retro is a complete alternate shell inspired by late-'80s and '90s home co
 
 ### Optional modern view: Cobalt + Radar
 
-![Cobalt modern dashboard](media/homebase.png)
+| Cobalt Homebase | Cobalt Radar | Cobalt Linux Apps |
+| --- | --- | --- |
+| ![Cobalt modern Homebase dashboard](media/cobalt-homebase.png) | ![Cobalt Radar Orbit visual](media/cobalt-radar.png) | ![Cobalt Linux app explorer](media/cobalt-apps.png) |
 
-Cobalt is the optional modern view: a calmer blue glass dashboard paired with the Radar visual. It is kept as an alternative—not the project’s public identity—while Ultra Retro remains the first screenshot and the main presentation theme.
+Cobalt + Radar is one compact optional modern view. It is kept as an alternative—not the project’s public identity—while Ultra Retro remains the first screenshot and the main presentation theme.
 
 ### System insight and Homebase Control
 
