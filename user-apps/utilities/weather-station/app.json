@@ -1,0 +1,6 @@
+{
+  "name": "Weather Station",
+  "description": "A keyless retro forecast console powered by Open-Meteo.",
+  "icon": "☼",
+  "entry": "index.html"
+}

@@ -47,7 +47,7 @@ Homebase ships without commercial games. To add a backup you legally made:
 3. Optionally put your own cover PNGs or real gameplay GIFs in `covers/`.
 4. Reload Pocket Archive, open a game card, then use **Play** or **Controller layout**.
 
-![Pocket Archive game shelf](media/pocket-archive.png)
+![Pocket Archive game shelf with intentionally blurred local artwork](media/pocket-archive.png)
 
 Supported systems include Game Boy, GBC, GBA, NES, SNES, Genesis, N64, and PlayStation. The in-app **Add your games** guide explains filenames, artwork, privacy, and recommended GIF sizes. ROMs, BIOS files, saves, and private artwork are ignored by Git and remain local.
 
@@ -67,13 +67,13 @@ This is not a replacement operating system. It is a fast console-like layer over
 
 | Your private game shelf | Recommendation-only discovery |
 |---|---|
-| ![Pocket Archive with public-safe system art](media/pocket-archive.png) | ![ROM Discovery with public-safe catalog art](media/rom-discovery.png) |
+| ![Pocket Archive with intentionally blurred local game artwork](media/pocket-archive.png) | ![Browse, Homebase’s retro internet-style discovery browser](media/rom-discovery.png) |
 
 Pocket Archive launches a locally installed EmulatorJS runtime for GBA, Game Boy, GBC, NES, SNES, Genesis, N64, and PlayStation files supplied by the user. Each game can have a detail sheet, swipeable gallery, Xbox controller diagram, save controls, performance profile, and fullscreen CRT presentation.
 
 ROM Discovery is deliberately separate from the installed library. It contains recommendations, hardware-fit notes, multiplayer information, expected emulator cores, and links for researching legal copies. It does not download ROMs and does not claim a suggested game is installed.
 
-The screenshots above use public-safe generated system panels. Personal cover files and gameplay captures are not committed.
+The Pocket Archive documentation capture uses actual local game imagery with a deliberately strong privacy blur. It communicates the real shelf without publishing sharp cover art or gameplay captures. Personal ROMs, saves, and source artwork are not committed.
 
 ### Orbit visual radio
 
@@ -83,9 +83,9 @@ Orbit combines internet radio and local audio playlists with audio-reactive visu
 
 ### App search and installation
 
-![Linux app discovery and installed apps](media/app-discovery.png)
+![Your Linux apps inside Browse’s Ultra Retro Explorer](media/app-discovery.png)
 
-Homebase reads actual desktop launchers and Flatpak state before calling an app installed. Explore searches the Flathub catalog, opens an in-app detail view with screenshots, and runs installs as observable background jobs. If automatic installation is unavailable, every app includes a copyable terminal fallback:
+Homebase reads actual desktop launchers and Flatpak state before calling an app installed. The **Browse** internet-style explorer now includes live News, AI, Dev, Security, Research, Games, Books, Reference, open-source tools, and Linux apps lanes. Explore searches the Flathub catalog, opens an in-app detail view with screenshots, and runs installs as observable background jobs. If automatic installation is unavailable, every app includes a copyable terminal fallback:
 
 ```bash
 flatpak install --user flathub APP_ID

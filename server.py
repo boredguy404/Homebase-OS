@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+import html
 import os
 import shutil
 import subprocess
@@ -51,6 +52,20 @@ SCAN_CHOICES = {"My Library": HOME_ROOT / "My Library", "Downloads": HOME_ROOT /
 ROM_CORES = {".gba": ("gba", "GBA"), ".gb": ("gb", "Game Boy"), ".gbc": ("gb", "GBC"), ".nes": ("nes", "NES"), ".sfc": ("snes", "SNES"), ".smc": ("snes", "SNES"), ".md": ("segaMD", "Genesis"), ".gen": ("segaMD", "Genesis"), ".z64": ("n64", "N64"), ".n64": ("n64", "N64"), ".v64": ("n64", "N64"), ".cue": ("psx", "PlayStation"), ".chd": ("psx", "PlayStation"), ".iso": ("psx", "PlayStation")}
 GAME_CATALOG = ROOT / "imports" / "homebase-game-catalog.json"
 ASSISTANT_KEY_FILE = ROOT / "local" / "openai-api-key.txt"
+USER_APPS = ROOT / "user-apps"
+
+def user_apps():
+    apps=[]
+    if not USER_APPS.exists(): return apps
+    for manifest in sorted(USER_APPS.rglob("app.json"), key=lambda path:str(path).casefold()):
+        folder=manifest.parent; relative=folder.relative_to(USER_APPS)
+        if not all(re.fullmatch(r"[a-z0-9][a-z0-9-]{0,63}", part) for part in relative.parts): continue
+        try: data=json.loads(manifest.read_text(encoding="utf-8"))
+        except (OSError, ValueError): continue
+        entry=Path(str(data.get("entry", "index.html"))).name
+        if not (folder / entry).is_file(): continue
+        app_id="/".join(relative.parts);apps.append({"id":app_id,"name":str(data.get("name") or folder.name)[:60],"description":str(data.get("description") or "Local Homebase app.")[:180],"icon":str(data.get("icon") or "◫")[:4],"url":"/user-apps/"+app_id+"/"+entry})
+    return apps
 
 def local_assistant(message):
     """Safe built-in assistant: facts and explicit UI actions only, never shell commands."""
@@ -95,6 +110,36 @@ def openai_assistant(message):
         answer = data.get("output_text") or "".join(part.get("text", "") for item in data.get("output", []) for part in item.get("content", []) if part.get("type") == "output_text")
         return answer.strip()[:600] or None
     except (OSError, ValueError, KeyError): return None
+
+def create_relay_app(description, framework):
+    """Generate a small, self-contained user app. Core Homebase files are never writable here."""
+    try: key = ASSISTANT_KEY_FILE.read_text(encoding="utf-8").strip()
+    except OSError: raise ValueError("connect an API key in Relay before generating an app")
+    if not key: raise ValueError("connect an API key in Relay before generating an app")
+    prompt=("Create one small offline-first Homebase user app from this request: "+description+
+        "\nFramework: "+framework+". Return JSON only with name, description, html, css, js. "
+        "Use only browser APIs and localStorage; no external scripts, iframes, network calls, forms posting data, eval, or imports. "
+        "The HTML must be body contents only. Keep it touch-friendly and useful.")
+    payload={"model":os.environ.get("HOMEBASE_OPENAI_MODEL","gpt-4.1-mini"),"store":False,"input":prompt,
+        "text":{"format":{"type":"json_object"}},"max_output_tokens":6000}
+    request=urllib.request.Request("https://api.openai.com/v1/responses",data=json.dumps(payload).encode(),headers={"Authorization":"Bearer "+key,"Content-Type":"application/json"},method="POST")
+    try:
+        with urllib.request.urlopen(request,timeout=60) as response:data=json.load(response)
+        raw=data.get("output_text") or "".join(part.get("text","") for item in data.get("output",[]) for part in item.get("content",[]) if part.get("type")=="output_text")
+        app=json.loads(raw)
+    except (OSError, ValueError, KeyError) as error: raise ValueError("Relay could not generate that app: "+str(error)[:140])
+    name=re.sub(r"\s+"," ",str(app.get("name") or "Untitled app")).strip()[:60]
+    slug=game_slug(name); category="experiments"; folder=USER_APPS/category/slug; suffix=2
+    while folder.exists(): folder=USER_APPS/(slug+"-"+str(suffix));suffix+=1
+    parts={key:str(app.get(key) or "") for key in ("html","css","js")}
+    if not parts["html"]: raise ValueError("Relay returned an empty app")
+    blocked=re.compile(r"<\s*script|<\s*iframe|\b(fetch|xmlhttprequest|websocket|eval|import\s*\(|document\.cookie)\b",re.I)
+    if any(blocked.search(value) for value in parts.values()): raise ValueError("Relay generated an unsafe browser capability; nothing was saved")
+    folder.mkdir(parents=True)
+    page="<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>"+html.escape(name)+" · Homebase</title><link rel=\"stylesheet\" href=\"/assets/styles/shared/ultra-retro.css\"><script src=\"/assets/scripts/shared/theme-sync.js\"></script><style>body{margin:0;background:#101719;color:#edf5f2;font:16px system-ui}.app{max-width:900px;margin:auto;padding:30px 20px 80px}button,input,textarea{font:inherit}button{min-height:44px;cursor:pointer} "+parts["css"]+"</style></head><body><main class=\"app\">"+parts["html"]+"</main><script>"+parts["js"]+"<\/script></body></html>"
+    (folder/"index.html").write_text(page,encoding="utf-8")
+    (folder/"app.json").write_text(json.dumps({"name":name,"description":str(app.get("description") or "Relay-generated local app.")[:180],"icon":"✦","entry":"index.html","framework":framework},indent=2),encoding="utf-8")
+    return next(app for app in user_apps() if app["id"]==str(folder.relative_to(USER_APPS)).replace(os.sep,"/"))
 
 def game_slug(value):
     return re.sub(r"(^-|-$)", "", re.sub(r"[^a-z0-9]+", "-", value.casefold()))[:80] or "game"
@@ -251,6 +296,9 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
         if self.path == "/api/status":
             self._json(200, {"service": "homebase-v61", "multiplayer": True})
             return
+        if self.path == "/api/user-apps":
+            self._json(200, {"apps": user_apps()})
+            return
         if self.path == "/api/assistant/status":
             connected = False
             try: connected = bool(ASSISTANT_KEY_FILE.read_text(encoding="utf-8").strip())
@@ -322,25 +370,29 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                     result={"items":items,"source":"GitHub"}
                 elif section == "linux":
                     items=[{"kind":"Installed Linux app","title":app["name"],"summary":app.get("summary") or app.get("generic_name") or "Installed locally.","meta":"Installed · "+("Flatpak" if app["id"] in flatpak_scopes() else "Linux desktop app"),"image":"/api/app-icon/"+app["id"],"url":""} for app in installed_apps().values()]
-                    request=urllib.request.Request("https://flathub.org/api/v2/search",data=json.dumps({"query":query or "popular","filters":[]}).encode(),headers={"Content-Type":"application/json","User-Agent":"Homebase-OS/1.0"})
-                    with urllib.request.urlopen(request,timeout=12) as response:data=json.load(response)
-                    items.extend({"kind":"Linux app","title":x.get("name") or x.get("app_id","Linux app"),"summary":x.get("summary") or "ARM-compatible Linux app on Flathub.","meta":(x.get("developer_name") or "Flathub")+" · "+str(x.get("installs_last_month",0))+" monthly installs","image":x.get("icon") or "","url":"https://flathub.org/apps/"+(x.get("app_id") or "")} for x in data.get("hits",[]) if "aarch64" in x.get("arches",[]))
-                    result={"items":items,"source":"Flathub · ARM-compatible Linux apps"}
+                    source="Installed Linux apps · Flathub catalog"
+                    try:
+                        request=urllib.request.Request("https://flathub.org/api/v2/search",data=json.dumps({"query":query or "popular","filters":[]}).encode(),headers={"Content-Type":"application/json","User-Agent":"Homebase-OS/1.0"})
+                        with urllib.request.urlopen(request,timeout=4) as response:data=json.load(response)
+                        items.extend({"kind":"Linux app","title":x.get("name") or x.get("app_id","Linux app"),"summary":x.get("summary") or "ARM-compatible Linux app on Flathub.","meta":(x.get("developer_name") or "Flathub")+" · "+str(x.get("installs_last_month",0))+" monthly installs","image":x.get("icon") or "","url":"https://flathub.org/apps/"+(x.get("app_id") or "")} for x in data.get("hits",[]) if "aarch64" in x.get("arches",[]))
+                    except (OSError, ValueError, KeyError):
+                        source="Installed Linux apps · catalog reconnecting"
+                    result={"items":items,"source":source}
                 elif section == "news":
                     feeds={"top":"https://feeds.bbci.co.uk/news/rss.xml","world":"https://feeds.bbci.co.uk/news/world/rss.xml","technology":"https://feeds.bbci.co.uk/news/technology/rss.xml","science":"https://feeds.bbci.co.uk/news/science_and_environment/rss.xml","business":"https://feeds.bbci.co.uk/news/business/rss.xml"}
                     request=urllib.request.Request(feeds.get(query.casefold(),feeds["top"]),headers={"User-Agent":"Homebase-OS/1.0"})
                     with urllib.request.urlopen(request,timeout=12) as response:root=ET.fromstring(response.read())
                     items=[{"kind":"news","title":node.findtext("title",default="Untitled"),"summary":re.sub("<[^>]+>","",node.findtext("description",default="")),"meta":node.findtext("pubDate",default=""),"url":node.findtext("link",default="")} for node in root.findall(".//item")[:30]]
                     result={"items":items,"source":"BBC News RSS"}
-                elif section in {"ai", "dev", "games"}:
-                    defaults={"ai":"AI software development Claude OpenAI","dev":"software development open source Linux","games":"game development industry indie games"}
-                    labels={"ai":"AI & developer news","dev":"Developer news","games":"Game development news"}
+                elif section in {"ai", "dev", "security", "research", "games"}:
+                    defaults={"ai":"AI software development Claude OpenAI","dev":"software development open source Linux","security":"cybersecurity privacy open source security","research":"computer science research science technology","games":"game development industry indie games"}
+                    labels={"ai":"AI & developer news","dev":"Developer news","security":"Security & privacy news","research":"Research briefings","games":"Game development news"}
                     term=query or defaults[section]
                     feed="https://news.google.com/rss/search?"+urllib.parse.urlencode({"q":term,"hl":"en-US","gl":"US","ceid":"US:en","num":100})
                     request=urllib.request.Request(feed,headers={"User-Agent":"Homebase-OS/1.0"})
                     with urllib.request.urlopen(request,timeout=12) as response:root=ET.fromstring(response.read())
                     items=[{"kind":section+" news","title":node.findtext("title",default="Untitled"),"summary":re.sub("<[^>]+>","",node.findtext("description",default="")),"meta":node.findtext("pubDate",default=""),"url":node.findtext("link",default="")} for node in root.findall(".//item")[:40]]
-                    if section in {"ai", "dev"}:
+                    if section in {"ai", "dev", "security", "research"}:
                         try:
                             hn_url="https://hn.algolia.com/api/v1/search_by_date?"+urllib.parse.urlencode({"query":term,"tags":"story","hitsPerPage":48})
                             hn_request=urllib.request.Request(hn_url,headers={"User-Agent":"Homebase-OS/1.0"})
@@ -348,9 +400,10 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                             items.extend({"kind":"developer discussion","title":x.get("title") or "Untitled","summary":str(x.get("points",0))+" points · "+str(x.get("num_comments",0))+" comments on Hacker News","meta":str(x.get("created_at","")).replace("T"," ")[:16],"url":x.get("url") or "https://news.ycombinator.com/item?id="+str(x.get("objectID",""))} for x in hn.get("hits",[]) if x.get("title"))
                         except (OSError, ValueError, KeyError):
                             pass
-                    if section == "ai":
+                    if section in {"ai", "research"}:
                         try:
-                            arxiv_url="https://export.arxiv.org/api/query?"+urllib.parse.urlencode({"search_query":"all:machine learning OR all:large language model OR all:artificial intelligence","start":0,"max_results":28,"sortBy":"submittedDate","sortOrder":"descending"})
+                            arxiv_terms="all:machine learning OR all:large language model OR all:artificial intelligence" if section == "ai" else "cat:cs* OR cat:physics* OR cat:q-bio*"
+                            arxiv_url="https://export.arxiv.org/api/query?"+urllib.parse.urlencode({"search_query":arxiv_terms,"start":0,"max_results":28,"sortBy":"submittedDate","sortOrder":"descending"})
                             arxiv_request=urllib.request.Request(arxiv_url,headers={"User-Agent":"Homebase-OS/1.0"})
                             with urllib.request.urlopen(arxiv_request,timeout=12) as response:arxiv=ET.fromstring(response.read())
                             atom="{http://www.w3.org/2005/Atom}"
@@ -379,7 +432,8 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                         except (OSError, ValueError, KeyError, ET.ParseError):
                             pass
                     seen_titles=set();items=[item for item in items if item.get("title") and not (item["title"].casefold() in seen_titles or seen_titles.add(item["title"].casefold()))]
-                    result={"items":items,"source":labels[section]+(" · Google News RSS + Hacker News + DEV Community + Lobsters" if section=="dev" else " · Google News RSS + Hacker News + arXiv + r/MachineLearning" if section=="ai" else " · Google News RSS")}
+                    feeds=" · Google News RSS + Hacker News + DEV Community + Lobsters" if section=="dev" else " · Google News RSS + Hacker News + arXiv + r/MachineLearning" if section=="ai" else " · Google News RSS + Hacker News + arXiv" if section=="research" else " · Google News RSS + Hacker News" if section=="security" else " · Google News RSS"
+                    result={"items":items,"source":labels[section]+feeds}
                 else: raise ValueError("unknown browse source")
                 BROWSE_CACHE[cache_key]=(time.time(),result);self._json(200,result)
             except (OSError,ValueError,KeyError,ET.ParseError) as error:self._json(502,{"error":str(error),"items":[]})
@@ -625,6 +679,24 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                 response["enhanced"] = bool(enhanced)
                 self._json(200, response)
             except (ValueError, TypeError) as error: self._json(400, {"error": str(error)})
+            return
+        if route.path == "/api/assistant/app":
+            length=min(int(self.headers.get("Content-Length","0")),12*1024)
+            try:
+                payload=json.loads(self.rfile.read(length) or b"{}"); description=str(payload.get("description","")).strip()[:3000]; framework=str(payload.get("framework","Vanilla HTML/CSS/JS"))[:50]
+                if not description: raise ValueError("describe the app first")
+                self._json(200,{"app":create_relay_app(description,framework)})
+            except (OSError, ValueError, TypeError) as error:self._json(400,{"error":str(error)})
+            return
+        if route.path == "/api/assistant/app/delete":
+            length=min(int(self.headers.get("Content-Length","0")),4*1024)
+            try:
+                payload=json.loads(self.rfile.read(length) or b"{}"); app_id=str(payload.get("id","")).strip()
+                if payload.get("confirm")!="DELETE" or not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,63}(?:/[a-z0-9][a-z0-9-]{0,63})?",app_id): raise ValueError("a confirmed app folder is required")
+                target=(USER_APPS/app_id).resolve()
+                if not target.is_dir() or not target.is_relative_to(USER_APPS): raise ValueError("app folder not found")
+                shutil.rmtree(target);self._json(200,{"deleted":app_id})
+            except (OSError, ValueError, TypeError) as error:self._json(400,{"error":str(error)})
             return
         if route.path == "/api/assistant/key":
             length = min(int(self.headers.get("Content-Length", "0")), 16 * 1024)
