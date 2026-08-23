@@ -89,7 +89,7 @@ This is not a replacement operating system. It is a fast console-like layer over
 |---|---|
 | ![Pocket Archive with intentionally pixelated local game artwork](media/pocket-archive.png) | ![Browse, Homebase’s retro internet-style discovery browser](media/rom-discovery.png) |
 
-Pocket Archive launches a locally installed EmulatorJS runtime for GBA, Game Boy, GBC, NES, SNES, Genesis, N64, and PlayStation files supplied by the user. Each game can have a detail sheet, swipeable gallery, Xbox controller diagram, save controls, performance profile, and fullscreen CRT presentation.
+Pocket Archive launches a locally installed EmulatorJS runtime for GBA, Game Boy, GBC, NES, SNES, Genesis, N64, and PlayStation files supplied by the user. Each game can have a detail sheet, swipeable gallery, Xbox controller diagram, save controls, performance profile, and fullscreen CRT presentation. In the library, Xbox **B** closes an open detail sheet before returning Homebase; once a game is running, the emulator owns B normally.
 
 The shelf scans `roms/` and My Library when it opens, so newly added supported files appear without maintaining a second list. Its compact **System** and **Type** filters are touch-sized, spaced apart, and scroll horizontally on narrow screens. Existing owner-supplied cover PNGs and gameplay GIFs are used first; when no local artwork exists, NovaShell shows an honest system card instead of a broken image.
 
