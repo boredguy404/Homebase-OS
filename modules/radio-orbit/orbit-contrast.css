@@ -4,3 +4,10 @@ html[data-theme="ultra-retro"] .track span,html[data-theme="ultra-retro"] .volum
 html[data-theme="ultra-retro"] .hero h1 em{color:#000080!important;-webkit-text-stroke:0!important;text-shadow:1px 1px #fff!important}
 html[data-theme="ultra-retro"] .station:hover,html[data-theme="ultra-retro"] .station.active{color:#fff!important;background:#263b3f!important;border-left-color:#000080!important;outline-color:#f8f5df!important}html[data-theme="ultra-retro"] .station:hover :is(h3,p,.go),html[data-theme="ultra-retro"] .station.active :is(h3,p,.go){color:#fff!important;text-shadow:none!important}
 html[data-theme="ultra-retro"] .clock{padding:5px 7px;color:#111!important;background:#eee!important;border:1px solid #172728!important;text-shadow:none!important}
+/* Orbit has a live visual behind the page.  Small supporting copy always gets
+   a solid, intentionally old-computer reading strip instead of relying on it. */
+html[data-theme="ultra-retro"] :is(.browser-head h2,.station h3,.station p,.station .index,.station .go,.search span,.search button,.chips button,.quick-plays button,.local-albums,footer .modes button){color:#111!important;text-shadow:none!important}
+html[data-theme="ultra-retro"] .browser-head>div,.station>div,.quick-plays,.chips{background:#eeeef0e8;padding:4px 6px}
+html[data-theme="ultra-retro"] .station:hover>div,html[data-theme="ultra-retro"] .station.active>div{background:transparent!important}
+html[data-theme="ultra-retro"] .station:hover :is(h3,p,.index,.go),html[data-theme="ultra-retro"] .station.active :is(h3,p,.index,.go){color:#fff!important}
+html[data-theme="ultra-retro"] .eyebrow{display:table;padding:5px 7px;background:#263b3f!important;color:#fff!important;border:1px solid #172728!important;text-shadow:none!important}

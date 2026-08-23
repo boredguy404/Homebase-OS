@@ -9,12 +9,14 @@
     "sharedClient": "assets/scripts/agent/client.js",
     "thinkingComponent": "assets/scripts/components/thinking-indicator.js",
     "toolCatalog": "/api/agent/tools",
-    "semanticSearch": "/api/agent/query"
+    "semanticSearch": "/api/agent/query",
+    "coreWorkspace": "/api/relay/workspace"
   },
   "rules": [
     "Use HomebaseAgent instead of duplicating fetch wrappers.",
     "Local agent tools return metadata, not ROM bytes, saves, credentials, or arbitrary shell access.",
     "Every state-changing action stays visible and requires an explicit user interaction.",
-    "Generated apps remain inside user-apps and do not gain core-file write access."
+    "Generated apps remain inside user-apps and do not gain core-file write access.",
+    "Core edits use the workspace allowlist, explicit typed confirmation, and a timestamped local backup."
   ]
 }

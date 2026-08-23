@@ -53,6 +53,14 @@ ROM_CORES = {".gba": ("gba", "GBA"), ".gb": ("gb", "Game Boy"), ".gbc": ("gb", "
 GAME_CATALOG = ROOT / "imports" / "homebase-game-catalog.json"
 ASSISTANT_KEY_FILE = ROOT / "local" / "openai-api-key.txt"
 USER_APPS = ROOT / "user-apps"
+CORE_EDITABLE = {
+    "homebase-deck": ROOT / "assets/scripts/homebase/deck.js",
+    "pocket-archive-filters": ROOT / "assets/scripts/arcade/archive-filters.js",
+    "relay-console": ROOT / "assets/scripts/homebase/console.js",
+    "theme-sync": ROOT / "assets/scripts/shared/theme-sync.js",
+    "server": ROOT / "server.py",
+    "core-taxonomy": ROOT / "docs/CORE_TAXONOMY.md"
+}
 
 def user_apps():
     apps=[]
@@ -300,6 +308,13 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                 except (OSError, ValueError): continue
             self._json(200, {"version": 1, "core_contract": "/docs/CORE_TAXONOMY.md", "manifests": manifests})
             return
+        if browse_route.path == "/api/relay/workspace":
+            file_id=urllib.parse.parse_qs(browse_route.query).get("file",[""])[0]
+            if not file_id:
+                self._json(200,{"files":[{"id":key,"path":str(path.relative_to(ROOT)),"bytes":path.stat().st_size} for key,path in CORE_EDITABLE.items() if path.is_file()]});return
+            path=CORE_EDITABLE.get(file_id)
+            if not path or not path.is_file():self._json(404,{"error":"editable workspace file not found"});return
+            self._json(200,{"id":file_id,"path":str(path.relative_to(ROOT)),"content":path.read_text(encoding="utf-8")[:250000]});return
         if browse_route.path == "/api/agent/tools":
             self._json(200, {"version": 1, "tools": [
                 {"id":"system","method":"GET","path":"/api/system","purpose":"Live storage, memory, and load summary."},
@@ -307,6 +322,7 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                 {"id":"apps","method":"GET","path":"/api/user-apps","purpose":"User-created app inventory."},
                 {"id":"taxonomy","method":"GET","path":"/api/taxonomy","purpose":"Editable core product and module contracts."},
                 {"id":"query","method":"GET","path":"/api/agent/query?scope=games|apps|taxonomy&q=...","purpose":"Local semantic search over safe metadata only."},
+                {"id":"core-workspace","method":"GET/POST","path":"/api/relay/workspace and /api/relay/workspace/apply","purpose":"Confirmation-gated editor for a small allowlist of core files; every write creates a local backup."},
                 {"id":"browse","method":"GET","path":"/api/browse/<source>?q=...","purpose":"Read-only external-source cards for Browse."}
             ]})
             return
@@ -756,6 +772,18 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                 if not target.is_dir() or not target.is_relative_to(USER_APPS): raise ValueError("app folder not found")
                 shutil.rmtree(target);self._json(200,{"deleted":app_id})
             except (OSError, ValueError, TypeError) as error:self._json(400,{"error":str(error)})
+            return
+        if route.path == "/api/relay/workspace/apply":
+            length=min(int(self.headers.get("Content-Length","0")),300*1024)
+            try:
+                payload=json.loads(self.rfile.read(length) or b"{}");file_id=str(payload.get("file",""));content=str(payload.get("content",""));path=CORE_EDITABLE.get(file_id)
+                if payload.get("confirm")!="APPLY CORE EDIT" or not path:raise ValueError("choose an allowed file and type the exact confirmation")
+                if len(content)>250000:raise ValueError("workspace edit is too large")
+                backup=ROOT/"local"/"workspace-backups"/(file_id+"-"+str(int(time.time()))+path.suffix);backup.parent.mkdir(parents=True,exist_ok=True)
+                if path.exists():shutil.copy2(path,backup)
+                temporary=path.with_suffix(path.suffix+".tmp");temporary.write_text(content,encoding="utf-8");temporary.replace(path)
+                self._json(200,{"saved":file_id,"backup":str(backup.relative_to(ROOT))})
+            except (OSError,ValueError,TypeError) as error:self._json(400,{"error":str(error)})
             return
         if route.path == "/api/assistant/key":
             length = min(int(self.headers.get("Content-Length", "0")), 16 * 1024)

@@ -1,2 +1,6 @@
-/* A fixed taskbar must not turn the browseable archive into a fixed-height canvas. */
-html:has(#library),body:has(#library){height:auto!important;min-height:100%!important;overflow-y:auto!important;overscroll-behavior-y:auto!important}body:has(#library){touch-action:pan-y!important}.archive-taskbar{pointer-events:auto}
+/* Pocket Archive is a normal document while browsing. Parent overlays, game
+   player styles, and touch input must not turn it into an overflow-hidden pane. */
+html:has(#library),body:has(#library){display:block!important;position:static!important;width:auto!important;height:auto!important;min-height:100%!important;max-height:none!important;overflow-x:clip!important;overflow-y:auto!important;overscroll-behavior-y:auto!important;-webkit-overflow-scrolling:touch!important}
+body:has(#library){touch-action:pan-y!important;isolation:auto!important}
+#library{position:relative!important;min-height:100vh!important;touch-action:pan-y!important;overscroll-behavior-y:auto!important}
+.archive-taskbar{pointer-events:auto}

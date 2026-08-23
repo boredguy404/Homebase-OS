@@ -44,6 +44,10 @@ async function openOrbit() {
     document.body.appendChild(player);
     player.querySelector('iframe').src='/modules/radio-orbit/index.html?v=64';
   } else {
+    // A docked mini player owns inline left/top coordinates.  Those must never
+    // leak into the full-size player or its iframe can open mostly off-screen.
+    player.style.left='';player.style.top='';player.style.right='';player.style.bottom='';player.style.transform='';
+    player.classList.remove('peek','mini-peek-centered','mini-docked','mini-dragging');
     player.classList.add('expanded');
     player.querySelector('iframe')?.contentWindow.postMessage({type:'orbit-compact',compact:false},'*');
   }
@@ -225,4 +229,4 @@ if(!document.querySelector('link[data-wallpaper-explorer-pack-two]')){const shee
 
 /* Light Wallpaper Explorer choices are intentionally accepted only after the
    legacy wallpaper listeners have finished, so older dark selections cannot win. */
-addEventListener('message',event=>{if(event.data?.type!=='homebase-retro-wallpaper')return;const light=['classic','aqua','graph','parchment','office','mint','floppy','museum','paper','garage','cloud','pearl','skygrid','notebook','aqua-grid','blueprint-light','sand','ice','lilac','terracotta','meadow','typewriter','powder','seafoam'];if(light.includes(event.data.id)){localStorage.setItem('homebase-retro-wallpaper',event.data.id);document.documentElement.dataset.retroWallpaper=event.data.id}});
+addEventListener('message',event=>{if(event.data?.type!=='homebase-retro-wallpaper')return;const light=['classic','aqua','graph','parchment','office','mint','floppy','museum','paper','garage','cloud','pearl','skygrid','notebook','aqua-grid','blueprint-light','sand','ice','lilac','terracotta','meadow','typewriter','powder','seafoam','frost','apricot','sage','silver-grid','harbor','cream','rose','slate-light'];if(light.includes(event.data.id)){localStorage.setItem('homebase-retro-wallpaper',event.data.id);document.documentElement.dataset.retroWallpaper=event.data.id}});
