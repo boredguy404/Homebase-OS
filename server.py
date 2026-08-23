@@ -61,6 +61,22 @@ CORE_EDITABLE = {
     "server": ROOT / "server.py",
     "core-taxonomy": ROOT / "docs/CORE_TAXONOMY.md"
 }
+RELAY_KNOWLEDGE = {
+    "core-taxonomy": ROOT / "docs" / "CORE_TAXONOMY.md",
+    "app-contract": ROOT / "docs" / "APP_CONTRACT.md",
+    "relay-contract": ROOT / "modules" / "relay" / "manifest.json",
+}
+
+def relay_knowledge(topic=""):
+    """Small, readable local knowledge base for Relay drafts and inspection."""
+    term=str(topic or "").casefold().strip()
+    entries=[]
+    for key,path in RELAY_KNOWLEDGE.items():
+        try: content=path.read_text(encoding="utf-8")[:24000]
+        except OSError: continue
+        if term and term not in (key+" "+content).casefold(): continue
+        entries.append({"id":key,"path":str(path.relative_to(ROOT)),"content":content})
+    return entries
 
 def user_apps():
     apps=[]
@@ -130,11 +146,12 @@ def draft_core_edit(file_id, instruction):
     if len(current) > 100000: raise ValueError("that core file is too large for a safe single-draft review; split the requested change into a smaller module first")
     task = str(instruction or "").strip()[:2000]
     if not task: raise ValueError("describe the change Relay should draft")
+    knowledge="\n\n".join("Knowledge file: "+item["path"]+"\n"+item["content"] for item in relay_knowledge())
     prompt = ("You are drafting one reviewable edit for a local Homebase web app. "
         "Return JSON only with keys summary and content. content must be the COMPLETE replacement file, not a diff. "
         "Preserve unrelated behavior and do not add network calls, credential handling, shell execution, telemetry, eval, dynamic imports, or external dependencies. "
         "This is a draft only: the person will review it before a separate confirmation-gated save.\n\n"
-        f"File: {path.relative_to(ROOT)}\nRequest: {task}\n\nCurrent file:\n{current}")
+        f"Knowledge base:\n{knowledge}\n\nFile: {path.relative_to(ROOT)}\nRequest: {task}\n\nCurrent file:\n{current}")
     payload={"model":os.environ.get("HOMEBASE_OPENAI_MODEL","gpt-4.1-mini"),"store":False,"input":prompt,
         "text":{"format":{"type":"json_object"}},"max_output_tokens":14000}
     request=urllib.request.Request("https://api.openai.com/v1/responses",data=json.dumps(payload).encode(),headers={"Authorization":"Bearer "+key,"Content-Type":"application/json"},method="POST")
@@ -342,6 +359,14 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
             path=CORE_EDITABLE.get(file_id)
             if not path or not path.is_file():self._json(404,{"error":"editable workspace file not found"});return
             self._json(200,{"id":file_id,"path":str(path.relative_to(ROOT)),"content":path.read_text(encoding="utf-8")[:250000]});return
+        if browse_route.path == "/api/relay/knowledge":
+            topic=urllib.parse.parse_qs(browse_route.query).get("q",[""])[0]
+            self._json(200,{"entries":[{"id":item["id"],"path":item["path"],"bytes":len(item["content"])} for item in relay_knowledge(topic)]});return
+        if browse_route.path.startswith("/api/relay/knowledge/"):
+            key=urllib.parse.unquote(browse_route.path.rsplit("/",1)[-1])
+            item=next((value for value in relay_knowledge() if value["id"]==key),None)
+            if not item:self._json(404,{"error":"knowledge entry not found"});return
+            self._json(200,item);return
         if browse_route.path == "/api/agent/tools":
             self._json(200, {"version": 1, "tools": [
                 {"id":"system","method":"GET","path":"/api/system","purpose":"Live storage, memory, and load summary."},
