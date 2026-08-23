@@ -401,6 +401,18 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         browse_route = urllib.parse.urlsplit(self.path)
+        if browse_route.path == "/api/browse/live":
+            requested=urllib.parse.parse_qs(browse_route.query).get("url",[""])[0]
+            if requested not in {entry[5] for entry in CURATED_PUBLIC_APIS}:
+                self._json(400,{"error":"choose a listed API example"});return
+            try:
+                request=urllib.request.Request(requested,headers={"User-Agent":"NovaShell/1.0"})
+                with urllib.request.urlopen(request,timeout=12) as response: raw=response.read(180000).decode(response.headers.get_content_charset() or "utf-8",errors="replace")
+                try: body=json.dumps(json.loads(raw),indent=2,ensure_ascii=False)[:180000]
+                except ValueError: body=raw[:180000]
+                self._json(200,{"body":body,"url":requested})
+            except (OSError,ValueError) as error:self._json(502,{"error":str(error)})
+            return
         if self.path == "/api/taxonomy":
             manifests = {}
             for file in sorted((ROOT / "modules").glob("*/manifest.json")):
