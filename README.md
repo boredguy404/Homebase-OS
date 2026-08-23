@@ -18,6 +18,8 @@ Here is the more organized AI-slop explanation.
 
 The hosted companion is intended to carry the PWA shell, touch/controller navigation, browser game imports, Orbit, playlists, notes, kanban, discovery, weather, and browser-backed storage. Local Linux app launching, unrestricted file scanning, and native helpers remain clearly labeled local-only capabilities.
 
+For a cPanel-hosted static PWA, see [the cPanel deployment guide](docs/CPANEL_DEPLOY.md). It explains exactly what can be hosted and what must remain private/local.
+
 ## Install Homebase
 
 You do not need to be a developer. Pick your computer, paste the highlighted line once, and Homebase handles the project download and startup.
