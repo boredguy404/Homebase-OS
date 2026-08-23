@@ -3,3 +3,7 @@ body:is([data-visual="pixel"],[data-visual="terminal"],[data-visual="radar"],[da
 body:is([data-visual="pixel"],[data-visual="terminal"],[data-visual="radar"],[data-visual="tunnel"]) .hero h1 em{color:#9deeff!important;-webkit-text-stroke:0!important;text-shadow:0 1px 4px #000!important}
 html[data-theme="ultra-retro"] body:is([data-visual="pixel"],[data-visual="terminal"],[data-visual="radar"],[data-visual="tunnel"]) .hero h1{background:#d4d4d4!important;color:#111!important;border:2px solid #111!important;box-shadow:inset 2px 2px #fff,inset -2px -2px #666,3px 3px #111!important;text-shadow:none!important}
 html[data-theme="ultra-retro"] body:is([data-visual="pixel"],[data-visual="terminal"],[data-visual="radar"],[data-visual="tunnel"]) .hero h1 em{color:#000080!important;text-shadow:none!important}
+/* The live station label is replaced after a stream is selected; it needs the
+   same dependable plate as the title instead of inheriting visual colors. */
+#stationName em{display:inline-block;margin-top:3px;padding:2px 6px;border-radius:4px;background:#061116e8!important;color:#d9f7ff!important;font-style:normal;font-size:.42em;letter-spacing:.12em;text-shadow:0 1px 3px #000!important}
+html[data-theme="ultra-retro"] #stationName em{border:1px solid #111;border-radius:0;background:#eef0ee!important;color:#000080!important;box-shadow:inset 1px 1px #fff,inset -1px -1px #777;text-shadow:none!important}

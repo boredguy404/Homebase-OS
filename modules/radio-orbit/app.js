@@ -1,5 +1,5 @@
 const $ = s => document.querySelector(s);
-const requestedOrbitTheme=new URLSearchParams(location.search).get('theme');if(requestedOrbitTheme)document.documentElement.dataset.theme=requestedOrbitTheme;
+const requestedOrbitTheme=new URLSearchParams(location.search).get('theme');document.documentElement.dataset.theme=['slate-glass','tidal','cobalt','paper-glass','ultra-retro'].includes(requestedOrbitTheme)?requestedOrbitTheme:(localStorage.getItem('nightglass-theme')||'ultra-retro');
 if(localStorage.getItem('radio-visual-version')!=='3'){localStorage.setItem('radio-visual','bars');localStorage.setItem('radio-visual-version','3')}
 const state = { stations: [], current: null, playing: false, mode: 'bars', favorites: JSON.parse(localStorage.getItem('radio-favorites') || '[]'), favoritesOnly: false, energy: 0 };
 state.mode=localStorage.getItem('radio-visual')||'bars';const audio = $('#audio'), canvas = $('#visualizer'), ctx = canvas.getContext('2d');

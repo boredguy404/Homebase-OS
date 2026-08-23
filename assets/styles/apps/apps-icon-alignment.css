@@ -1,0 +1,5 @@
+/* Every result reserves the same compact icon column, including the first
+   asynchronously rendered card.  This prevents a late app icon from pushing
+   its title into a different row. */
+#installed .card,#catalog .card{display:grid;grid-template-columns:54px minmax(0,1fr);grid-template-rows:auto auto auto;column-gap:14px;align-content:start}#installed .card .app-icon,#catalog .card .app-icon{grid-column:1;grid-row:1 / span 2;margin:0;align-self:start}#installed .card>b,#catalog .card>b{grid-column:2;grid-row:1;align-self:center;margin:0}#installed .card>.summary,#catalog .card>.summary{grid-column:2;grid-row:2;margin-top:7px}#installed .card>.meta,#catalog .card>.meta{grid-column:1 / -1;grid-row:3;margin-top:14px}.catalog .card{padding-bottom:66px}@media(max-width:420px){#installed .card,#catalog .card{grid-template-columns:46px minmax(0,1fr);column-gap:11px}#installed .card .app-icon,#catalog .card .app-icon{width:46px;height:46px}}
+html[data-theme="ultra-retro"] #installed .card,html[data-theme="ultra-retro"] #catalog .card{display:grid}
