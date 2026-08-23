@@ -1,0 +1,8 @@
+/* Header actions are text-free on a narrow screen, so every dynamic control
+   needs a visible symbol instead of becoming an empty touch target. */
+@media(max-width:700px){
+  header .actions #library-about,header .actions #library-paste{cursor:pointer}
+  header .actions #library-about:before{content:'i'}
+  header .actions #library-paste:before{content:'⧉'}
+  header .actions #library-about:before,header .actions #library-paste:before{font:700 16px/1 ui-monospace,monospace}
+}
