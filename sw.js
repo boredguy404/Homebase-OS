@@ -1,4 +1,4 @@
-const CACHE='homebase-v71';
+const CACHE='homebase-v72';
 const SHELL=[
   '/', '/index.html', '/manifest.webmanifest', '/assets/icons/homebase-icon.svg',
   '/pages/arcade.html', '/pages/discover.html', '/pages/files.html', '/pages/apps.html',
@@ -19,7 +19,7 @@ const SHELL=[
   '/assets/styles/apps/apps-install-modal.css', '/assets/styles/settings/settings.css', '/assets/styles/settings/settings-desktop-theme-sync.css',
   '/assets/styles/settings/settings-dialog.css', '/assets/styles/shared/modal-global.css',
   '/assets/styles/shared/ultra-retro.css', '/assets/styles/homebase/fake-virus-lab.css', '/assets/styles/apps/apps-icon-alignment.css', '/assets/scripts/homebase/deck.js',
-  '/assets/scripts/homebase/deck-gestures.js', '/assets/scripts/homebase/gyro3d.js', '/assets/scripts/homebase/console.js', '/assets/scripts/homebase/update-check.js', '/assets/styles/homebase/console.css',
+  '/assets/scripts/homebase/deck-gestures.js', '/assets/scripts/homebase/gyro3d.js', '/assets/scripts/homebase/console.js', '/assets/scripts/homebase/relay-brain-panel.js', '/assets/scripts/homebase/relay-workspace.js', '/assets/scripts/homebase/update-check.js', '/assets/styles/homebase/console.css', '/assets/styles/homebase/relay-brain-deck.css',
   '/assets/scripts/homebase/clock.js', '/assets/scripts/homebase/system-insights.js',
   '/assets/scripts/homebase/scroll-motion.js', '/assets/scripts/arcade/game-controls.js',
   '/assets/scripts/arcade/game-capture.js', '/assets/scripts/arcade/game-details.js',

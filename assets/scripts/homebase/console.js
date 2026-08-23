@@ -1,6 +1,6 @@
 (()=>{
   const chat=document.querySelector('#chat'),form=document.querySelector('#composer'),message=document.querySelector('#message'),connection=document.querySelector('#connection');
-  document.querySelector('header small').textContent='RELAY · LOCAL COMPUTER';document.head.insertAdjacentHTML('beforeend','<link rel="stylesheet" href="/assets/styles/homebase/relay-workshop.css?v=94">');
+  document.querySelector('header small').textContent='RELAY BIOS · LOCAL COMPUTER';document.head.insertAdjacentHTML('beforeend','<link rel="stylesheet" href="/assets/styles/homebase/relay-workshop.css?v=95">');
   document.head.insertAdjacentHTML('beforeend','<style>html[data-theme="ultra-retro"] .chat article b,html[data-theme="ultra-retro"] .chat .user b{color:#000080!important;text-shadow:none!important}html[data-theme="ultra-retro"] .console-shell header small{color:#000080!important;background:#eee;padding:3px 5px}</style>');
   const esc=value=>{const node=document.createElement('span');node.textContent=String(value||'');return node.innerHTML};
   const bottom=()=>requestAnimationFrame(()=>{chat.scrollTo({top:chat.scrollHeight,behavior:'smooth'});requestAnimationFrame(()=>chat.scrollTop=chat.scrollHeight)});
