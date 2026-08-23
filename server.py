@@ -65,6 +65,8 @@ RELAY_KNOWLEDGE = {
     "core-taxonomy": ROOT / "docs" / "CORE_TAXONOMY.md",
     "app-contract": ROOT / "docs" / "APP_CONTRACT.md",
     "relay-contract": ROOT / "modules" / "relay" / "manifest.json",
+    "relay-brain": ROOT / "docs" / "RELAY_BRAIN.md",
+    "relay-edit-boundaries": ROOT / "brain" / "conventions" / "relay-edit-boundaries.md",
 }
 # Browse only lists APIs that work without an account or secret.  Keep the
 # request details alongside the card so a person can use an API immediately.
@@ -525,7 +527,7 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                     for candidate in [f"{slug}-real.png",f"{slug}.png",f"{slug}.gif",f"{slug}-cover.png",f"{slug}-cover.jpg",f"{slug}-cover.webp",f"{slug}-gameplay.gif",f"{slug}-gameplay-2.gif",f"{slug}-gameplay-3.gif"]:
                         if (ROOT / "covers" / candidate).is_file(): media.append("/covers/"+candidate)
                     game_url="/roms/"+rom.name if source_kind=="roms" else "/api/file?path="+urllib.parse.quote(str(rom.relative_to(HOME_ROOT)))
-                    games.append({"rom":game_url,"name":title,"slug":slug,"core":core,"system":saved.get("system") or system,"description":saved.get("description") or "A private game from your local library.","genre":saved.get("genre") or "Game","year":saved.get("year") or "","players":saved.get("players") or "Single player","controls":saved.get("controls") or "Standard Xbox mapping","media":media,"bytes":rom.stat().st_size,"source":source_kind,"needs_details":not bool(saved)})
+                    games.append({"rom":game_url,"rom_name":rom.name,"name":title,"slug":slug,"core":core,"system":saved.get("system") or system,"description":saved.get("description") or "A private game from your local library.","genre":saved.get("genre") or "Game","year":saved.get("year") or "","players":saved.get("players") or "Single player","controls":saved.get("controls") or "Standard Xbox mapping","mosaic":bool(saved.get("mosaic")),"media":media,"bytes":rom.stat().st_size,"source":source_kind,"needs_details":not bool(saved)})
             self._json(200,{"games":games,"local_only":True});return
         if browse_route.path.startswith("/api/browse/"):
             section = browse_route.path.rsplit("/", 1)[-1]
@@ -985,7 +987,7 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
             try:
                 payload=json.loads(self.rfile.read(length) or b"{}");rom_name=Path(str(payload.get("rom_name", ""))).name
                 if rom_name!=payload.get("rom_name") or not (ROOT/"roms"/rom_name).is_file():raise ValueError("imported ROM was not found")
-                catalog=read_game_catalog();catalog[rom_name]={key:str(payload.get(key,""))[:500] for key in ("title","slug","system","description","genre","year","players","controls")};GAME_CATALOG.parent.mkdir(parents=True,exist_ok=True);temporary=GAME_CATALOG.with_suffix(".tmp");temporary.write_text(json.dumps(catalog,indent=2),encoding="utf-8");temporary.replace(GAME_CATALOG);self._json(200,{"saved":True,"game":catalog[rom_name]})
+                catalog=read_game_catalog();catalog[rom_name]={key:str(payload.get(key,""))[:500] for key in ("title","slug","system","description","genre","year","players","controls")};catalog[rom_name]["mosaic"]=bool(payload.get("mosaic",False));GAME_CATALOG.parent.mkdir(parents=True,exist_ok=True);temporary=GAME_CATALOG.with_suffix(".tmp");temporary.write_text(json.dumps(catalog,indent=2),encoding="utf-8");temporary.replace(GAME_CATALOG);self._json(200,{"saved":True,"game":catalog[rom_name]})
             except (OSError,ValueError,TypeError) as error:self._json(400,{"error":str(error)})
             return
         if route.path == "/api/backup/export":

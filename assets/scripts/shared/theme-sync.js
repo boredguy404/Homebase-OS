@@ -1,4 +1,5 @@
 (()=>{
+  if(location.pathname.endsWith('/console.html')&&!document.querySelector('script[data-relay-brain-panel]')){const relayBrain=document.createElement('script');relayBrain.src='/assets/scripts/homebase/relay-brain-panel.js?v=1';relayBrain.dataset.relayBrainPanel='true';document.head.append(relayBrain)}
   if(location.pathname.endsWith('/discover.html')&&!document.querySelector('script[data-discovery-resilience]')){document.head.insertAdjacentHTML('beforeend','<link rel="stylesheet" href="/assets/styles/discovery/discover-offline-art.css?v=1">');const discovery=document.createElement('script');discovery.src='/assets/scripts/discovery/discover-resilience.js?v=1';discovery.dataset.discoveryResilience='true';document.head.append(discovery)}
   // Applied synchronously in the document head so a retro page never paints the
   // modern dark palette for a frame while the full stylesheet is being fetched.
