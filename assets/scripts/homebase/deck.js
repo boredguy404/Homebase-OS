@@ -140,6 +140,15 @@ function dedupeDesktopChrome(){for(const selector of ['.retro-taskbar','.retro-m
 new MutationObserver(dedupeDesktopChrome).observe(document.documentElement,{childList:true,subtree:true});
 addEventListener('DOMContentLoaded',()=>{const computer=document.querySelectorAll('.grid')[1];if(!computer||document.querySelector('[data-utility-desk]'))return;const tile=document.createElement('button');tile.className='tile';tile.dataset.utilityDesk='true';tile.innerHTML='<i>⌗</i><b>Utility Desk</b><span>Local notes, calculator, and clipboard handoff—no account required.</span>';tile.onclick=()=>openPanel('/pages/utility-desk.html');computer.insertBefore(tile,computer.firstChild)});
 addEventListener('DOMContentLoaded',()=>document.querySelectorAll('.tile').forEach(tile=>{if(tile.querySelector('b')?.textContent.trim()==='Explore Linux apps')tile.remove()}));
+addEventListener('DOMContentLoaded',()=>{
+  const shell=document.querySelector('.shell');if(!shell)return;
+  const leavesHomebase=new Set(['YouTube','Chrome Remote Desktop','Steam Link','XFCE Terminal','Codex workspace','VS Code']);
+  const externalTiles=[...document.querySelectorAll('.tile')].filter(tile=>leavesHomebase.has(tile.querySelector('b')?.textContent.trim()));
+  let shelf=document.querySelector('#outside-homebase');
+  if(!shelf&&externalTiles.length){shelf=document.createElement('section');shelf.id='outside-homebase';shelf.innerHTML='<h2 class="section-title">Open outside NovaShell</h2><div class="grid"></div>';shell.append(shelf)}
+  const grid=shelf?.querySelector('.grid');externalTiles.forEach(tile=>grid?.append(tile));
+  document.querySelectorAll('.grid').forEach(group=>{if(group===grid)return;[...group.querySelectorAll('.tile')].filter(tile=>!leavesHomebase.has(tile.querySelector('b')?.textContent.trim())).forEach(tile=>group.append(tile))});
+});
 
 /* This lives after drawOrbitMini on purpose.  The regular renderer draws every
    frame first; this pass owns Pixel Field in the expanded compact player. */
