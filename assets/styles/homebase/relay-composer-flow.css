@@ -1,0 +1,3 @@
+/* A sticky composer obscured Relay actions on compact Chromebook screens.
+   Keeping it in normal flow makes every action reachable before chatting. */
+#composer{position:relative!important;bottom:auto!important;margin-top:8px}

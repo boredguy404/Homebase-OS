@@ -1,4 +1,4 @@
-const CACHE='homebase-v89';
+const CACHE='homebase-v91';
 const SHELL=[
   '/', '/index.html', '/manifest.webmanifest', '/assets/icons/homebase-icon.svg',
   '/pages/arcade.html', '/pages/discover.html', '/pages/files.html', '/pages/apps.html',
@@ -19,7 +19,7 @@ const SHELL=[
   '/assets/styles/apps/apps-install-modal.css', '/assets/styles/settings/settings.css', '/assets/styles/settings/settings-desktop-theme-sync.css', '/assets/styles/settings/settings-device-center.css',
   '/assets/styles/settings/settings-dialog.css', '/assets/styles/shared/modal-global.css',
   '/assets/styles/shared/ultra-retro.css', '/assets/styles/shared/back-button-spacing.css', '/assets/styles/homebase/fake-virus-lab.css', '/assets/styles/apps/apps-icon-alignment.css', '/assets/scripts/homebase/deck.js', '/assets/scripts/homebase/first-run.js', '/assets/scripts/homebase/first-run-shortcuts.js', '/assets/scripts/shared/about-novashell.js',
-  '/assets/scripts/homebase/deck-gestures.js', '/assets/scripts/homebase/gyro3d.js', '/assets/scripts/homebase/console.js', '/assets/scripts/homebase/relay-brain-panel.js', '/assets/scripts/homebase/relay-brain-browser.js', '/assets/scripts/homebase/relay-workshop-components.js', '/assets/scripts/homebase/relay-provider-config.js', '/assets/scripts/homebase/relay-workspace.js', '/assets/scripts/homebase/utility-project-board.js', '/assets/scripts/homebase/update-check.js', '/assets/styles/homebase/console.css', '/assets/styles/homebase/relay-brain-deck.css', '/assets/styles/homebase/relay-brain-browser.css', '/assets/styles/homebase/relay-contrast-guard.css', '/assets/styles/homebase/relay-provider-config.css', '/assets/styles/homebase/relay-codex-runner.css',
+  '/assets/scripts/homebase/deck-gestures.js', '/assets/scripts/homebase/gyro3d.js', '/assets/scripts/homebase/console.js', '/assets/scripts/homebase/relay-brain-panel.js', '/assets/scripts/homebase/relay-brain-browser.js', '/assets/scripts/homebase/relay-workshop-components.js', '/assets/scripts/homebase/relay-provider-config.js', '/assets/scripts/homebase/relay-workspace.js', '/assets/scripts/homebase/utility-project-board.js', '/assets/scripts/homebase/update-check.js', '/assets/styles/homebase/console.css', '/assets/styles/homebase/relay-composer-flow.css', '/assets/styles/homebase/relay-brain-deck.css', '/assets/styles/homebase/relay-brain-browser.css', '/assets/styles/homebase/relay-contrast-guard.css', '/assets/styles/homebase/relay-provider-config.css', '/assets/styles/homebase/relay-codex-runner.css',
   '/assets/scripts/homebase/clock.js', '/assets/scripts/homebase/system-insights.js', '/assets/scripts/homebase/utility-workspace-manifest.js', '/assets/scripts/homebase/utility-live-snapshot.js',
   '/assets/scripts/homebase/scroll-motion.js', '/assets/scripts/arcade/game-controls.js',
   '/assets/scripts/arcade/game-capture.js', '/assets/scripts/arcade/game-details.js',
@@ -30,7 +30,9 @@ const SHELL=[
   '/assets/scripts/apps/install-jobs.js',
   '/assets/scripts/settings/settings.js', '/assets/scripts/settings/settings-restore.js', '/assets/scripts/settings/settings-device-center.js',
   '/assets/scripts/settings/settings-options.js', '/assets/scripts/shared/theme-sync.js',
-  '/assets/scripts/shared/github-status.js'
+  '/assets/scripts/shared/github-status.js',
+  '/assets/styles/homebase/relay-composer-flow.css', '/assets/styles/homebase/relay-keyring.css',
+  '/assets/scripts/homebase/relay-keyring.js'
 ];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));

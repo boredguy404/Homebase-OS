@@ -1159,6 +1159,14 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                 self._json(200,{"restored":file_id,"backup":str(backup.relative_to(ROOT)),"safety_backup":str(safety.relative_to(ROOT))})
             except (OSError,ValueError,TypeError,SyntaxError) as error:self._json(400,{"error":str(error)})
             return
+        if route.path == "/api/assistant/key/remove":
+            try:
+                if self.headers.get("Sec-Fetch-Site") not in {"same-origin", "same-site"}: raise ValueError("open NovaShell locally to manage the keyring")
+                removed=ASSISTANT_CONFIG_FILE.exists()
+                if removed: ASSISTANT_CONFIG_FILE.unlink()
+                self._json(200,{"removed":removed})
+            except (OSError, ValueError) as error: self._json(400,{"error":str(error)})
+            return
         if route.path == "/api/assistant/key":
             length = min(int(self.headers.get("Content-Length", "0")), 16 * 1024)
             try:
