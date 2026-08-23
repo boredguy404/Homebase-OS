@@ -14,5 +14,7 @@
     dialog.querySelector('#setup-enter').onclick=async()=>{const status=dialog.querySelector('#setup-status');status.textContent='Saving private setup…';const approved=[...dialog.querySelectorAll('#setup-folders input:checked')].map(input=>input.value);try{const response=await fetch('/api/setup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({approved_folders:approved,demo_library:dialog.querySelector('#setup-demo').checked})});if(!response.ok)throw Error();localStorage.setItem(key,new Date().toISOString());dialog.close();dialog.remove();if(typeof toast==='function')toast('Homebase setup saved')}catch{status.textContent='Could not save setup. Homebase is still safe to use; try again from Settings.'}};
     dialog.showModal();
   }
-  window.openFirstRun=openFirstRun;addEventListener('DOMContentLoaded',()=>setTimeout(()=>openFirstRun(new URLSearchParams(location.search).has('setup')),450));
+  window.openFirstRun=openFirstRun;
+  const launchInitial=()=>setTimeout(()=>openFirstRun(new URLSearchParams(location.search).has('setup')),450);
+  if(document.readyState==='loading')addEventListener('DOMContentLoaded',launchInitial,{once:true});else launchInitial();
 })();

@@ -46,6 +46,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubus
 
 Homebase opens automatically. In Chrome or Edge, choose **Install Homebase** to make it fullscreen and remove the address bar. Your games, saves, music, and personal files stay on your computer and are not uploaded to GitHub.
 
+On its first launch, the three-step welcome setup shows the local device reading, asks exactly which folders may be scanned, then gives direct shortcuts to My Library, owned-game setup, backup and restore, and controller help. The retro update bulletin never covers this setup flow.
+
 ### EmulatorJS runtime (automatic)
 
 Both installers download and unpack the local **EmulatorJS 4.2.3 runtime** on first install (roughly 290 MB), then verify `emulatorjs/data/loader.js` exists before Homebase starts. On Windows, the installer uses the free 7-Zip helper and offers to install it through Winget when needed. It is a local dependency—not something users need to add by hand—and remains ignored by Git. If a first install was interrupted, run the same installer command again; it resumes by installing only a missing runtime. The official EmulatorJS 4.2.3 release is the runtime source. [EmulatorJS release](https://github.com/EmulatorJS/EmulatorJS/releases)
@@ -99,7 +101,7 @@ The Pocket Archive documentation capture uses a deliberate pixel-mosaic privacy 
 
 ![Orbit Wave visualizer](media/orbit-wave.png)
 
-Orbit combines internet radio and local audio playlists with audio-reactive visuals. **Pulse** is the default; other modes include Scope, radar, tunnel, nebula, and a club-style light field. The selected visual continues in the low-cost mini player while navigating NovaShell, with play, pause, previous, next, expand, and close controls.
+Orbit combines internet radio and local audio playlists with audio-reactive visuals. **Pulse** is the default; other modes include Scope, radar, tunnel, nebula, and a club-style light field. Its full-height station rail keeps search and filters in view while every returned station stays scrollable. The selected visual continues in the low-cost mini player while navigating NovaShell, with play, pause, previous, next, expand, and close controls.
 
 ### Relay workspace
 
