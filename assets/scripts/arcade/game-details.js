@@ -7,10 +7,12 @@
   let active = null, slide = 0, media = [];
   const slug = name => name.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   function draw() {
-    const track = dialog.querySelector('.game-detail-track');
-    track.innerHTML = media.map((src, index) => '<img class="' + (index === slide ? 'active' : '') + '" src="' + src + '" alt="Real ' + active.dataset.name + ' gameplay ' + (index + 1) + '">').join('');
-    track.querySelectorAll('img').forEach(image => image.onerror = () => { image.remove(); });
-    dialog.querySelector('.game-detail-dots').innerHTML = media.map((_, i) => '<i class="' + (i === slide ? 'active' : '') + '"></i>').join('');
+    const track = dialog.querySelector('.game-detail-track'),hasMedia=media.length>0;
+    track.innerHTML = hasMedia ? media.map((src, index) => '<img class="' + (index === slide ? 'active' : '') + '" src="' + src + '" alt="Local ' + active.dataset.name + ' preview ' + (index + 1) + '">').join('') : '<div class="game-detail-fallback"><b>'+String(active.dataset.system||active.dataset.core||'LOCAL').toUpperCase()+'</b><strong></strong><span>LOCAL COPY · ADD YOUR OWN COVER OR GAMEPLAY GIF</span></div>';
+    if(!hasMedia)track.querySelector('strong').textContent=active.dataset.name;
+    track.querySelectorAll('img').forEach(image => image.onerror = () => { media=media.filter(src=>src!==image.getAttribute('src'));slide=0;draw(); });
+    dialog.querySelector('.game-detail-dots').innerHTML = hasMedia ? media.map((_, i) => '<i class="' + (i === slide ? 'active' : '') + '"></i>').join('') : '';
+    dialog.querySelector('.gallery-left').hidden=!hasMedia;dialog.querySelector('.gallery-right').hidden=!hasMedia;
   }
   function move(direction) { slide = (slide + direction + media.length) % media.length; draw(); }
   const available = src => new Promise(resolve => { const image=new Image();image.onload=()=>resolve(src);image.onerror=()=>resolve(null);image.src=src; });
@@ -20,7 +22,6 @@
     const existing = card.querySelector('img')?.getAttribute('src');
     const candidates=[existing,'/covers/'+id+'-real.png','/covers/'+id+'-gameplay-v2.gif','/covers/'+id+'-gameplay.gif','/covers/'+id+'-gameplay-2.gif','/covers/'+id+'-gameplay-3.gif'].filter(Boolean);
     media=[...new Set((await Promise.all(candidates.map(available))).filter(Boolean))];
-    if(!media.length)media=['/assets/icons/homebase-icon.svg'];
     const tag = card.querySelector('.tag')?.textContent || (card.dataset.core || 'GBA').toUpperCase();
     dialog.querySelector('small').textContent = tag + ' · LOCAL COPY';
     dialog.querySelector('h2').textContent = card.dataset.name;

@@ -1,0 +1,10 @@
+/* Settings uses the same material recipes as the desktop, so choosing a theme
+   here is an honest live preview rather than a separate settings-only palette. */
+html[data-theme="cobalt"] body{background:radial-gradient(ellipse at 78% 8%,#0f62fe24 0,transparent 38%),#161616!important;color:#f4f4f4!important}
+html[data-theme="cobalt"] section{background:#262626!important;border-color:#525252!important;box-shadow:inset 0 1px #ffffff12,0 14px 32px #0004!important}
+html[data-theme="cobalt"] p{color:#c6c6c6!important}
+html[data-theme="cobalt"] .back,html[data-theme="cobalt"] .choices button,html[data-theme="cobalt"] .actions button{background:#262626!important;border-color:#525252!important;color:#f4f4f4!important}
+html[data-theme="cobalt"] .choices button.active,html[data-theme="cobalt"] .settings-nav a.active{background:#0f62fe!important;border-color:#78a9ff!important;color:#fff!important;box-shadow:0 0 0 2px #0f62fe55!important}
+html[data-theme="cobalt"] h1,html[data-theme="cobalt"] h2{color:#f4f4f4!important}html[data-theme="cobalt"] header small{color:#78a9ff!important}
+html[data-theme="cobalt"] .settings-nav{background:#262626!important;border-color:#525252!important}html[data-theme="cobalt"] .settings-nav a{color:#d0e2ff!important;border-color:#525252!important}
+html[data-theme="cobalt"] #visual-preview{background:#0c1116!important;border-color:#4589ff88!important}

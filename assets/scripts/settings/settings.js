@@ -1,4 +1,5 @@
 if(!document.querySelector('link[data-settings-header-surface]')){const surface=document.createElement('link');surface.rel='stylesheet';surface.href='/assets/styles/settings/settings-header-surface.css?v=96';surface.dataset.settingsHeaderSurface='true';document.head.append(surface)}
+if(!document.querySelector('link[data-settings-desktop-theme-sync]')){const desktopTheme=document.createElement('link');desktopTheme.rel='stylesheet';desktopTheme.href='/assets/styles/settings/settings-desktop-theme-sync.css?v=1';desktopTheme.dataset.settingsDesktopThemeSync='true';document.head.append(desktopTheme)}
 const status = document.querySelector('#status');
 let theme = localStorage.getItem('nightglass-theme') || 'ultra-retro';
 let visual = localStorage.getItem('nightglass-visual') || '0';
@@ -208,4 +209,7 @@ document.querySelector('[data-setting="homebase-dancer-enabled"]')?.addEventList
 });
 
 syncVisualPreview();
+const syncAppearanceFromDesktop=()=>{theme=localStorage.getItem('nightglass-theme')||'ultra-retro';visual=localStorage.getItem('nightglass-visual')||'0';wallpaper=localStorage.getItem('homebase-retro-wallpaper')||'classic';document.documentElement.dataset.theme=theme;document.documentElement.dataset.retroWallpaper=wallpaper;document.querySelectorAll('[data-theme-choice]').forEach(button=>button.classList.toggle('active',button.dataset.themeChoice===theme));document.querySelectorAll('[data-retro-wallpaper]').forEach(button=>button.classList.toggle('active',button.dataset.retroWallpaper===wallpaper));syncVisualPreview()};
+addEventListener('storage',event=>{if(['nightglass-theme','nightglass-visual','homebase-retro-wallpaper'].includes(event.key))syncAppearanceFromDesktop()});
+addEventListener('message',event=>{if(['homebase-theme-choice','homebase-visual-choice','homebase-retro-wallpaper'].includes(event.data?.type))setTimeout(syncAppearanceFromDesktop,0)});
 document.querySelector('[data-setting="homebase-dancer-enabled"]')?.closest('label')?.remove();document.querySelector('#reset-dancer')?.remove();
