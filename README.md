@@ -109,6 +109,14 @@ The **Workspace Editor** can load an allowlisted set of NovaShell core files, cr
 
 ![Relay local assistant in Ultra Retro](media/relay-workspace.png)
 
+### Utility Desk and local handoffs
+
+Utility Desk is deliberately useful without an account or a network connection: live device readings, notes, calculator, clipboard handoff, focus timer, converter, local SHA-256 file verification, quick queue, Kanban, and a **Workspace handoff** tool. Choose a folder and it creates a downloadable JSON inventory with relative names, timestamps, sizes, and fingerprints—never file contents or absolute paths. That makes a copied folder, backup, or support handoff explainable without uploading private data.
+
+![Workspace handoff in Ultra Retro](media/utility-workspace-handoff.png)
+
+The quiet **About NovaShell** window is available from the desktop Help menu and My Library. It credits [boredguy404](https://github.com/boredguy404) without turning the desktop into an advertisement.
+
 ### App search and installation
 
 ![Your Linux apps inside Browse’s Ultra Retro Explorer](media/app-discovery.png)
