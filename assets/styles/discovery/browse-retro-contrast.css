@@ -1,0 +1,20 @@
+/* Every readable Browse surface gets its own old-computer panel. Nothing
+   depends on the patterned Ultra Retro desktop for contrast. */
+html[data-theme="ultra-retro"] header{background:#d4d4d4!important;color:#111!important;border-bottom:2px solid #111!important;box-shadow:inset 2px 2px #fff,inset -2px -2px #777!important}
+html[data-theme="ultra-retro"] header :is(h1,small,#source){color:#111!important;text-shadow:none!important}
+html[data-theme="ultra-retro"] header small,#source{display:table;padding:4px 6px;background:#eee!important;border:1px solid #111!important}
+html[data-theme="ultra-retro"] nav{padding-top:8px!important;padding-bottom:12px!important;background:#c7c7c7!important;border-block:1px solid #111!important}
+html[data-theme="ultra-retro"] nav button{color:#111!important;background:#dedede!important;border:2px outset #eee!important;border-radius:0!important;text-shadow:none!important;box-shadow:inset 1px 1px #fff,inset -1px -1px #666!important}
+html[data-theme="ultra-retro"] nav button.active{color:#fff!important;background:#000080!important;border-color:#111!important}
+html[data-theme="ultra-retro"] main{background:transparent!important}
+html[data-theme="ultra-retro"] #suggestions button{color:#111!important;background:#e5e5e5!important;border:2px outset #eee!important;border-radius:0!important;text-shadow:none!important}
+html[data-theme="ultra-retro"] #search input{color:#111!important;background:#fff!important;border:2px inset #eee!important;border-radius:0!important}
+html[data-theme="ultra-retro"] #search button{color:#fff!important;background:#000080!important;border:2px outset #eee!important;border-radius:0!important}
+html[data-theme="ultra-retro"] .result{color:#111!important;background:#e4e4e4!important;border:2px solid #111!important;border-radius:0!important;box-shadow:inset 2px 2px #fff,inset -2px -2px #777,4px 4px #111!important}
+html[data-theme="ultra-retro"] .result :is(h2,p,time){color:#111!important;text-shadow:none!important}
+html[data-theme="ultra-retro"] .result time{display:table;padding:3px 5px;background:#d4d4d4!important;border:1px solid #777!important}
+html[data-theme="ultra-retro"] .result:hover,html[data-theme="ultra-retro"] .result:focus-visible{color:#fff!important;background:#263b3f!important;border-color:#111!important;outline:2px dotted #fff!important;outline-offset:-6px!important}
+html[data-theme="ultra-retro"] .result:hover :is(h2,p,time),html[data-theme="ultra-retro"] .result:focus-visible :is(h2,p,time){color:#fff!important;background:transparent!important}
+html[data-theme="ultra-retro"] dialog{color:#111!important;background:#dedede!important;border:3px solid #111!important;border-radius:0!important;box-shadow:inset 2px 2px #fff,inset -2px -2px #777,7px 7px #111!important}
+html[data-theme="ultra-retro"] dialog :is(h1,h2,h3,p,small){color:#111!important;text-shadow:none!important}
+html[data-theme="ultra-retro"] dialog .close{color:#111!important;background:#d4d4d4!important;border:2px outset #eee!important;border-radius:0!important}

@@ -119,6 +119,33 @@ def openai_assistant(message):
         return answer.strip()[:600] or None
     except (OSError, ValueError, KeyError): return None
 
+def draft_core_edit(file_id, instruction):
+    """Return a review-only source draft. This function never writes core files."""
+    try: key = ASSISTANT_KEY_FILE.read_text(encoding="utf-8").strip()
+    except OSError: raise ValueError("connect an API key in Relay before drafting a core edit")
+    path = CORE_EDITABLE.get(file_id)
+    if not key: raise ValueError("connect an API key in Relay before drafting a core edit")
+    if not path or not path.is_file(): raise ValueError("choose an allowed core file")
+    current = path.read_text(encoding="utf-8")
+    if len(current) > 100000: raise ValueError("that core file is too large for a safe single-draft review; split the requested change into a smaller module first")
+    task = str(instruction or "").strip()[:2000]
+    if not task: raise ValueError("describe the change Relay should draft")
+    prompt = ("You are drafting one reviewable edit for a local Homebase web app. "
+        "Return JSON only with keys summary and content. content must be the COMPLETE replacement file, not a diff. "
+        "Preserve unrelated behavior and do not add network calls, credential handling, shell execution, telemetry, eval, dynamic imports, or external dependencies. "
+        "This is a draft only: the person will review it before a separate confirmation-gated save.\n\n"
+        f"File: {path.relative_to(ROOT)}\nRequest: {task}\n\nCurrent file:\n{current}")
+    payload={"model":os.environ.get("HOMEBASE_OPENAI_MODEL","gpt-4.1-mini"),"store":False,"input":prompt,
+        "text":{"format":{"type":"json_object"}},"max_output_tokens":14000}
+    request=urllib.request.Request("https://api.openai.com/v1/responses",data=json.dumps(payload).encode(),headers={"Authorization":"Bearer "+key,"Content-Type":"application/json"},method="POST")
+    try:
+        with urllib.request.urlopen(request,timeout=90) as response:data=json.load(response)
+        raw=data.get("output_text") or "".join(part.get("text","") for item in data.get("output",[]) for part in item.get("content",[]) if part.get("type")=="output_text")
+        draft=json.loads(raw); content=str(draft.get("content") or "")
+    except (OSError, ValueError, KeyError) as error: raise ValueError("Relay could not draft that edit: "+str(error)[:140])
+    if not content or len(content)>250000: raise ValueError("Relay returned an unusable draft; nothing was changed")
+    return {"summary":str(draft.get("summary") or "Review the draft before applying it.")[:500],"content":content}
+
 def create_relay_app(description, framework):
     """Generate a small, self-contained user app. Core Homebase files are never writable here."""
     try: key = ASSISTANT_KEY_FILE.read_text(encoding="utf-8").strip()
@@ -419,7 +446,8 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                         with urllib.request.urlopen(request,timeout=5) as response:data=json.load(response)
                         for service,versions in data.items():
                             for version,entry in versions.get("versions",{}).items():
-                                info=entry.get("info",{}); title=info.get("title") or service; summary=info.get("description") or "Documented OpenAPI service."
+                                info=entry.get("info",{}); title=info.get("title") or service; summary=html.unescape(re.sub(r"<[^>]+>"," ",str(info.get("description") or "Documented OpenAPI service.")))
+                                summary=re.sub(r"\s+"," ",summary).strip()
                                 if term and term not in (title+" "+summary+" "+service).casefold(): continue
                                 records.append({"kind":"OpenAPI directory","title":title,"summary":summary[:500],"meta":"OpenAPI "+str(info.get("version") or version)+" · "+service,"image":entry.get("info",{}).get("x-logo",{}).get("url","") if isinstance(entry.get("info",{}).get("x-logo",{}),dict) else "","url":entry.get("swaggerUrl") or entry.get("swaggerYamlUrl") or "https://apis.guru/"})
                     except (OSError, ValueError, KeyError):
@@ -761,6 +789,13 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                 payload=json.loads(self.rfile.read(length) or b"{}"); description=str(payload.get("description","")).strip()[:3000]; framework=str(payload.get("framework","Vanilla HTML/CSS/JS"))[:50]
                 if not description: raise ValueError("describe the app first")
                 self._json(200,{"app":create_relay_app(description,framework)})
+            except (OSError, ValueError, TypeError) as error:self._json(400,{"error":str(error)})
+            return
+        if route.path == "/api/relay/workspace/draft":
+            length=min(int(self.headers.get("Content-Length","0")),16*1024)
+            try:
+                payload=json.loads(self.rfile.read(length) or b"{}"); file_id=str(payload.get("file","")).strip(); instruction=str(payload.get("instruction","")).strip()
+                self._json(200,draft_core_edit(file_id,instruction))
             except (OSError, ValueError, TypeError) as error:self._json(400,{"error":str(error)})
             return
         if route.path == "/api/assistant/app/delete":

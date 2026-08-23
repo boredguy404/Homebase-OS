@@ -47,7 +47,9 @@ Homebase ships without commercial games. To add a backup you legally made:
 3. Optionally put your own cover PNGs or real gameplay GIFs in `covers/`.
 4. Reload Pocket Archive, open a game card, then use **Play** or **Controller layout**.
 
-![Pocket Archive game shelf with intentionally blurred local artwork](media/pocket-archive.png)
+![Pocket Archive game shelf with intentionally pixelated local artwork](media/pocket-archive.png)
+
+> **Why the pixelation?** Public screenshots use a retro mosaic treatment whenever they could reveal local ROM covers or gameplay. The actual local Pocket Archive shows the real images supplied by its owner; the public repository does not publish those private or copyrighted assets.
 
 Supported systems include Game Boy, GBC, GBA, NES, SNES, Genesis, N64, and PlayStation. The in-app **Add your games** guide explains filenames, artwork, privacy, and recommended GIF sizes. ROMs, BIOS files, saves, and private artwork are ignored by Git and remain local.
 
@@ -67,13 +69,13 @@ This is not a replacement operating system. It is a fast console-like layer over
 
 | Your private game shelf | Recommendation-only discovery |
 |---|---|
-| ![Pocket Archive with intentionally blurred local game artwork](media/pocket-archive.png) | ![Browse, Homebase’s retro internet-style discovery browser](media/rom-discovery.png) |
+| ![Pocket Archive with intentionally pixelated local game artwork](media/pocket-archive.png) | ![Browse, Homebase’s retro internet-style discovery browser](media/rom-discovery.png) |
 
 Pocket Archive launches a locally installed EmulatorJS runtime for GBA, Game Boy, GBC, NES, SNES, Genesis, N64, and PlayStation files supplied by the user. Each game can have a detail sheet, swipeable gallery, Xbox controller diagram, save controls, performance profile, and fullscreen CRT presentation.
 
 ROM Discovery is deliberately separate from the installed library. It contains recommendations, hardware-fit notes, multiplayer information, expected emulator cores, and links for researching legal copies. It does not download ROMs and does not claim a suggested game is installed.
 
-The Pocket Archive documentation capture uses actual local game imagery with a deliberately strong privacy blur. It communicates the real shelf without publishing sharp cover art or gameplay captures. Personal ROMs, saves, and source artwork are not committed.
+The Pocket Archive documentation capture uses a deliberate pixel-mosaic privacy treatment over local game imagery. It communicates the real shelf without publishing sharp cover art or gameplay captures; in the installed local app, owners still see their own real images. Personal ROMs, saves, and source artwork are not committed.
 
 ### Orbit visual radio
 
@@ -81,11 +83,17 @@ The Pocket Archive documentation capture uses actual local game imagery with a d
 
 Orbit combines internet radio and local audio playlists with audio-reactive visuals. Wave is the default; other modes include radar, tunnel, nebula, and a club-style light field. The selected visual continues in the low-cost mini player while navigating Homebase, with play, pause, previous, next, expand, and close controls.
 
+### Relay workspace
+
+Relay works as a local guide without a key, or can use a locally stored API key for richer chat and draft help. Its **Workspace Editor** can load an allowlisted set of Homebase core files, create a review-only AI draft, and apply a reviewed edit only after explicit typed confirmation. Every write makes a timestamped local backup. Generated mini-apps remain isolated in `user-apps/`; they do not gain core-file access.
+
 ### App search and installation
 
 ![Your Linux apps inside Browse’s Ultra Retro Explorer](media/app-discovery.png)
 
-Homebase reads actual desktop launchers and Flatpak state before calling an app installed. The **Browse** internet-style explorer now includes live News, AI, Dev, Security, Research, Games, Books, Reference, open-source tools, and Linux apps lanes. Explore searches the Flathub catalog, opens an in-app detail view with screenshots, and runs installs as observable background jobs. If automatic installation is unavailable, every app includes a copyable terminal fallback:
+Homebase reads actual desktop launchers and Flatpak state before calling an app installed. The **Browse** internet-style explorer includes live News, AI, Dev, Security, Research, Games, Books, Reference, open-source tools, Linux apps, and a searchable **320-entry public API catalog**. Each lane has paging, source links, touch-friendly detail sheets, and dedicated Ultra Retro reading surfaces so text stays legible over the desktop pattern. Linux App Explore searches the Flathub catalog, opens an in-app detail view with screenshots, and runs installs as observable background jobs. If automatic installation is unavailable, every app includes a copyable terminal fallback:
+
+![Browse API catalog in Ultra Retro](media/browse-api-catalog.png)
 
 ```bash
 flatpak install --user flathub APP_ID
@@ -111,11 +119,11 @@ File access is confined to the current user’s home folder by the local server.
 
 ### Settings, saves, and portable backup
 
-![Settings and selective backup](media/settings-backup.png)
+![Settings and selective backup, presented with a retro pixel-mosaic privacy treatment](media/settings-backup-pixelated.png)
 
 Settings can export or merge independent data groups: My Library, user-provided ROMs, native saves, artwork, imports, mGBA data, Orbit playlists, Flatpak data, browser preferences, and an installed-app inventory. Restore defaults to merge-and-skip; replacing matching files requires an explicit choice.
 
-The README keeps the sharp real capture above for documentation. A lightly blurred version of that exact capture is also included at [`media/settings-backup-blur.png`](media/settings-backup-blur.png) for soft-focus presentation backdrops—no invented interface imagery.
+The README uses a pixelated version of the real Settings capture so public docs keep the same retro visual language and avoid exposing personal data. The installed local app is not pixelated; it shows the real controls, local library, and any owner-provided game imagery. A soft-focus presentation variant remains at [`media/settings-backup-blur.png`](media/settings-backup-blur.png).
 
 EmulatorJS saves live in browser IndexedDB, so Homebase also includes a separate browser-save export/import tool for that protected data.
 
