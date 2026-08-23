@@ -20,6 +20,8 @@ The hosted companion is intended to carry the PWA shell, touch/controller naviga
 
 Deployment credentials, host setup, and operator notes are deliberately private. The separate **NovaShell web** repository is reserved for the deployable browser companion when it is ready—not for publishing infrastructure instructions.
 
+See the [hosted companion parity matrix](docs/HOSTED_COMPANION_PARITY.md) for the exact local-vs-web boundary before deploying a companion build.
+
 ## Install Homebase
 
 You do not need to be a developer. Pick your computer, paste the highlighted line once, and Homebase handles the project download and startup.
