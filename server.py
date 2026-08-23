@@ -95,6 +95,32 @@ CURATED_PUBLIC_APIS = [
     ("Wikipedia", "Searchable encyclopedia summaries and page images.", "https://en.wikipedia.org/w/api.php", "GET", "/?action=query&format=json&titles=Chromebook", "https://en.wikipedia.org/w/api.php?action=query&format=json&titles=Chromebook", "https://www.mediawiki.org/wiki/API:Main_page"),
     ("XKCD", "Comics, transcripts, and image metadata.", "https://xkcd.com", "GET", "/info.0.json", "https://xkcd.com/info.0.json", "https://xkcd.com/json.html"),
     ("ZenQuotes", "Quote data for personal dashboards.", "https://zenquotes.io/api", "GET", "/random", "https://zenquotes.io/api/random", "https://zenquotes.io/"),
+    ("Advice Slip", "Short advice prompts for dashboard experiments.", "https://api.adviceslip.com", "GET", "/advice", "https://api.adviceslip.com/advice", "https://api.adviceslip.com/"),
+    ("Bacon Ipsum", "Placeholder text with a food-themed twist.", "https://baconipsum.com/api", "GET", "/?type=meat-and-filler", "https://baconipsum.com/api/?type=meat-and-filler", "https://baconipsum.com/json-api/"),
+    ("BreweryDB Open Brewery", "Breweries by city, name, and type.", "https://api.openbrewerydb.org/v1", "GET", "/breweries?per_page=3", "https://api.openbrewerydb.org/v1/breweries?per_page=3", "https://www.openbrewerydb.org/documentation"),
+    ("Chuck Norris Jokes", "Random joke categories and jokes.", "https://api.chucknorris.io/jokes", "GET", "/random", "https://api.chucknorris.io/jokes/random", "https://api.chucknorris.io/"),
+    ("Crossref Works", "Scholarly work metadata and DOI lookup.", "https://api.crossref.org", "GET", "/works?query=chromebook&rows=3", "https://api.crossref.org/works?query=chromebook&rows=3", "https://api.crossref.org/"),
+    ("Datamuse", "Word associations, rhymes, and meanings.", "https://api.datamuse.com", "GET", "/words?ml=computer&max=5", "https://api.datamuse.com/words?ml=computer&max=5", "https://www.datamuse.com/api/"),
+    ("Deck of Cards", "Shuffled decks for game or UI prototypes.", "https://deckofcardsapi.com/api/deck", "GET", "/new/shuffle/?deck_count=1", "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1", "https://deckofcardsapi.com/"),
+    ("D&D 5e", "Open reference data for classes, monsters, and spells.", "https://www.dnd5eapi.co/api", "GET", "/classes", "https://www.dnd5eapi.co/api/classes", "https://www.dnd5eapi.co/docs/"),
+    ("GitHub Public", "Public repositories, releases, issues, and users.", "https://api.github.com", "GET", "/users/octocat", "https://api.github.com/users/octocat", "https://docs.github.com/en/rest"),
+    ("Ghibli API", "Studio Ghibli film and character metadata.", "https://ghibliapi.vercel.app", "GET", "/films", "https://ghibliapi.vercel.app/films", "https://ghibliapi.vercel.app/"),
+    ("Gutendex", "Project Gutenberg book search and metadata.", "https://gutendex.com", "GET", "/books?search=adventure", "https://gutendex.com/books?search=adventure", "https://gutendex.com/"),
+    ("IP Who Is", "Approximate IP geolocation and network metadata.", "https://ipwho.is", "GET", "/8.8.8.8", "https://ipwho.is/8.8.8.8", "https://ipwhois.io/documentation"),
+    ("JokeAPI", "Programmable jokes by category.", "https://v2.jokeapi.dev", "GET", "/joke/Programming?type=single", "https://v2.jokeapi.dev/joke/Programming?type=single", "https://sv443.net/jokeapi/v2/"),
+    ("Kitsu", "Anime and manga discovery metadata.", "https://kitsu.io/api/edge", "GET", "/anime?page[limit]=3", "https://kitsu.io/api/edge/anime?page[limit]=3", "https://kitsu.docs.apiary.io/"),
+    ("Open Food Facts", "Food product and nutrition data.", "https://world.openfoodfacts.org/api/v2", "GET", "/product/737628064502.json", "https://world.openfoodfacts.org/api/v2/product/737628064502.json", "https://openfoodfacts.github.io/openfoodfacts-server/api/"),
+    ("Open Trivia DB", "Trivia questions for games and quizzes.", "https://opentdb.com", "GET", "/api.php?amount=3", "https://opentdb.com/api.php?amount=3", "https://opentdb.com/api_config.php"),
+    ("OpenAlex", "Open scholarly works, authors, and institutions.", "https://api.openalex.org", "GET", "/works?search=human%20computer%20interaction&per-page=3", "https://api.openalex.org/works?search=human%20computer%20interaction&per-page=3", "https://docs.openalex.org/"),
+    ("PoetryDB", "Poems by author, title, or line.", "https://poetrydb.org", "GET", "/title/Ozymandias", "https://poetrydb.org/title/Ozymandias", "https://github.com/thundercomb/poetrydb"),
+    ("Random User", "Synthetic profile data for UI testing.", "https://randomuser.me", "GET", "/api/?results=3", "https://randomuser.me/api/?results=3", "https://randomuser.me/documentation"),
+    ("Rick and Morty", "Character, location, and episode metadata.", "https://rickandmortyapi.com/api", "GET", "/character/1", "https://rickandmortyapi.com/api/character/1", "https://rickandmortyapi.com/documentation/"),
+    ("Sunrise Sunset", "Sun and twilight times by latitude and longitude.", "https://api.sunrise-sunset.org", "GET", "/json?lat=39.77&lng=-86.16&formatted=0", "https://api.sunrise-sunset.org/json?lat=39.77&lng=-86.16&formatted=0", "https://sunrise-sunset.org/api"),
+    ("SWAPI", "Star Wars people, planets, and films.", "https://www.swapi.tech/api", "GET", "/people/1", "https://www.swapi.tech/api/people/1", "https://www.swapi.tech/documentation"),
+    ("TVMaze", "TV shows, episodes, schedules, and people.", "https://api.tvmaze.com", "GET", "/singlesearch/shows?q=mr%20robot", "https://api.tvmaze.com/singlesearch/shows?q=mr%20robot", "https://www.tvmaze.com/api"),
+    ("USGS Earthquakes", "Recent global earthquake feed data.", "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary", "GET", "/all_hour.geojson", "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson", "https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php"),
+    ("Where the ISS At", "International Space Station location data.", "https://api.wheretheiss.at/v1", "GET", "/satellites/25544", "https://api.wheretheiss.at/v1/satellites/25544", "https://wheretheiss.at/w/developer"),
+    ("Zippopotam", "Postal-code lookup across supported countries.", "https://api.zippopotam.us", "GET", "/us/90210", "https://api.zippopotam.us/us/90210", "https://www.zippopotam.us/"),
 ]
 
 def relay_knowledge(topic=""):
@@ -496,7 +522,7 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                     result={"items":items,"source":"Wikipedia"}
                 elif section == "apis":
                     term=(query or "").casefold()
-                    records=[{"kind":"Free API","title":title,"summary":summary,"meta":"Free · no key · "+method,"url":docs,"service":base,"method":method,"endpoint":endpoint,"example":example,"auth":"None required"} for title,summary,base,method,endpoint,example,docs in CURATED_PUBLIC_APIS if not term or term in (title+" "+summary+" "+base+" "+endpoint).casefold()]
+                    records=[{"kind":"Free API","title":title,"summary":summary,"meta":"Free · no key · "+method,"url":docs,"service":base,"method":method,"endpoint":endpoint,"example":example,"auth":"None required","image":urllib.parse.urlsplit(base).scheme+"://"+urllib.parse.urlsplit(base).netloc+"/favicon.ico"} for title,summary,base,method,endpoint,example,docs in CURATED_PUBLIC_APIS if not term or term in (title+" "+summary+" "+base+" "+endpoint).casefold()]
                     # The list is deliberately curated rather than sourced from a
                     # bulk directory: bulk directories mix paid/keyed APIs and
                     # versions. A normalized title makes duplicate names impossible.
