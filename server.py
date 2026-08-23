@@ -66,6 +66,34 @@ RELAY_KNOWLEDGE = {
     "app-contract": ROOT / "docs" / "APP_CONTRACT.md",
     "relay-contract": ROOT / "modules" / "relay" / "manifest.json",
 }
+CURATED_PUBLIC_APIS = [
+    ("Airtable Web API","Workspace records and structured tables.","https://airtable.com/developers/web/api/introduction"),
+    ("Bored API","Small activity suggestions for utility prototypes.","https://www.boredapi.com/"),
+    ("CoinGecko API","Crypto market prices and asset metadata.","https://www.coingecko.com/en/api/documentation"),
+    ("Dog CEO API","Dog breed data and public images.","https://dog.ceo/dog-api/"),
+    ("ExchangeRate API","Currency conversion and exchange-rate data.","https://www.exchangerate-api.com/docs/overview"),
+    ("Free Dictionary API","Definitions, phonetics, and word meanings.","https://dictionaryapi.dev/"),
+    ("Google Books API","Books, editions, authors, and cover metadata.","https://developers.google.com/books"),
+    ("Hacker News API","Stories, comments, users, and rankings.","https://github.com/HackerNews/API"),
+    ("Internet Archive API","Public-domain collections and metadata.","https://archive.org/developers/"),
+    ("Jikan API","Unofficial MyAnimeList metadata for discovery apps.","https://docs.api.jikan.moe/"),
+    ("Kitsu API","Anime and manga catalog metadata.","https://kitsu.docs.apiary.io/"),
+    ("Library of Congress API","Public collection search and records.","https://www.loc.gov/apis/"),
+    ("Met Museum Collection API","Public-domain artwork and object data.","https://metmuseum.github.io/"),
+    ("NASA Open APIs","Space imagery, astronomy, and Earth science.","https://api.nasa.gov/"),
+    ("Open-Meteo","Forecast, marine, air-quality, and geocoding data.","https://open-meteo.com/en/docs"),
+    ("PokeAPI","Pokémon species, moves, sprites, and game data.","https://pokeapi.co/docs/v2"),
+    ("Quran API","Quran text and translation data.","https://alquran.cloud/api"),
+    ("REST Countries","Country, flag, currency, and regional data.","https://restcountries.com/"),
+    ("SpaceX API","Launches, vehicles, crews, and company data.","https://github.com/r-spacex/SpaceX-API"),
+    ("TheMealDB","Recipe search, ingredients, and meal imagery.","https://www.themealdb.com/api.php"),
+    ("Unsplash API","Photography search and attribution-aware image data.","https://unsplash.com/documentation"),
+    ("VirusTotal API","Security file, URL, and domain analysis.","https://docs.virustotal.com/reference/overview"),
+    ("Wikidata Query Service","Linked open knowledge and structured facts.","https://www.wikidata.org/wiki/Wikidata:SPARQL_query_service"),
+    ("XKCD JSON","Comics, transcripts, and image metadata.","https://xkcd.com/json.html"),
+    ("Yelp Fusion API","Business and restaurant search.","https://docs.developer.yelp.com/"),
+    ("ZenQuotes API","Quote data for personal dashboards.","https://zenquotes.io/"),
+]
 
 def relay_knowledge(topic=""):
     """Small, readable local knowledge base for Relay drafts and inspection."""
@@ -487,6 +515,7 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                         source="Curated no-key APIs · directory reconnecting"
                         records=[{"kind":"No-key API","title":title,"summary":summary,"meta":tag,"url":url} for title,summary,tag,url in [("Open-Meteo","Weather forecasts and global geocoding without an app key.","Weather · no key","https://open-meteo.com/"),("Wikipedia API","Searchable encyclopedia summaries and page images.","Reference · no key","https://www.mediawiki.org/wiki/API:Main_page"),("Open Library","Books, authors, covers, and bibliographic search.","Books · no key","https://openlibrary.org/developers/api"),("PokeAPI","Structured Pokémon species, moves, and sprite data.","Games · no key","https://pokeapi.co/docs/v2"),("NASA Open APIs","Space imagery and astronomy data, with a freely obtainable demo key.","Science · demo key","https://api.nasa.gov/"),("REST Countries","Country, currency, flag, and regional information.","Reference · no key","https://restcountries.com/"),("The Metropolitan Museum API","Public-domain museum collection search and artwork metadata.","Culture · no key","https://metmuseum.github.io/"),("GitHub public API","Repositories, releases, issues, and project search; cache-aware anonymous usage.","Developer · no key","https://docs.github.com/en/rest")]]
                     if term: records=[item for item in records if term in (item["title"]+" "+item["summary"]+" "+item["meta"]).casefold()]
+                    records.extend({"kind":"OpenAPI directory","title":title,"summary":summary,"meta":"Curated documentation · public developer API","url":url,"service":"curated:"+title,"version":"Guide","spec_url":"","license":"See provider terms","contact":""} for title,summary,url in CURATED_PUBLIC_APIS if not term or term in (title+" "+summary).casefold())
                     unique={}
                     for item in records:
                         key=(item.get("service") or item["title"]).casefold()
