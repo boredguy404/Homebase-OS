@@ -926,7 +926,7 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                 except OSError:
                     pass
             return
-        if route.path in {"/api/files/mkdir", "/api/files/rename", "/api/files/trash", "/api/files/upload", "/api/files/open"}:
+        if route.path in {"/api/files/mkdir", "/api/files/rename", "/api/files/copy", "/api/files/trash", "/api/files/upload", "/api/files/open"}:
             length = min(int(self.headers.get("Content-Length", "0")), 1024 ** 3)
             if route.path == "/api/files/upload":
                 folder = safe_home_path(urllib.parse.parse_qs(route.query).get("path", ["Desktop"])[0])
@@ -969,6 +969,15 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                     if target.exists() and target != source:
                         raise ValueError("a file or folder with that name already exists")
                     source.rename(target)
+                elif route.path == "/api/files/copy":
+                    destination = safe_home_path(payload.get("destination", ""))
+                    if not source or source == HOME_ROOT or not source.exists() or not destination or not destination.is_dir():
+                        raise ValueError("invalid copy source or destination")
+                    target = destination / source.name
+                    if target.exists():
+                        raise ValueError("a file or folder with that name already exists here")
+                    if source.is_dir(): shutil.copytree(source, target)
+                    else: shutil.copy2(source, target)
                 elif route.path == "/api/files/trash":
                     if not source or source == HOME_ROOT:
                         raise ValueError("invalid trash target")
@@ -979,7 +988,7 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                     subprocess.Popen(["gio", "open", str(source)], start_new_session=True,
                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                         env={**os.environ, "DISPLAY": os.environ.get("DISPLAY", ":0")})
-                self._json(201 if route.path == "/api/files/mkdir" else 200, {"ok": True, "created": str(target.relative_to(HOME_ROOT)) if route.path == "/api/files/mkdir" else None})
+                self._json(201 if route.path == "/api/files/mkdir" else 200, {"ok": True, "created": str(target.relative_to(HOME_ROOT)) if route.path in {"/api/files/mkdir", "/api/files/copy"} else None})
             except (OSError, ValueError, subprocess.CalledProcessError) as error:
                 self._json(400, {"error": str(error)})
             return

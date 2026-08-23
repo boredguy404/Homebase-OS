@@ -38,6 +38,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubus
 
 Homebase opens automatically. In Chrome or Edge, choose **Install Homebase** to make it fullscreen and remove the address bar. Your games, saves, music, and personal files stay on your computer and are not uploaded to GitHub.
 
+### EmulatorJS runtime (automatic)
+
+Both installers download and unpack the local **EmulatorJS 4.2.3 runtime** on first install (roughly 290 MB), then verify `emulatorjs/data/loader.js` exists before Homebase starts. On Windows, the installer uses the free 7-Zip helper and offers to install it through Winget when needed. It is a local dependency—not something users need to add by hand—and remains ignored by Git. If a first install was interrupted, run the same installer command again; it resumes by installing only a missing runtime. The official EmulatorJS 4.2.3 release is the runtime source. [EmulatorJS release](https://github.com/EmulatorJS/EmulatorJS/releases)
+
 ### Add games you own
 
 Homebase ships without commercial games. To add a backup you legally made:
@@ -87,6 +91,8 @@ Orbit combines internet radio and local audio playlists with audio-reactive visu
 
 Relay works as a local guide without a key, or can use a locally stored API key for richer chat and draft help. Its **Workspace Editor** can load an allowlisted set of Homebase core files, create a review-only AI draft, and apply a reviewed edit only after explicit typed confirmation. Every write makes a timestamped local backup. Generated mini-apps remain isolated in `user-apps/`; they do not gain core-file access.
 
+![Relay local assistant in Ultra Retro](media/relay-workspace.png)
+
 ### App search and installation
 
 ![Your Linux apps inside Browse’s Ultra Retro Explorer](media/app-discovery.png)
@@ -119,11 +125,11 @@ File access is confined to the current user’s home folder by the local server.
 
 ### Settings, saves, and portable backup
 
-![Settings and selective backup, presented with a retro pixel-mosaic privacy treatment](media/settings-backup-pixelated.png)
+![Settings and selective backup](media/settings-backup.png)
 
 Settings can export or merge independent data groups: My Library, user-provided ROMs, native saves, artwork, imports, mGBA data, Orbit playlists, Flatpak data, browser preferences, and an installed-app inventory. Restore defaults to merge-and-skip; replacing matching files requires an explicit choice.
 
-The README uses a pixelated version of the real Settings capture so public docs keep the same retro visual language and avoid exposing personal data. The installed local app is not pixelated; it shows the real controls, local library, and any owner-provided game imagery. A soft-focus presentation variant remains at [`media/settings-backup-blur.png`](media/settings-backup-blur.png).
+The README uses a crisp current Settings capture. Pixel-mosaic treatment is reserved only for public game-shelf imagery that could expose local ROM covers or gameplay. A soft-focus presentation variant remains at [`media/settings-backup-blur.png`](media/settings-backup-blur.png).
 
 EmulatorJS saves live in browser IndexedDB, so Homebase also includes a separate browser-save export/import tool for that protected data.
 

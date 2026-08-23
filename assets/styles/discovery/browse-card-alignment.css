@@ -1,0 +1,8 @@
+/* A result always reserves one horizontal visual row.  API cards with no
+   remote logo therefore line up exactly with cards that do have one. */
+.result-visual{height:82px;display:grid;place-items:center;margin-bottom:10px;border:1px solid #ffffff20;border-radius:10px;background:#ffffff08;overflow:hidden}
+.result-visual img{width:70px!important;height:70px!important;max-height:none!important;margin:0!important;object-fit:contain!important;border-radius:9px;background:#ffffff08}
+.result-visual span{display:grid;place-items:center;width:48px;height:48px;border:1px solid currentColor;border-radius:9px;color:var(--accent);font:24px ui-monospace,monospace}
+html[data-theme="ultra-retro"] .result-visual{height:82px!important;border:2px inset #eee!important;border-radius:0!important;background:#d4d4d4!important}
+html[data-theme="ultra-retro"] .result-visual img{width:64px!important;height:64px!important;border:1px solid #111!important;border-radius:0!important;background:#eee!important;filter:grayscale(.55) contrast(1.05)!important}
+html[data-theme="ultra-retro"] .result-visual span{color:#000080!important;border:2px solid #000080!important;border-radius:0!important;background:#eee!important}

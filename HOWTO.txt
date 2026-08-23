@@ -10,6 +10,13 @@ That starts Homebase, waits until it is ready, and opens the current local URL.
 If Homebase is not installed yet, use the installer command at the very top of
 README.md once. After installation, always use the command above.
 
+EMULATORJS:
+
+The first Chromebook/Linux install automatically downloads and unpacks the
+local EmulatorJS runtime (about 290 MB). Do not put it in roms/ yourself.
+If Pocket Archive says the runtime is missing, run the README installer line
+again; it only downloads EmulatorJS when emulatorjs/data/loader.js is absent.
+
 Recovery:
 
   cd "$HOME/homebase" && ./homebase-maintenance.sh restart

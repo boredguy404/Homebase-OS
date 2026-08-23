@@ -1,0 +1,1 @@
+(()=>{let deferred=null;addEventListener('beforeinstallprompt',event=>{event.preventDefault();deferred=event});window.HomebasePWA={available:()=>!!deferred,install:async()=>{if(!deferred)throw Error('Use Chrome or Edge menu → Install Homebase if the install button is unavailable.');deferred.prompt();await deferred.userChoice;deferred=null}}})();
