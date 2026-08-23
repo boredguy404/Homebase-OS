@@ -11,3 +11,7 @@ html[data-theme="ultra-retro"] .browser-head>div,.station>div,.quick-plays,.chip
 html[data-theme="ultra-retro"] .station:hover>div,html[data-theme="ultra-retro"] .station.active>div{background:transparent!important}
 html[data-theme="ultra-retro"] .station:hover :is(h3,p,.index,.go),html[data-theme="ultra-retro"] .station.active :is(h3,p,.index,.go){color:#fff!important}
 html[data-theme="ultra-retro"] .eyebrow{display:table;padding:5px 7px;background:#263b3f!important;color:#fff!important;border:1px solid #172728!important;text-shadow:none!important}
+/* Dense programs need an opaque label plate; Scope remains lighter because its
+   empty phosphor field already gives the station title plenty of contrast. */
+html[data-theme="ultra-retro"] body:is([data-visual="pixel"],[data-visual="terminal"],[data-visual="radar"],[data-visual="tunnel"]) .hero h1{display:table;max-width:100%;padding:7px 9px;background:#d4d4d4!important;color:#111!important;border:2px solid #111;box-shadow:inset 2px 2px #fff,inset -2px -2px #666,3px 3px #111;text-shadow:none!important}
+html[data-theme="ultra-retro"] body:is([data-visual="pixel"],[data-visual="terminal"],[data-visual="radar"],[data-visual="tunnel"]) .hero h1 em{color:#000080!important;text-shadow:none!important}

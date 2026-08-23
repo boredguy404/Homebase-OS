@@ -1,8 +1,8 @@
 # NovaShell
 
-NovaShell is a little OS-style home screen for a Chromebook or PC: one fullscreen place for apps, files, music, system information, and games you add yourself.
+> **NovaShell is an installable local dashboard that sits on top of ChromeOS/Linux or Windows.** It turns a Chromebook or PC into one touch-first, controller-friendly home screen for the apps and files already on the computer, a private game shelf for games you add yourself, Orbit radio and local music, live device insight, backups, weather, utilities, and a local-first Relay assistant. It can run as a PWA or fullscreen deck, and it remains useful offline after its shell and local tools are installed.
 
-> **What this is:** an installable local dashboard that sits on top of ChromeOS/Linux or Windows. It organizes the apps and files already on your computer, provides a private game shelf for games you add yourself, and adds touch/controller-friendly controls. It is **not** a replacement operating system, cloud service, or game download site. Some `homebase-*` internal names remain temporarily so existing local preferences migrate cleanly.
+It is a lightweight layer over your existing computer—not a replacement operating system, cloud service, game download site, or remote-control agent. NovaShell never bundles commercial games, silently uploads your library, or claims it can launch software the browser cannot access. Local Linux app launching, real file browsing, and native helpers stay clearly local-only; the hosted companion uses browser-safe equivalents. Some `homebase-*` internal names remain temporarily so existing local preferences migrate cleanly.
 
 I wanted an easy way to get more out of a low-power Chromebook without bouncing between a pile of unrelated windows, so I made this. It is designed first for touch and an Xbox controller, but mouse and keyboard work normally too.
 
