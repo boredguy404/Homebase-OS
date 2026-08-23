@@ -1,6 +1,6 @@
-const CACHE='homebase-v93';
+const CACHE='homebase-v94';
 const SHELL=[
-  '/', '/index.html', '/manifest.webmanifest', '/assets/icons/homebase-icon.svg',
+  '/', '/index.html', '/offline.html', '/manifest.webmanifest', '/assets/icons/homebase-icon.svg',
   '/pages/arcade.html', '/pages/discover.html', '/pages/files.html', '/pages/apps.html',
   '/pages/settings.html', '/pages/github-setup.html', '/pages/readme-studio.html',
   '/pages/browse.html', '/pages/game-setup.html', '/pages/game-manager.html', '/pages/console.html', '/version.json', '/assets/styles/discovery/browse.css', '/assets/scripts/discovery/browse.js',
@@ -15,7 +15,7 @@ const SHELL=[
   '/assets/styles/arcade/game-details.css', '/assets/styles/arcade/multiplayer.css',
   '/assets/styles/arcade/performance.css', '/assets/styles/discovery/discover.css',
   '/assets/styles/discovery/discover-gallery.css', '/assets/styles/discovery/discover-offline-art.css', '/assets/styles/files/files.css',
-  '/assets/styles/files/dialog.css', '/assets/styles/files/files-mobile-actions.css', '/assets/styles/apps/catalog.css',
+  '/assets/styles/files/dialog.css', '/assets/styles/files/files-mobile-actions.css', '/assets/scripts/files/files-rename.js', '/assets/scripts/files/files-trash-confirm.js', '/assets/scripts/files/files-copy-paste.js', '/assets/scripts/files/files-inapp-actions.js', '/assets/styles/apps/catalog.css',
   '/assets/styles/apps/apps-install-modal.css', '/assets/styles/settings/settings.css', '/assets/styles/settings/settings-desktop-theme-sync.css', '/assets/styles/settings/settings-device-center.css',
   '/assets/styles/settings/settings-dialog.css', '/assets/styles/shared/modal-global.css',
   '/assets/styles/shared/ultra-retro.css', '/assets/styles/shared/back-button-spacing.css', '/assets/styles/homebase/fake-virus-lab.css', '/assets/styles/apps/apps-icon-alignment.css', '/assets/scripts/homebase/deck.js', '/assets/scripts/homebase/first-run.js', '/assets/scripts/homebase/first-run-shortcuts.js', '/assets/scripts/shared/about-novashell.js',
@@ -36,4 +36,4 @@ const SHELL=[
 ];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
-self.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;event.respondWith(fetch(event.request).then(response=>{const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy));return response}).catch(()=>caches.match(event.request))) });
+self.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;event.respondWith(fetch(event.request).then(response=>{const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy));return response}).catch(async()=>{const exact=await caches.match(event.request),pathFallback=await caches.match(event.request,{ignoreSearch:true});return exact||pathFallback||(event.request.mode==='navigate'?caches.match('/offline.html'):Response.error())}))});

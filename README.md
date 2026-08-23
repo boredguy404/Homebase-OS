@@ -220,7 +220,7 @@ The PWA shell, browser emulators, Xbox input, Orbit, My Library, browser saves, 
 
 | Feature | Offline behavior |
 |---|---|
-| Homebase shell and installed PWA assets | Works after the service worker caches the shell |
+| Homebase shell and installed PWA assets | Works after the service worker caches the shell; direct routes with query parameters fall back to their cached page, and a clear local offline page appears if a page was never cached |
 | Emulator runtime and user-provided games | Local and offline once the runtime is installed |
 | My Library, Settings, saves, and backups | Local and offline |
 | Local Orbit playlists | Local and offline |
