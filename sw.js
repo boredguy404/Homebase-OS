@@ -1,9 +1,9 @@
-const CACHE='homebase-v74';
+const CACHE='homebase-v75';
 const SHELL=[
   '/', '/index.html', '/manifest.webmanifest', '/assets/icons/homebase-icon.svg',
   '/pages/arcade.html', '/pages/discover.html', '/pages/files.html', '/pages/apps.html',
   '/pages/settings.html', '/pages/github-setup.html', '/pages/readme-studio.html',
-  '/pages/browse.html', '/pages/game-setup.html', '/pages/console.html', '/version.json', '/assets/styles/discovery/browse.css', '/assets/scripts/discovery/browse.js',
+  '/pages/browse.html', '/pages/game-setup.html', '/pages/game-manager.html', '/pages/console.html', '/version.json', '/assets/styles/discovery/browse.css', '/assets/scripts/discovery/browse.js',
   '/assets/styles/homebase/visual-deck.css', '/assets/styles/homebase/shell.css',
   '/assets/styles/homebase/tiles.css', '/assets/styles/homebase/clock.css',
   '/assets/styles/homebase/gestures.css', '/assets/styles/homebase/indicators.css',

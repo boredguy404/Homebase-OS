@@ -545,12 +545,12 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                     identity=str(rom.resolve());
                     if identity in seen:continue
                     seen.add(identity)
-                    core, system = ROM_CORES[rom.suffix.casefold()]; saved = metadata.get(rom.name, {}); title = saved.get("title") or re.sub(r"[_-]+", " ", rom.stem).strip().title(); slug = saved.get("slug") or game_slug(title)
+                    core, system = ROM_CORES[rom.suffix.casefold()]; relative=str(rom.relative_to(source)); catalog_key=source_kind+":"+relative; saved = metadata.get(catalog_key, metadata.get(rom.name, {})); title = saved.get("title") or re.sub(r"[_-]+", " ", rom.stem).strip().title(); slug = saved.get("slug") or game_slug(title)
                     media=[]
                     for candidate in [f"{slug}-real.png",f"{slug}.png",f"{slug}.gif",f"{slug}-cover.png",f"{slug}-cover.jpg",f"{slug}-cover.webp",f"{slug}-gameplay.gif",f"{slug}-gameplay-2.gif",f"{slug}-gameplay-3.gif"]:
                         if (ROOT / "covers" / candidate).is_file(): media.append("/covers/"+candidate)
                     game_url="/roms/"+rom.name if source_kind=="roms" else "/api/file?path="+urllib.parse.quote(str(rom.relative_to(HOME_ROOT)))
-                    games.append({"rom":game_url,"rom_name":rom.name,"name":title,"slug":slug,"core":core,"system":saved.get("system") or system,"description":saved.get("description") or "A private game from your local library.","genre":saved.get("genre") or "Game","year":saved.get("year") or "","players":saved.get("players") or "Single player","controls":saved.get("controls") or "Standard Xbox mapping","mosaic":bool(saved.get("mosaic")),"media":media,"bytes":rom.stat().st_size,"source":source_kind,"needs_details":not bool(saved)})
+                    games.append({"rom":game_url,"rom_name":rom.name,"catalog_key":catalog_key,"source_path":relative,"name":title,"slug":slug,"core":core,"system":saved.get("system") or system,"description":saved.get("description") or "A private game from your local library.","genre":saved.get("genre") or "Game","year":saved.get("year") or "","players":saved.get("players") or "Single player","controls":saved.get("controls") or "Standard Xbox mapping","mosaic":bool(saved.get("mosaic")),"media":media,"bytes":rom.stat().st_size,"source":source_kind,"needs_details":not bool(saved)})
             self._json(200,{"games":games,"local_only":True});return
         if browse_route.path.startswith("/api/browse/"):
             section = browse_route.path.rsplit("/", 1)[-1]
@@ -1008,9 +1008,11 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
         if route.path == "/api/game-import/metadata":
             length=min(int(self.headers.get("Content-Length","0")),128*1024)
             try:
-                payload=json.loads(self.rfile.read(length) or b"{}");rom_name=Path(str(payload.get("rom_name", ""))).name
-                if rom_name!=payload.get("rom_name") or not (ROOT/"roms"/rom_name).is_file():raise ValueError("imported ROM was not found")
-                catalog=read_game_catalog();catalog[rom_name]={key:str(payload.get(key,""))[:500] for key in ("title","slug","system","description","genre","year","players","controls")};catalog[rom_name]["mosaic"]=bool(payload.get("mosaic",False));GAME_CATALOG.parent.mkdir(parents=True,exist_ok=True);temporary=GAME_CATALOG.with_suffix(".tmp");temporary.write_text(json.dumps(catalog,indent=2),encoding="utf-8");temporary.replace(GAME_CATALOG);self._json(200,{"saved":True,"game":catalog[rom_name]})
+                payload=json.loads(self.rfile.read(length) or b"{}");rom_name=Path(str(payload.get("rom_name", ""))).name;catalog_key=str(payload.get("catalog_key","")).strip();source_path=str(payload.get("source_path","")).strip()
+                if rom_name!=payload.get("rom_name") or not re.fullmatch(r"(?:roms|library):[^\\]{1,500}",catalog_key):raise ValueError("invalid game catalog entry")
+                source,relative=catalog_key.split(":",1);target=(ROOT/"roms"/relative).resolve() if source=="roms" else (HOME_ROOT/"My Library"/relative).resolve();root=(ROOT/"roms").resolve() if source=="roms" else (HOME_ROOT/"My Library").resolve()
+                if source_path!=relative or not target.is_relative_to(root) or not target.is_file() or target.name!=rom_name or target.suffix.casefold() not in ROM_CORES:raise ValueError("imported ROM was not found")
+                catalog=read_game_catalog();catalog[catalog_key]={key:str(payload.get(key,""))[:500] for key in ("title","slug","system","description","genre","year","players","controls")};catalog[catalog_key]["mosaic"]=bool(payload.get("mosaic",False));GAME_CATALOG.parent.mkdir(parents=True,exist_ok=True);temporary=GAME_CATALOG.with_suffix(".tmp");temporary.write_text(json.dumps(catalog,indent=2),encoding="utf-8");temporary.replace(GAME_CATALOG);self._json(200,{"saved":True,"game":catalog[catalog_key]})
             except (OSError,ValueError,TypeError) as error:self._json(400,{"error":str(error)})
             return
         if route.path == "/api/backup/export":
