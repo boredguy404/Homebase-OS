@@ -1,4 +1,6 @@
 .orbit-player.expanded{left:0!important;top:0!important;right:0!important;bottom:0!important;transform:none!important}
-.orbit-player:not(.expanded).peek.mini-peek-centered{left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;transform:translate(-50%,-50%)!important}
+/* The larger mini player stays at its dragged/docked edge; it never jumps to
+   the center of the screen. */
+.orbit-player:not(.expanded).peek.mini-peek-centered{transform:none!important}
 body.app-open #assistant-window{z-index:2200!important;pointer-events:auto!important}
 body.app-open #assistant-window header{touch-action:none!important;pointer-events:auto!important}

@@ -445,16 +445,28 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                         request=urllib.request.Request("https://api.apis.guru/v2/list.json",headers={"User-Agent":"Homebase-OS/1.0"})
                         with urllib.request.urlopen(request,timeout=5) as response:data=json.load(response)
                         for service,versions in data.items():
-                            for version,entry in versions.get("versions",{}).items():
-                                info=entry.get("info",{}); title=info.get("title") or service; summary=html.unescape(re.sub(r"<[^>]+>"," ",str(info.get("description") or "Documented OpenAPI service.")))
-                                summary=re.sub(r"\s+"," ",summary).strip()
-                                if term and term not in (title+" "+summary+" "+service).casefold(): continue
-                                records.append({"kind":"OpenAPI directory","title":title,"summary":summary[:500],"meta":"OpenAPI "+str(info.get("version") or version)+" · "+service,"image":entry.get("info",{}).get("x-logo",{}).get("url","") if isinstance(entry.get("info",{}).get("x-logo",{}),dict) else "","url":entry.get("swaggerUrl") or entry.get("swaggerYamlUrl") or "https://apis.guru/"})
+                            # APIs.guru lists every version of each service. Keep the
+                            # newest entry only so Browse is a real directory, not a
+                            # wall of duplicate version cards.
+                            candidates=list(versions.get("versions",{}).items())
+                            if not candidates: continue
+                            version,entry=sorted(candidates,key=lambda item:item[0],reverse=True)[0]
+                            info=entry.get("info",{}); raw_title=info.get("title") or service
+                            title=service if raw_title.casefold() in {"api client","openapi","swagger"} else raw_title
+                            summary=html.unescape(re.sub(r"<[^>]+>"," ",str(info.get("description") or "Documented OpenAPI service.")))
+                            summary=re.sub(r"\s+"," ",summary).strip()
+                            if term and term not in (title+" "+summary+" "+service).casefold(): continue
+                            logo=info.get("x-logo",{}).get("url","") if isinstance(info.get("x-logo",{}),dict) else ""
+                            records.append({"kind":"OpenAPI directory","title":title,"summary":summary[:500],"meta":"OpenAPI "+str(info.get("version") or version)+" · "+service,"image":logo,"url":info.get("termsOfService") or "https://apis.guru/","service":service,"version":str(info.get("version") or version),"spec_url":entry.get("swaggerUrl") or entry.get("swaggerYamlUrl") or "","license":(info.get("license") or {}).get("name","") if isinstance(info.get("license"),dict) else "","contact":(info.get("contact") or {}).get("url","") if isinstance(info.get("contact"),dict) else ""})
                     except (OSError, ValueError, KeyError):
                         source="Curated no-key APIs · directory reconnecting"
                         records=[{"kind":"No-key API","title":title,"summary":summary,"meta":tag,"url":url} for title,summary,tag,url in [("Open-Meteo","Weather forecasts and global geocoding without an app key.","Weather · no key","https://open-meteo.com/"),("Wikipedia API","Searchable encyclopedia summaries and page images.","Reference · no key","https://www.mediawiki.org/wiki/API:Main_page"),("Open Library","Books, authors, covers, and bibliographic search.","Books · no key","https://openlibrary.org/developers/api"),("PokeAPI","Structured Pokémon species, moves, and sprite data.","Games · no key","https://pokeapi.co/docs/v2"),("NASA Open APIs","Space imagery and astronomy data, with a freely obtainable demo key.","Science · demo key","https://api.nasa.gov/"),("REST Countries","Country, currency, flag, and regional information.","Reference · no key","https://restcountries.com/"),("The Metropolitan Museum API","Public-domain museum collection search and artwork metadata.","Culture · no key","https://metmuseum.github.io/"),("GitHub public API","Repositories, releases, issues, and project search; cache-aware anonymous usage.","Developer · no key","https://docs.github.com/en/rest")]]
                     if term: records=[item for item in records if term in (item["title"]+" "+item["summary"]+" "+item["meta"]).casefold()]
-                    records.sort(key=lambda item:item["title"].casefold())
+                    unique={}
+                    for item in records:
+                        key=(item.get("service") or item["title"]).casefold()
+                        unique.setdefault(key,item)
+                    records=sorted(unique.values(),key=lambda item:(item["title"].casefold(),item.get("service","").casefold()))
                     result={"items":records[:320],"source":source+" · "+str(min(len(records),320))+" APIs"}
                 elif section == "projects":
                     params=urllib.parse.urlencode({"q":query or "chromebook utilities","sort":"stars","order":"desc","per_page":48})
