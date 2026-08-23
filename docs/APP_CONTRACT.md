@@ -42,11 +42,13 @@ Keep descriptions short, entries relative, and assets inside the app folder. Use
 
 ## Relay generation rules
 
-1. Relay requires the optional local API key to generate code.
+1. Relay requires a configured local AI provider profile to generate code.
+   OpenAI and OpenRouter are supported; the profile is ignored by Git.
 2. Generated output must be reviewable plain HTML/CSS/JS, with no external scripts, iframes, network calls, dynamic imports, `eval`, or access to Homebase core files.
 3. Relay creates a new folder instead of silently overwriting an app.
-4. Deleting an app requires two explicit confirmations and only removes that app folder.
-5. A generated app should remain usable offline unless its manifest explicitly says otherwise.
+4. New generated apps use the Web Components contract only.
+5. Deleting an app requires two explicit confirmations and only removes that app folder.
+6. A generated app should remain usable offline unless its manifest explicitly says otherwise.
 
 ## Change contract
 

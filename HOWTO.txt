@@ -34,15 +34,18 @@ excluded from the public Git repository.
 RELAY — OPTIONAL AI APP + CORE EDITING
 ======================================
 
-Open Relay inside NovaShell and choose Connect API key. Enter your own OpenAI
-API key there; it is saved only as local/openai-api-key.txt (permissions 600)
-and is ignored by Git. Nothing is sent to a hosted NovaShell service.
+Open Relay inside NovaShell and use AI Connection. Choose OpenAI or OpenRouter.
+OpenRouter starts on openrouter/free for low-volume free-model experiments; it
+still requires your own OpenRouter key and can be rate-limited. The provider
+profile is saved only as local/relay-provider.json (permissions 600), ignored
+by Git, and never sent to a hosted NovaShell service.
 
-With a key, Relay can:
-  * Generate small offline-first apps in user-apps/experiments/.
+With a configured provider, Relay can:
+  * Generate Web Component apps in user-apps/experiments/.
   * Delete those generated apps from Relay or by deleting that folder.
   * Draft a reviewed replacement for a small, listed core file.
 
+Brain Files is read-only and lets you inspect the locally imported Brain archive.
 Core edits are intentionally not automatic. Relay shows the full draft first;
 you must review it and type APPLY CORE EDIT to save. Every successful core
 write creates a timestamped copy in local/workspace-backups/.

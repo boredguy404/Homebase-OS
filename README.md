@@ -103,7 +103,9 @@ Orbit combines internet radio and local audio playlists with audio-reactive visu
 
 ### Relay workspace
 
-Relay works as a local guide without a key, or can use a locally stored API key for richer chat and draft help. Its **Workspace Editor** can load an allowlisted set of Homebase core files, create a review-only AI draft, and apply a reviewed edit only after explicit typed confirmation. Every write makes a timestamped local backup. Generated mini-apps remain isolated in `user-apps/`; they do not gain core-file access.
+Relay works as a local guide without a key. For richer chat and drafts, its **AI Routes** panel can save either an OpenAI profile or an OpenRouter profile on this computer only. OpenRouter defaults to `openrouter/free`, which is useful for low-volume experimentation but can be rate-limited or unavailable. Its **Brain Files** browser exposes the locally imported Brain archive in read-only form: conventions, notes, structure, and utilities can be inspected without placing that private archive in Git.
+
+The **Workspace Editor** can load an allowlisted set of NovaShell core files, create a review-only AI draft, and apply a reviewed edit only after explicit typed confirmation. Every write makes a timestamped local backup. Generated mini-apps use the Web Components contract and remain isolated in `user-apps/`; they do not gain core-file access. Utility Desk also includes a local project Kanban, seeded with current work on first use and fully editable without an account.
 
 ![Relay local assistant in Ultra Retro](media/relay-workspace.png)
 
