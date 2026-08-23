@@ -1,1 +1,1 @@
-{"version":"68","released":"2026-08-22","notes":"Pocket Archive has spaced touch filters, an expanded local artwork scan, and a cleaned local Tekken entry. Settings now mirrors the selected desktop material and stays synchronized while the desktop theme changes."}
+{"version":"69","released":"2026-08-23","notes":"README Browse capture refreshed with the deduplicated API catalog. Browse filters are opaque, Orbit labels stay readable over dense visuals, embedded pages no longer inherit stray top chrome, and Ultra Retro desktop icons now have restrained color cues."}
