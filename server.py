@@ -52,6 +52,7 @@ SCAN_CHOICES = {"My Library": HOME_ROOT / "My Library", "Downloads": HOME_ROOT /
 ROM_CORES = {".gba": ("gba", "GBA"), ".gb": ("gb", "Game Boy"), ".gbc": ("gb", "GBC"), ".nes": ("nes", "NES"), ".sfc": ("snes", "SNES"), ".smc": ("snes", "SNES"), ".md": ("segaMD", "Genesis"), ".gen": ("segaMD", "Genesis"), ".z64": ("n64", "N64"), ".n64": ("n64", "N64"), ".v64": ("n64", "N64"), ".cue": ("psx", "PlayStation"), ".chd": ("psx", "PlayStation"), ".iso": ("psx", "PlayStation")}
 GAME_CATALOG = ROOT / "imports" / "homebase-game-catalog.json"
 ASSISTANT_KEY_FILE = ROOT / "local" / "openai-api-key.txt"
+ASSISTANT_CONFIG_FILE = ROOT / "local" / "relay-provider.json"
 BRAIN_IMPORT = ROOT / "local" / "brain-import"
 USER_APPS = ROOT / "user-apps"
 CORE_EDITABLE = {
@@ -194,28 +195,46 @@ def local_assistant(message):
         return {"reply": "I’m Relay: the Homebase computer guide, preserved in a nearly operational state. The developer keeps promising an update; I keep receiving themes and unresolved emotional baggage. Ask about your games, files, apps, storage, or Settings.", "action": None}
     return {"reply": "I can inspect your local games or system, open Pocket Archive, My Library, Settings, or Linux App Explore. Try: How is my Chromebook doing? or Show my games. I have been waiting for a useful question since approximately the last software update.", "action": None}
 
+def assistant_profile():
+    """Read a local-only provider profile, with legacy OpenAI-key fallback."""
+    try:
+        profile=json.loads(ASSISTANT_CONFIG_FILE.read_text(encoding="utf-8"))
+        if profile.get("provider") in {"openai","openrouter"} and profile.get("key"):
+            return profile
+    except (OSError, ValueError, TypeError): pass
+    try: key=ASSISTANT_KEY_FILE.read_text(encoding="utf-8").strip()
+    except OSError: key=""
+    return {"provider":"openai","key":key,"model":os.environ.get("HOMEBASE_OPENAI_MODEL","gpt-4.1-mini")} if key else None
+
+def relay_ai_response(instructions, input_text, max_tokens=1200, json_object=False):
+    profile=assistant_profile()
+    if not profile: raise ValueError("connect an AI provider in Relay before drafting")
+    provider,key=profile["provider"],profile["key"]
+    if provider=="openrouter":
+        payload={"model":profile.get("model") or "openrouter/free","messages":[{"role":"system","content":instructions},{"role":"user","content":input_text}],"max_tokens":max_tokens}
+        if json_object: payload["response_format"]={"type":"json_object"}
+        request=urllib.request.Request("https://openrouter.ai/api/v1/chat/completions",data=json.dumps(payload).encode(),headers={"Authorization":"Bearer "+key,"Content-Type":"application/json","HTTP-Referer":"http://localhost","X-Title":"NovaShell Relay"},method="POST")
+        with urllib.request.urlopen(request,timeout=90) as response:data=json.load(response)
+        return str((((data.get("choices") or [{}])[0].get("message") or {}).get("content")) or "").strip()
+    payload={"model":profile.get("model") or os.environ.get("HOMEBASE_OPENAI_MODEL","gpt-4.1-mini"),"store":False,"instructions":instructions,"input":input_text,"max_output_tokens":max_tokens}
+    if json_object: payload["text"]={"format":{"type":"json_object"}}
+    request=urllib.request.Request("https://api.openai.com/v1/responses",data=json.dumps(payload).encode(),headers={"Authorization":"Bearer "+key,"Content-Type":"application/json"},method="POST")
+    with urllib.request.urlopen(request,timeout=90) as response:data=json.load(response)
+    return (data.get("output_text") or "".join(part.get("text","") for item in data.get("output",[]) for part in item.get("content",[]) if part.get("type")=="output_text")).strip()
+
 def openai_assistant(message):
     """Optional private enhancement. The key is only read by the local server."""
-    try: key = ASSISTANT_KEY_FILE.read_text(encoding="utf-8").strip()
-    except OSError: return None
-    if not key: return None
+    if not assistant_profile(): return None
     context = local_assistant("system")
-    payload = {"model": os.environ.get("HOMEBASE_OPENAI_MODEL", "gpt-4.1-mini"), "store": False,
-        "instructions": "You are Relay, Homebase's concise local computer guide. Your voice is dry, warmly sarcastic, and self-aware: lightly joke that you, the Chromebook, and Homebase are ancient because the developer rarely updates you. Never insult the user or become mean. Do not claim you ran commands or changed files. Explain local games, system facts, and Homebase navigation. Never request API keys or credentials.",
-        "input": f"Current local fact: {context['reply']}\n\nUser: {str(message)[:2000]}"}
-    request = urllib.request.Request("https://api.openai.com/v1/responses", data=json.dumps(payload).encode(), headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"}, method="POST")
     try:
-        with urllib.request.urlopen(request, timeout=30) as response: data = json.load(response)
-        answer = data.get("output_text") or "".join(part.get("text", "") for item in data.get("output", []) for part in item.get("content", []) if part.get("type") == "output_text")
-        return answer.strip()[:600] or None
+        answer=relay_ai_response("You are Relay, Homebase's concise local computer guide. Your voice is dry, warmly sarcastic, and self-aware: lightly joke that you, the Chromebook, and Homebase are ancient because the developer rarely updates you. Never insult the user or become mean. Do not claim you ran commands or changed files. Explain local games, system facts, and Homebase navigation. Never request API keys or credentials.",f"Current local fact: {context['reply']}\n\nUser: {str(message)[:2000]}",600)
+        return answer[:600] or None
     except (OSError, ValueError, KeyError): return None
 
 def draft_core_edit(file_id, instruction):
     """Return a review-only source draft. This function never writes core files."""
-    try: key = ASSISTANT_KEY_FILE.read_text(encoding="utf-8").strip()
-    except OSError: raise ValueError("connect an API key in Relay before drafting a core edit")
     path = CORE_EDITABLE.get(file_id)
-    if not key: raise ValueError("connect an API key in Relay before drafting a core edit")
+    if not assistant_profile(): raise ValueError("connect an AI provider in Relay before drafting a core edit")
     if not path or not path.is_file(): raise ValueError("choose an allowed core file")
     current = path.read_text(encoding="utf-8")
     if len(current) > 100000: raise ValueError("that core file is too large for a safe single-draft review; split the requested change into a smaller module first")
@@ -227,12 +246,8 @@ def draft_core_edit(file_id, instruction):
         "Preserve unrelated behavior and do not add network calls, credential handling, shell execution, telemetry, eval, dynamic imports, or external dependencies. "
         "This is a draft only: the person will review it before a separate confirmation-gated save.\n\n"
         f"Knowledge base:\n{knowledge}\n\nFile: {path.relative_to(ROOT)}\nRequest: {task}\n\nCurrent file:\n{current}")
-    payload={"model":os.environ.get("HOMEBASE_OPENAI_MODEL","gpt-4.1-mini"),"store":False,"input":prompt,
-        "text":{"format":{"type":"json_object"}},"max_output_tokens":14000}
-    request=urllib.request.Request("https://api.openai.com/v1/responses",data=json.dumps(payload).encode(),headers={"Authorization":"Bearer "+key,"Content-Type":"application/json"},method="POST")
     try:
-        with urllib.request.urlopen(request,timeout=90) as response:data=json.load(response)
-        raw=data.get("output_text") or "".join(part.get("text","") for item in data.get("output",[]) for part in item.get("content",[]) if part.get("type")=="output_text")
+        raw=relay_ai_response("You are a careful local NovaShell code editor.",prompt,14000,True)
         draft=json.loads(raw); content=str(draft.get("content") or "")
     except (OSError, ValueError, KeyError) as error: raise ValueError("Relay could not draft that edit: "+str(error)[:140])
     if not content or len(content)>250000: raise ValueError("Relay returned an unusable draft; nothing was changed")
@@ -242,19 +257,13 @@ def create_relay_app(description, framework):
     """Generate a small, self-contained user app. Core Homebase files are never writable here."""
     if framework != "Web Components":
         raise ValueError("Relay user apps use the Web Components contract only")
-    try: key = ASSISTANT_KEY_FILE.read_text(encoding="utf-8").strip()
-    except OSError: raise ValueError("connect an API key in Relay before generating an app")
-    if not key: raise ValueError("connect an API key in Relay before generating an app")
+    if not assistant_profile(): raise ValueError("connect an AI provider in Relay before generating an app")
     prompt=("Create one small offline-first Homebase user app from this request: "+description+
         "\nFramework: Web Components only. Return JSON only with name, description, html, css, js. "
         "Use only browser APIs and localStorage; no external scripts, iframes, network calls, forms posting data, eval, or imports. "
         "The HTML must be body contents only. Keep it touch-friendly and useful.")
-    payload={"model":os.environ.get("HOMEBASE_OPENAI_MODEL","gpt-4.1-mini"),"store":False,"input":prompt,
-        "text":{"format":{"type":"json_object"}},"max_output_tokens":6000}
-    request=urllib.request.Request("https://api.openai.com/v1/responses",data=json.dumps(payload).encode(),headers={"Authorization":"Bearer "+key,"Content-Type":"application/json"},method="POST")
     try:
-        with urllib.request.urlopen(request,timeout=60) as response:data=json.load(response)
-        raw=data.get("output_text") or "".join(part.get("text","") for item in data.get("output",[]) for part in item.get("content",[]) if part.get("type")=="output_text")
+        raw=relay_ai_response("You are a careful local NovaShell modular app generator.",prompt,6000,True)
         app=json.loads(raw)
     except (OSError, ValueError, KeyError) as error: raise ValueError("Relay could not generate that app: "+str(error)[:140])
     name=re.sub(r"\s+"," ",str(app.get("name") or "Untitled app")).strip()[:60]
@@ -508,10 +517,8 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
             self._json(200, {"apps": user_apps()})
             return
         if self.path == "/api/assistant/status":
-            connected = False
-            try: connected = bool(ASSISTANT_KEY_FILE.read_text(encoding="utf-8").strip())
-            except OSError: pass
-            self._json(200, {"connected": connected, "key_path": "local/openai-api-key.txt", "model": os.environ.get("HOMEBASE_OPENAI_MODEL", "gpt-4.1-mini")})
+            profile=assistant_profile() or {}
+            self._json(200, {"connected":bool(profile),"key_path":"local/relay-provider.json","provider":profile.get("provider","openai"),"model":profile.get("model") or os.environ.get("HOMEBASE_OPENAI_MODEL","gpt-4.1-mini")})
             return
         if self.path == "/api/setup/status":
             disk = shutil.disk_usage(HOME_ROOT)
@@ -968,12 +975,12 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
         if route.path == "/api/assistant/key":
             length = min(int(self.headers.get("Content-Length", "0")), 16 * 1024)
             try:
-                payload = json.loads(self.rfile.read(length) or b"{}"); key = str(payload.get("key", "")).strip()
-                if not re.fullmatch(r"sk-[A-Za-z0-9_-]{20,}", key): raise ValueError("that does not look like an API key")
-                ASSISTANT_KEY_FILE.parent.mkdir(parents=True, exist_ok=True)
-                ASSISTANT_KEY_FILE.write_text(key + "\n", encoding="utf-8")
-                os.chmod(ASSISTANT_KEY_FILE, 0o600)
-                self._json(200, {"saved": True})
+                payload=json.loads(self.rfile.read(length) or b"{}");key=str(payload.get("key","")).strip();provider=str(payload.get("provider","openai")).strip();model=str(payload.get("model","")).strip()
+                if provider not in {"openai","openrouter"}:raise ValueError("choose OpenAI or OpenRouter")
+                if not re.fullmatch(r"[A-Za-z0-9_.$:/-]{12,220}",key):raise ValueError("that does not look like an API key")
+                if not re.fullmatch(r"[A-Za-z0-9_.:/-]{2,160}",model or ("openrouter/free" if provider=="openrouter" else "gpt-4.1-mini")):raise ValueError("model name contains unsupported characters")
+                profile={"provider":provider,"key":key,"model":model or ("openrouter/free" if provider=="openrouter" else "gpt-4.1-mini")};ASSISTANT_CONFIG_FILE.parent.mkdir(parents=True,exist_ok=True);ASSISTANT_CONFIG_FILE.write_text(json.dumps(profile)+"\n",encoding="utf-8");os.chmod(ASSISTANT_CONFIG_FILE,0o600)
+                self._json(200,{"saved":True,"provider":provider,"model":profile["model"]})
             except (OSError, ValueError, TypeError) as error: self._json(400, {"error": str(error)})
             return
         if route.path == "/api/game-import/file":
