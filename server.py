@@ -506,7 +506,7 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                     seen.add(identity)
                     core, system = ROM_CORES[rom.suffix.casefold()]; saved = metadata.get(rom.name, {}); title = saved.get("title") or re.sub(r"[_-]+", " ", rom.stem).strip().title(); slug = saved.get("slug") or game_slug(title)
                     media=[]
-                    for candidate in [f"{slug}-cover.png",f"{slug}-cover.jpg",f"{slug}-cover.webp",f"{slug}-gameplay.gif",f"{slug}-gameplay-2.gif",f"{slug}-gameplay-3.gif"]:
+                    for candidate in [f"{slug}-real.png",f"{slug}.png",f"{slug}.gif",f"{slug}-cover.png",f"{slug}-cover.jpg",f"{slug}-cover.webp",f"{slug}-gameplay.gif",f"{slug}-gameplay-2.gif",f"{slug}-gameplay-3.gif"]:
                         if (ROOT / "covers" / candidate).is_file(): media.append("/covers/"+candidate)
                     game_url="/roms/"+rom.name if source_kind=="roms" else "/api/file?path="+urllib.parse.quote(str(rom.relative_to(HOME_ROOT)))
                     games.append({"rom":game_url,"name":title,"slug":slug,"core":core,"system":saved.get("system") or system,"description":saved.get("description") or "A private game from your local library.","genre":saved.get("genre") or "Game","year":saved.get("year") or "","players":saved.get("players") or "Single player","controls":saved.get("controls") or "Standard Xbox mapping","media":media,"bytes":rom.stat().st_size,"source":source_kind,"needs_details":not bool(saved)})

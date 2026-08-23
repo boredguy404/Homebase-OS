@@ -87,6 +87,8 @@ This is not a replacement operating system. It is a fast console-like layer over
 
 Pocket Archive launches a locally installed EmulatorJS runtime for GBA, Game Boy, GBC, NES, SNES, Genesis, N64, and PlayStation files supplied by the user. Each game can have a detail sheet, swipeable gallery, Xbox controller diagram, save controls, performance profile, and fullscreen CRT presentation.
 
+The shelf scans `roms/` and My Library when it opens, so newly added supported files appear without maintaining a second list. Its compact **System** and **Type** filters are touch-sized, spaced apart, and scroll horizontally on narrow screens. Existing owner-supplied cover PNGs and gameplay GIFs are used first; when no local artwork exists, NovaShell shows an honest system card instead of a broken image.
+
 ROM Discovery is deliberately separate from the installed library. It contains recommendations, hardware-fit notes, multiplayer information, expected emulator cores, and links for researching legal copies. It does not download ROMs and does not claim a suggested game is installed.
 
 The Pocket Archive documentation capture uses a deliberate pixel-mosaic privacy treatment over local game imagery. It communicates the real shelf without publishing sharp cover art or gameplay captures; in the installed local app, owners still see their own real images. Personal ROMs, saves, and source artwork are not committed.
