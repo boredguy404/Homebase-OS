@@ -8,9 +8,15 @@ I wanted an easy way to get more out of a low-power Chromebook without bouncing 
 
 Here is the more organized AI-slop explanation.
 
-![Homebase in its default Ultra Retro desktop](media/ultra-retro.png)
+![NovaShell in its default Ultra Retro desktop](media/ultra-retro.png)
 
 **Ultra Retro is Homebase’s advertised default:** a full desktop-style shell with a taskbar, menu bar, windows, and pixel-era visual language. For a contemporary alternative, switch to **Cobalt + Radar** in Settings.
+
+## Hosted NovaShell companion
+
+[Open NovaShell on the web →](https://novashell.app) *(deployment is being prepared; the local companion remains the full Chromebook/PC edition until this link is live.)*
+
+The hosted companion is intended to carry the PWA shell, touch/controller navigation, browser game imports, Orbit, playlists, notes, kanban, discovery, weather, and browser-backed storage. Local Linux app launching, unrestricted file scanning, and native helpers remain clearly labeled local-only capabilities.
 
 ## Install Homebase
 

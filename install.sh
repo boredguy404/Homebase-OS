@@ -29,5 +29,5 @@ if [ ! -f "${target}/emulatorjs/data/loader.js" ]; then
   rm -rf "${runtime}"
 fi
 
-chmod +x "${target}/launch-homebase.sh"
+chmod +x "${target}/launch-homebase.sh" "${target}/launch-homebase-kiosk.sh"
 "${target}/launch-homebase.sh"
