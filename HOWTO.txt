@@ -30,3 +30,31 @@ Homebase shortcut it creates. README.md covers the first installation.
 
 Your ROMs, BIOS files, saves, music, and My Library content stay local and are
 excluded from the public Git repository.
+
+RELAY — OPTIONAL AI APP + CORE EDITING
+======================================
+
+Open Relay inside NovaShell and choose Connect API key. Enter your own OpenAI
+API key there; it is saved only as local/openai-api-key.txt (permissions 600)
+and is ignored by Git. Nothing is sent to a hosted NovaShell service.
+
+With a key, Relay can:
+  * Generate small offline-first apps in user-apps/experiments/.
+  * Delete those generated apps from Relay or by deleting that folder.
+  * Draft a reviewed replacement for a small, listed core file.
+
+Core edits are intentionally not automatic. Relay shows the full draft first;
+you must review it and type APPLY CORE EDIT to save. Every successful core
+write creates a timestamped copy in local/workspace-backups/.
+
+IF A CORE EDIT BREAKS SOMETHING:
+
+1. Restart first:  cd "$HOME/homebase" && ./homebase-maintenance.sh restart
+2. Restore the newest matching file from local/workspace-backups/ (the folder
+   name tells you which core file it belonged to), then restart again.
+3. If you want a clean public version, run the README installer command again.
+   It refreshes tracked project files but leaves ignored personal folders such
+   as roms/, saves/, covers/, imports/, My Library, and local/ alone.
+
+Treat an API key like a password: never paste it into a GitHub issue, README,
+or a generated app. The public repository has no key and no credentials.

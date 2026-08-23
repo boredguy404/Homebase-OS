@@ -61,7 +61,11 @@ Homebase ships without commercial games. To add a backup you legally made:
 
 > **Why the pixelation?** Public screenshots use a retro mosaic treatment whenever they could reveal local ROM covers or gameplay. The actual local Pocket Archive shows the real images supplied by its owner; the public repository does not publish those private or copyrighted assets.
 
-Supported systems include Game Boy, GBC, GBA, NES, SNES, Genesis, N64, and PlayStation. The in-app **Add your games** guide explains filenames, artwork, privacy, and recommended GIF sizes. ROMs, BIOS files, saves, and private artwork are ignored by Git and remain local.
+Supported systems include Game Boy, GBC, GBA, NES, SNES, Genesis, N64, and PlayStation.
+
+![NovaShell supported systems: Game Boy, GBC, GBA, NES, SNES, Genesis, N64, and PlayStation](media/supported-systems.svg)
+
+The in-app **Add your games** guide explains filenames, artwork, privacy, and recommended GIF sizes. ROMs, BIOS files, saves, and private artwork are ignored by Git and remain local.
 
 ## What it feels like
 
@@ -91,7 +95,7 @@ The Pocket Archive documentation capture uses a deliberate pixel-mosaic privacy 
 
 ![Orbit Wave visualizer](media/orbit-wave.png)
 
-Orbit combines internet radio and local audio playlists with audio-reactive visuals. Wave is the default; other modes include radar, tunnel, nebula, and a club-style light field. The selected visual continues in the low-cost mini player while navigating Homebase, with play, pause, previous, next, expand, and close controls.
+Orbit combines internet radio and local audio playlists with audio-reactive visuals. **Pulse** is the default; other modes include Scope, radar, tunnel, nebula, and a club-style light field. The selected visual continues in the low-cost mini player while navigating NovaShell, with play, pause, previous, next, expand, and close controls.
 
 ### Relay workspace
 
@@ -103,7 +107,7 @@ Relay works as a local guide without a key, or can use a locally stored API key 
 
 ![Your Linux apps inside Browse’s Ultra Retro Explorer](media/app-discovery.png)
 
-Homebase reads actual desktop launchers and Flatpak state before calling an app installed. The **Browse** internet-style explorer includes live News, AI, Dev, Security, Research, Games, Books, Reference, open-source tools, Linux apps, and a searchable **320-entry public API catalog**. Each lane has paging, source links, touch-friendly detail sheets, and dedicated Ultra Retro reading surfaces so text stays legible over the desktop pattern. Linux App Explore searches the Flathub catalog, opens an in-app detail view with screenshots, and runs installs as observable background jobs. If automatic installation is unavailable, every app includes a copyable terminal fallback:
+NovaShell reads actual desktop launchers and Flatpak state before calling an app installed. The **Browse** internet-style explorer includes live News, AI, Dev, Security, Research, Games, Books, Reference, open-source tools, Linux apps, and a searchable catalog of **unique free no-key APIs**. API detail sheets show a live example URL, method, base URL, path, and a copy button—not merely a documentation link. Each lane has paging, source links, touch-friendly detail sheets, and dedicated Ultra Retro reading surfaces so text stays legible over the desktop pattern. Linux App Explore searches the Flathub catalog, opens an in-app detail view with screenshots, and runs installs as observable background jobs. If automatic installation is unavailable, every app includes a copyable terminal fallback:
 
 ![Browse API catalog in Ultra Retro](media/browse-api-catalog.png)
 

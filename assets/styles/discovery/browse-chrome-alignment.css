@@ -1,0 +1,3 @@
+/* Fixed visual columns prevent the first browser control from shifting when
+   the address text or source label changes. */
+.browser-lights{flex:0 0 43px;align-items:center;justify-content:center;height:29px}.browser-activity{display:block;flex:0 0 17px;margin:0}

@@ -66,33 +66,35 @@ RELAY_KNOWLEDGE = {
     "app-contract": ROOT / "docs" / "APP_CONTRACT.md",
     "relay-contract": ROOT / "modules" / "relay" / "manifest.json",
 }
+# Browse only lists APIs that work without an account or secret.  Keep the
+# request details alongside the card so a person can use an API immediately.
 CURATED_PUBLIC_APIS = [
-    ("Airtable Web API","Workspace records and structured tables.","https://airtable.com/developers/web/api/introduction"),
-    ("Bored API","Small activity suggestions for utility prototypes.","https://www.boredapi.com/"),
-    ("CoinGecko API","Crypto market prices and asset metadata.","https://www.coingecko.com/en/api/documentation"),
-    ("Dog CEO API","Dog breed data and public images.","https://dog.ceo/dog-api/"),
-    ("ExchangeRate API","Currency conversion and exchange-rate data.","https://www.exchangerate-api.com/docs/overview"),
-    ("Free Dictionary API","Definitions, phonetics, and word meanings.","https://dictionaryapi.dev/"),
-    ("Google Books API","Books, editions, authors, and cover metadata.","https://developers.google.com/books"),
-    ("Hacker News API","Stories, comments, users, and rankings.","https://github.com/HackerNews/API"),
-    ("Internet Archive API","Public-domain collections and metadata.","https://archive.org/developers/"),
-    ("Jikan API","Unofficial MyAnimeList metadata for discovery apps.","https://docs.api.jikan.moe/"),
-    ("Kitsu API","Anime and manga catalog metadata.","https://kitsu.docs.apiary.io/"),
-    ("Library of Congress API","Public collection search and records.","https://www.loc.gov/apis/"),
-    ("Met Museum Collection API","Public-domain artwork and object data.","https://metmuseum.github.io/"),
-    ("NASA Open APIs","Space imagery, astronomy, and Earth science.","https://api.nasa.gov/"),
-    ("Open-Meteo","Forecast, marine, air-quality, and geocoding data.","https://open-meteo.com/en/docs"),
-    ("PokeAPI","Pokémon species, moves, sprites, and game data.","https://pokeapi.co/docs/v2"),
-    ("Quran API","Quran text and translation data.","https://alquran.cloud/api"),
-    ("REST Countries","Country, flag, currency, and regional data.","https://restcountries.com/"),
-    ("SpaceX API","Launches, vehicles, crews, and company data.","https://github.com/r-spacex/SpaceX-API"),
-    ("TheMealDB","Recipe search, ingredients, and meal imagery.","https://www.themealdb.com/api.php"),
-    ("Unsplash API","Photography search and attribution-aware image data.","https://unsplash.com/documentation"),
-    ("VirusTotal API","Security file, URL, and domain analysis.","https://docs.virustotal.com/reference/overview"),
-    ("Wikidata Query Service","Linked open knowledge and structured facts.","https://www.wikidata.org/wiki/Wikidata:SPARQL_query_service"),
-    ("XKCD JSON","Comics, transcripts, and image metadata.","https://xkcd.com/json.html"),
-    ("Yelp Fusion API","Business and restaurant search.","https://docs.developer.yelp.com/"),
-    ("ZenQuotes API","Quote data for personal dashboards.","https://zenquotes.io/"),
+    ("Agify", "Estimate an age from a first name.", "https://api.agify.io", "GET", "/?name=alex", "https://api.agify.io/?name=alex", "https://agify.io/"),
+    ("Bored API successor", "Random activity suggestions for small utilities.", "https://bored-api.appbrewery.com", "GET", "/random", "https://bored-api.appbrewery.com/random", "https://www.boredapi.com/"),
+    ("Cat Facts", "Short cat facts for playful dashboard widgets.", "https://catfact.ninja", "GET", "/fact", "https://catfact.ninja/fact", "https://catfact.ninja/"),
+    ("CoinGecko", "Crypto prices and asset metadata.", "https://api.coingecko.com/api/v3", "GET", "/ping", "https://api.coingecko.com/api/v3/ping", "https://www.coingecko.com/en/api/documentation"),
+    ("Dog CEO", "Dog breeds and public dog photographs.", "https://dog.ceo/api", "GET", "/breeds/image/random", "https://dog.ceo/api/breeds/image/random", "https://dog.ceo/dog-api/"),
+    ("DuckDuckGo Instant Answers", "Topic summaries and related links.", "https://api.duckduckgo.com", "GET", "/?q=chromebook&format=json", "https://api.duckduckgo.com/?q=chromebook&format=json", "https://duckduckgo.com/api"),
+    ("ExchangeRate Host", "Currency conversion reference rates.", "https://api.frankfurter.app", "GET", "/latest?from=USD", "https://api.frankfurter.app/latest?from=USD", "https://www.frankfurter.app/docs/"),
+    ("Free Dictionary", "Definitions, phonetics, and word meanings.", "https://api.dictionaryapi.dev", "GET", "/api/v2/entries/en/hello", "https://api.dictionaryapi.dev/api/v2/entries/en/hello", "https://dictionaryapi.dev/"),
+    ("Hacker News", "Stories, comments, users, and rankings.", "https://hacker-news.firebaseio.com/v0", "GET", "/topstories.json", "https://hacker-news.firebaseio.com/v0/topstories.json", "https://github.com/HackerNews/API"),
+    ("Internet Archive Advanced Search", "Public-domain collection and item metadata.", "https://archive.org/advancedsearch.php", "GET", "/?q=subject%3Aopensource&output=json", "https://archive.org/advancedsearch.php?q=subject%3Aopensource&output=json", "https://archive.org/developers/"),
+    ("Jikan", "Unofficial MyAnimeList catalog metadata.", "https://api.jikan.moe/v4", "GET", "/anime?q=cowboy%20bebop", "https://api.jikan.moe/v4/anime?q=cowboy%20bebop", "https://docs.api.jikan.moe/"),
+    ("Library of Congress", "Public collection search and records.", "https://www.loc.gov", "GET", "/books/?fo=json&c=1", "https://www.loc.gov/books/?fo=json&c=1", "https://www.loc.gov/apis/"),
+    ("Met Museum", "Public-domain artwork and object data.", "https://collectionapi.metmuseum.org/public/collection/v1", "GET", "/search?q=sunflowers", "https://collectionapi.metmuseum.org/public/collection/v1/search?q=sunflowers", "https://metmuseum.github.io/"),
+    ("Nationalize", "Estimate nationality probabilities from a first name.", "https://api.nationalize.io", "GET", "/?name=alex", "https://api.nationalize.io/?name=alex", "https://nationalize.io/"),
+    ("Open Library", "Books, authors, covers, and bibliographic search.", "https://openlibrary.org", "GET", "/search.json?q=computers", "https://openlibrary.org/search.json?q=computers", "https://openlibrary.org/developers/api"),
+    ("Open-Meteo", "Forecast, air-quality, marine, and geocoding data.", "https://api.open-meteo.com/v1", "GET", "/forecast?latitude=39.77&longitude=-86.16&current=temperature_2m", "https://api.open-meteo.com/v1/forecast?latitude=39.77&longitude=-86.16&current=temperature_2m", "https://open-meteo.com/en/docs"),
+    ("PokeAPI", "Pokémon species, moves, sprites, and game data.", "https://pokeapi.co/api/v2", "GET", "/pokemon/pikachu", "https://pokeapi.co/api/v2/pokemon/pikachu", "https://pokeapi.co/docs/v2"),
+    ("Public Holidays", "Public holidays by country and year.", "https://date.nager.at/api/v3", "GET", "/PublicHolidays/2026/US", "https://date.nager.at/api/v3/PublicHolidays/2026/US", "https://date.nager.at/Api"),
+    ("Quran Cloud", "Quran text and translation data.", "https://api.alquran.cloud/v1", "GET", "/surah/1/en.asad", "https://api.alquran.cloud/v1/surah/1/en.asad", "https://alquran.cloud/api"),
+    ("REST Countries", "Countries, flags, currencies, and regional information.", "https://restcountries.com/v3.1", "GET", "/name/japan", "https://restcountries.com/v3.1/name/japan", "https://restcountries.com/"),
+    ("SpaceX", "Launches, vehicles, crews, and company data.", "https://api.spacexdata.com/v4", "GET", "/launches/latest", "https://api.spacexdata.com/v4/launches/latest", "https://github.com/r-spacex/SpaceX-API"),
+    ("TheMealDB", "Recipe search, ingredients, and meal imagery.", "https://www.themealdb.com/api/json/v1/1", "GET", "/search.php?s=chicken", "https://www.themealdb.com/api/json/v1/1/search.php?s=chicken", "https://www.themealdb.com/api.php"),
+    ("Wikidata", "Linked open knowledge and structured facts.", "https://www.wikidata.org/w/api.php", "GET", "/?action=wbsearchentities&search=Chromebook&language=en&format=json", "https://www.wikidata.org/w/api.php?action=wbsearchentities&search=Chromebook&language=en&format=json", "https://www.wikidata.org/wiki/Wikidata:SPARQL_query_service"),
+    ("Wikipedia", "Searchable encyclopedia summaries and page images.", "https://en.wikipedia.org/w/api.php", "GET", "/?action=query&format=json&titles=Chromebook", "https://en.wikipedia.org/w/api.php?action=query&format=json&titles=Chromebook", "https://www.mediawiki.org/wiki/API:Main_page"),
+    ("XKCD", "Comics, transcripts, and image metadata.", "https://xkcd.com", "GET", "/info.0.json", "https://xkcd.com/info.0.json", "https://xkcd.com/json.html"),
+    ("ZenQuotes", "Quote data for personal dashboards.", "https://zenquotes.io/api", "GET", "/random", "https://zenquotes.io/api/random", "https://zenquotes.io/"),
 ]
 
 def relay_knowledge(topic=""):
@@ -493,35 +495,16 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                     items=[{"kind":"reference","title":x.get("title","Untitled"),"summary":x.get("extract",""),"image":x.get("thumbnail",{}).get("source",""),"url":"https://en.wikipedia.org/?curid="+str(x.get("pageid",""))} for x in pages]
                     result={"items":items,"source":"Wikipedia"}
                 elif section == "apis":
-                    term=(query or "").casefold(); records=[]; source="APIs.guru · public OpenAPI directory"
-                    try:
-                        request=urllib.request.Request("https://api.apis.guru/v2/list.json",headers={"User-Agent":"Homebase-OS/1.0"})
-                        with urllib.request.urlopen(request,timeout=5) as response:data=json.load(response)
-                        for service,versions in data.items():
-                            # APIs.guru lists every version of each service. Keep the
-                            # newest entry only so Browse is a real directory, not a
-                            # wall of duplicate version cards.
-                            candidates=list(versions.get("versions",{}).items())
-                            if not candidates: continue
-                            version,entry=sorted(candidates,key=lambda item:item[0],reverse=True)[0]
-                            info=entry.get("info",{}); raw_title=info.get("title") or service
-                            title=service if raw_title.casefold() in {"api client","openapi","swagger"} else raw_title
-                            summary=html.unescape(re.sub(r"<[^>]+>"," ",str(info.get("description") or "Documented OpenAPI service.")))
-                            summary=re.sub(r"\s+"," ",summary).strip()
-                            if term and term not in (title+" "+summary+" "+service).casefold(): continue
-                            logo=info.get("x-logo",{}).get("url","") if isinstance(info.get("x-logo",{}),dict) else ""
-                            records.append({"kind":"OpenAPI directory","title":title,"summary":summary[:500],"meta":"OpenAPI "+str(info.get("version") or version)+" · "+service,"image":logo,"url":info.get("termsOfService") or "https://apis.guru/","service":service,"version":str(info.get("version") or version),"spec_url":entry.get("swaggerUrl") or entry.get("swaggerYamlUrl") or "","license":(info.get("license") or {}).get("name","") if isinstance(info.get("license"),dict) else "","contact":(info.get("contact") or {}).get("url","") if isinstance(info.get("contact"),dict) else ""})
-                    except (OSError, ValueError, KeyError):
-                        source="Curated no-key APIs · directory reconnecting"
-                        records=[{"kind":"No-key API","title":title,"summary":summary,"meta":tag,"url":url} for title,summary,tag,url in [("Open-Meteo","Weather forecasts and global geocoding without an app key.","Weather · no key","https://open-meteo.com/"),("Wikipedia API","Searchable encyclopedia summaries and page images.","Reference · no key","https://www.mediawiki.org/wiki/API:Main_page"),("Open Library","Books, authors, covers, and bibliographic search.","Books · no key","https://openlibrary.org/developers/api"),("PokeAPI","Structured Pokémon species, moves, and sprite data.","Games · no key","https://pokeapi.co/docs/v2"),("NASA Open APIs","Space imagery and astronomy data, with a freely obtainable demo key.","Science · demo key","https://api.nasa.gov/"),("REST Countries","Country, currency, flag, and regional information.","Reference · no key","https://restcountries.com/"),("The Metropolitan Museum API","Public-domain museum collection search and artwork metadata.","Culture · no key","https://metmuseum.github.io/"),("GitHub public API","Repositories, releases, issues, and project search; cache-aware anonymous usage.","Developer · no key","https://docs.github.com/en/rest")]]
-                    if term: records=[item for item in records if term in (item["title"]+" "+item["summary"]+" "+item["meta"]).casefold()]
-                    records.extend({"kind":"OpenAPI directory","title":title,"summary":summary,"meta":"Curated documentation · public developer API","url":url,"service":"curated:"+title,"version":"Guide","spec_url":"","license":"See provider terms","contact":""} for title,summary,url in CURATED_PUBLIC_APIS if not term or term in (title+" "+summary).casefold())
+                    term=(query or "").casefold()
+                    records=[{"kind":"Free API","title":title,"summary":summary,"meta":"Free · no key · "+method,"url":docs,"service":base,"method":method,"endpoint":endpoint,"example":example,"auth":"None required"} for title,summary,base,method,endpoint,example,docs in CURATED_PUBLIC_APIS if not term or term in (title+" "+summary+" "+base+" "+endpoint).casefold()]
+                    # The list is deliberately curated rather than sourced from a
+                    # bulk directory: bulk directories mix paid/keyed APIs and
+                    # versions. A normalized title makes duplicate names impossible.
                     unique={}
                     for item in records:
-                        key=(item.get("service") or item["title"]).casefold()
-                        unique.setdefault(key,item)
-                    records=sorted(unique.values(),key=lambda item:(item["title"].casefold(),item.get("service","").casefold()))
-                    result={"items":records[:320],"source":source+" · "+str(min(len(records),320))+" APIs"}
+                        unique.setdefault(re.sub(r"[^a-z0-9]+", "", item["title"].casefold()), item)
+                    records=sorted(unique.values(),key=lambda item:item["title"].casefold())
+                    result={"items":records,"source":"Curated free, no-key APIs · "+str(len(records))+" unique APIs"}
                 elif section == "projects":
                     params=urllib.parse.urlencode({"q":query or "chromebook utilities","sort":"stars","order":"desc","per_page":48})
                     request=urllib.request.Request("https://api.github.com/search/repositories?"+params,headers={"Accept":"application/vnd.github+json","User-Agent":"Homebase-OS/1.0"})
@@ -879,12 +862,31 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
             try:
                 payload=json.loads(self.rfile.read(length) or b"{}");file_id=str(payload.get("file",""));content=str(payload.get("content",""));path=CORE_EDITABLE.get(file_id)
                 if payload.get("confirm")!="APPLY CORE EDIT" or not path:raise ValueError("choose an allowed file and type the exact confirmation")
+                if not content.strip() or "\x00" in content:raise ValueError("workspace edit must contain normal text")
                 if len(content)>250000:raise ValueError("workspace edit is too large")
+                # Reject a Python syntax error before it can take down the local
+                # server. Other formats are intentionally review-only text files.
+                if path.suffix==".py": compile(content,str(path),"exec")
                 backup=ROOT/"local"/"workspace-backups"/(file_id+"-"+str(int(time.time()))+path.suffix);backup.parent.mkdir(parents=True,exist_ok=True)
                 if path.exists():shutil.copy2(path,backup)
                 temporary=path.with_suffix(path.suffix+".tmp");temporary.write_text(content,encoding="utf-8");temporary.replace(path)
                 self._json(200,{"saved":file_id,"backup":str(backup.relative_to(ROOT))})
-            except (OSError,ValueError,TypeError) as error:self._json(400,{"error":str(error)})
+            except (OSError,ValueError,TypeError,SyntaxError) as error:self._json(400,{"error":str(error)})
+            return
+        if route.path == "/api/relay/workspace/restore":
+            length=min(int(self.headers.get("Content-Length","0")),8*1024)
+            try:
+                payload=json.loads(self.rfile.read(length) or b"{}");file_id=str(payload.get("file","")).strip();backup_name=Path(str(payload.get("backup","")).strip()).name;path=CORE_EDITABLE.get(file_id)
+                if payload.get("confirm")!="RESTORE CORE BACKUP" or not path:raise ValueError("choose an allowed file and type the exact restore confirmation")
+                backup=ROOT/"local"/"workspace-backups"/backup_name
+                if not backup.is_file() or not backup.name.startswith(file_id+"-") or backup.suffix!=path.suffix:raise ValueError("that backup does not belong to the selected core file")
+                content=backup.read_text(encoding="utf-8")
+                if path.suffix==".py":compile(content,str(path),"exec")
+                safety=ROOT/"local"/"workspace-backups"/(file_id+"-before-restore-"+str(int(time.time()))+path.suffix)
+                if path.exists():shutil.copy2(path,safety)
+                temporary=path.with_suffix(path.suffix+".tmp");temporary.write_text(content,encoding="utf-8");temporary.replace(path)
+                self._json(200,{"restored":file_id,"backup":str(backup.relative_to(ROOT)),"safety_backup":str(safety.relative_to(ROOT))})
+            except (OSError,ValueError,TypeError,SyntaxError) as error:self._json(400,{"error":str(error)})
             return
         if route.path == "/api/assistant/key":
             length = min(int(self.headers.get("Content-Length", "0")), 16 * 1024)

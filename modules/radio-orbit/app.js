@@ -1,8 +1,8 @@
 const $ = s => document.querySelector(s);
 const requestedOrbitTheme=new URLSearchParams(location.search).get('theme');if(requestedOrbitTheme)document.documentElement.dataset.theme=requestedOrbitTheme;
-if(localStorage.getItem('radio-visual-version')!=='2'){localStorage.setItem('radio-visual','wave');localStorage.setItem('radio-visual-version','2')}
-const state = { stations: [], current: null, playing: false, mode: 'orbit', favorites: JSON.parse(localStorage.getItem('radio-favorites') || '[]'), favoritesOnly: false, energy: 0 };
-state.mode=localStorage.getItem('radio-visual')||'orbit';const audio = $('#audio'), canvas = $('#visualizer'), ctx = canvas.getContext('2d');
+if(localStorage.getItem('radio-visual-version')!=='3'){localStorage.setItem('radio-visual','bars');localStorage.setItem('radio-visual-version','3')}
+const state = { stations: [], current: null, playing: false, mode: 'bars', favorites: JSON.parse(localStorage.getItem('radio-favorites') || '[]'), favoritesOnly: false, energy: 0 };
+state.mode=localStorage.getItem('radio-visual')||'bars';const audio = $('#audio'), canvas = $('#visualizer'), ctx = canvas.getContext('2d');
 const orbitCaptureTheme=new URLSearchParams(location.search).get('theme');if(['slate-glass','tidal','cobalt','paper-glass','ultra-retro'].includes(orbitCaptureTheme))document.documentElement.dataset.theme=orbitCaptureTheme;
 let raf, searchTimer, audioContext, analyser, frequencyData, audioSource, bass=0, mids=0, treble=0, beat=0, localPlaylist=[], localIndex=-1, coverUrl='', albumCoverUrls=[], compactMode=false, lastVisualFrame=0, orbitColor='91,213,255';
 addEventListener('message',event=>{if(event.data?.type==='orbit-theme'){document.documentElement.dataset.theme=event.data.id;document.documentElement.style.setProperty('--signal-rgb',event.data.signal);document.documentElement.style.setProperty('--signal-alt-rgb',event.data.alt);orbitColor=(event.data.signal||orbitColor).trim()}if(event.data?.type==='orbit-compact')compactMode=!!event.data.compact;if(event.data?.type==='orbit-command'){if(event.data.command==='play')$('#play').click();if(event.data.command==='previous'){if(localPlaylist.length)$('#previousTrack').click();else stepStation(-1)}if(event.data.command==='next'){if(localPlaylist.length)$('#nextTrack').click();else stepStation(1)}}});parent.postMessage({type:'orbit-ready'},'*');
