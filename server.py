@@ -560,7 +560,12 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                     feeds={"top":"https://feeds.bbci.co.uk/news/rss.xml","world":"https://feeds.bbci.co.uk/news/world/rss.xml","technology":"https://feeds.bbci.co.uk/news/technology/rss.xml","science":"https://feeds.bbci.co.uk/news/science_and_environment/rss.xml","business":"https://feeds.bbci.co.uk/news/business/rss.xml"}
                     request=urllib.request.Request(feeds.get(query.casefold(),feeds["top"]),headers={"User-Agent":"Homebase-OS/1.0"})
                     with urllib.request.urlopen(request,timeout=12) as response:root=ET.fromstring(response.read())
-                    items=[{"kind":"news","title":node.findtext("title",default="Untitled"),"summary":re.sub("<[^>]+>","",node.findtext("description",default="")),"meta":node.findtext("pubDate",default=""),"url":node.findtext("link",default="")} for node in root.findall(".//item")[:30]]
+                    items=[]
+                    for node in root.findall(".//item")[:30]:
+                        description=node.findtext("description",default="")
+                        full=next((child.text or "" for child in node if child.tag.rsplit("}",1)[-1]=="encoded"),"")
+                        article=re.sub(r"\s+"," ",html.unescape(re.sub(r"<[^>]+>"," ",full or description))).strip()
+                        items.append({"kind":"news","title":node.findtext("title",default="Untitled"),"summary":re.sub("<[^>]+>","",description),"article":article,"meta":node.findtext("pubDate",default=""),"url":node.findtext("link",default="")})
                     result={"items":items,"source":"BBC News RSS"}
                 elif section in {"ai", "dev", "security", "research", "games"}:
                     defaults={"ai":"AI software development Claude OpenAI","dev":"software development open source Linux","security":"cybersecurity privacy open source security","research":"computer science research science technology","games":"game development industry indie games"}
