@@ -1,5 +1,5 @@
 (() => {
-  document.head.insertAdjacentHTML('beforeend','<link rel="stylesheet" href="/assets/styles/arcade/archive-taskbar.css">');
+  document.head.insertAdjacentHTML('beforeend','<link rel="stylesheet" href="/assets/styles/arcade/archive-taskbar.css"><link rel="stylesheet" href="/assets/styles/arcade/arcade-save-prep.css?v=1">');
   const publicCapture = new URLSearchParams(location.search).has('public');
   if(!document.querySelector('.archive-taskbar')){const bar=document.createElement('nav');bar.className='archive-taskbar';bar.setAttribute('aria-label','Pocket Archive taskbar');bar.innerHTML='<b>POCKET ARCHIVE</b><button data-archive-go="home">⌂ Homebase</button><button data-archive-go="games">▦ Games</button><button data-archive-go="apps">＋ Apps</button><button data-archive-go="full">⛶ Fullscreen</button>';bar.onclick=event=>{const action=event.target.closest('[data-archive-go]')?.dataset.archiveGo;if(action==='home')parent.closePocket?.();if(action==='games')document.querySelector('#library')?.scrollIntoView({behavior:'smooth'});if(action==='apps')document.querySelector('#apps')?.scrollIntoView({behavior:'smooth'});if(action==='full'){const shell=parent!==window?parent.document.documentElement:document.documentElement;shell.requestFullscreen?.()}};document.body.append(bar)}
   const apps=document.querySelector('#apps .app-grid');if(apps&&!document.querySelector('[data-game-setup]'))apps.insertAdjacentHTML('afterbegin','<button class="app-card" data-game-setup onclick="parent.openPanel?parent.openPanel(\'/pages/game-setup.html\'):location.href=\'/pages/game-setup.html\'"><i>＋</i><b>Add your games</b><span>Simple private-file guide for ROMs, BIOS files, cover art, real gameplay GIFs, and controller layouts.</span></button>');
@@ -8,20 +8,26 @@
   if (typeof originalLaunch !== 'function') return;
   window.launch = function (url, name, core = 'gba') {
     document.querySelector('#player')?.classList.toggle('n64-session', core === 'n64');
+    const loading=document.querySelector('#loading'),saveStatus=document.querySelector('#loading .load-card span');
+    if(loading)loading.classList.remove('done');
+    if(saveStatus)saveStatus.textContent='Starting local emulator…';
     window.EJS_biosUrl = core === 'psx' ? '/bios/scph1001.bin' : undefined;
     if(core==='psx'){window.EJS_disableCue=false;window.EJS_threads=false;window.EJS_CacheLimit=800*1024*1024}
     originalLaunch(url, name, core);
+    const originalGameStart=window.EJS_onGameStart;
+    window.EJS_onGameStart=()=>{loading?.classList.add('done');originalGameStart?.()};
     if (core === 'n64') {
       window.EJS_defaultOptions = {...window.EJS_defaultOptions, 'mupen64plus-pak1': 'memory'};
       if(name==='GoldenEye 007') toast('GoldenEye preset: choose 1.2 Solitaire once · left stick aims, right stick moves');
     }
     if (name !== "Tony Hawk's Pro Skater 3" || localStorage.getItem('homebase-autoboot-save:tony-hawk-s-pro-skater-3') === 'browser' || sessionStorage.getItem('homebase-thps3-complete-v2')) return;
+    if(saveStatus)saveStatus.textContent='Checking complete career save…';
     let attempts = 0;
     const timer = setInterval(async () => {
       const manager = window.EJS_emulator?.gameManager;
-      if (!manager && attempts++ < 160) return;
+      if (!manager && attempts++ < 300) {if(attempts===70&&saveStatus)saveStatus.textContent='Game engine is still starting — save will load as soon as it is ready…';return}
       clearInterval(timer);
-      if (!manager) return;
+      if (!manager) {if(saveStatus)saveStatus.textContent='Game started without the optional complete save. Open Saves to retry.';toast('THPS3 save manager did not become ready · game can still start');return}
       try {
         const response = await fetch('/saves/tony-hawk-pro-skater-3-complete.srm');
         if (!response.ok) throw new Error('save unavailable');
@@ -29,7 +35,6 @@
         const path = manager.getSaveFilePath();
         if (manager.FS.analyzePath(path).exists) manager.FS.unlink(path);
         manager.FS.writeFile(path, save);
-        manager.loadSaveFiles();
         manager.saveSaveFiles();
         const written=manager.FS.analyzePath(path);if(!written.exists||manager.FS.stat(path).size!==save.length)throw new Error('save verification failed');
         sessionStorage.setItem('homebase-thps3-complete-v2', '1');
