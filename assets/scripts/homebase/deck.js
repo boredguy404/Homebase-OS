@@ -140,6 +140,7 @@ function dedupeDesktopChrome(){for(const selector of ['.retro-taskbar','.retro-m
 new MutationObserver(dedupeDesktopChrome).observe(document.documentElement,{childList:true,subtree:true});
 addEventListener('DOMContentLoaded',()=>{const computer=document.querySelectorAll('.grid')[1];if(!computer||document.querySelector('[data-utility-desk]'))return;const tile=document.createElement('button');tile.className='tile';tile.dataset.utilityDesk='true';tile.innerHTML='<i>⌗</i><b>Utility Desk</b><span>Local notes, calculator, and clipboard handoff—no account required.</span>';tile.onclick=()=>openPanel('/pages/utility-desk.html');computer.insertBefore(tile,computer.firstChild)});
 addEventListener('DOMContentLoaded',()=>document.querySelectorAll('.tile').forEach(tile=>{if(tile.querySelector('b')?.textContent.trim()==='Explore Linux apps')tile.remove()}));
+if(!document.querySelector('script[data-orbit-center-dock]')){const centerDock=document.createElement('script');centerDock.src='/assets/scripts/homebase/orbit-mini-center-dock.js?v=1';centerDock.dataset.orbitCenterDock='true';document.head.append(centerDock)}
 addEventListener('DOMContentLoaded',()=>{
   const shell=document.querySelector('.shell');if(!shell)return;
   const leavesHomebase=new Set(['YouTube','Chrome Remote Desktop','Steam Link','XFCE Terminal','Codex workspace','VS Code']);
