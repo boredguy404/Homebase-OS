@@ -52,6 +52,7 @@ SCAN_CHOICES = {"My Library": HOME_ROOT / "My Library", "Downloads": HOME_ROOT /
 ROM_CORES = {".gba": ("gba", "GBA"), ".gb": ("gb", "Game Boy"), ".gbc": ("gb", "GBC"), ".nes": ("nes", "NES"), ".sfc": ("snes", "SNES"), ".smc": ("snes", "SNES"), ".md": ("segaMD", "Genesis"), ".gen": ("segaMD", "Genesis"), ".z64": ("n64", "N64"), ".n64": ("n64", "N64"), ".v64": ("n64", "N64"), ".cue": ("psx", "PlayStation"), ".chd": ("psx", "PlayStation"), ".iso": ("psx", "PlayStation")}
 GAME_CATALOG = ROOT / "imports" / "homebase-game-catalog.json"
 ASSISTANT_KEY_FILE = ROOT / "local" / "openai-api-key.txt"
+BRAIN_IMPORT = ROOT / "local" / "brain-import"
 USER_APPS = ROOT / "user-apps"
 CORE_EDITABLE = {
     "homebase-deck": ROOT / "assets/scripts/homebase/deck.js",
@@ -239,11 +240,13 @@ def draft_core_edit(file_id, instruction):
 
 def create_relay_app(description, framework):
     """Generate a small, self-contained user app. Core Homebase files are never writable here."""
+    if framework != "Web Components":
+        raise ValueError("Relay user apps use the Web Components contract only")
     try: key = ASSISTANT_KEY_FILE.read_text(encoding="utf-8").strip()
     except OSError: raise ValueError("connect an API key in Relay before generating an app")
     if not key: raise ValueError("connect an API key in Relay before generating an app")
     prompt=("Create one small offline-first Homebase user app from this request: "+description+
-        "\nFramework: "+framework+". Return JSON only with name, description, html, css, js. "
+        "\nFramework: Web Components only. Return JSON only with name, description, html, css, js. "
         "Use only browser APIs and localStorage; no external scripts, iframes, network calls, forms posting data, eval, or imports. "
         "The HTML must be body contents only. Keep it touch-friendly and useful.")
     payload={"model":os.environ.get("HOMEBASE_OPENAI_MODEL","gpt-4.1-mini"),"store":False,"input":prompt,
@@ -453,6 +456,19 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
             item=next((value for value in relay_knowledge() if value["id"]==key),None)
             if not item:self._json(404,{"error":"knowledge entry not found"});return
             self._json(200,item);return
+        if browse_route.path == "/api/relay/brain-tree":
+            files=[]
+            if BRAIN_IMPORT.is_dir():
+                for path in sorted(BRAIN_IMPORT.rglob("*")):
+                    if path.is_file() and path.name != ".gitkeep" and path.suffix.lower() in {".md", ".json", ".py", ".txt"}:
+                        files.append({"path":str(path.relative_to(BRAIN_IMPORT)),"bytes":path.stat().st_size})
+            self._json(200,{"source":"local/brain-import","files":files,"categories":["constraints","context","conventions","decisions","domain","incidents","map","open","patterns"]});return
+        if browse_route.path == "/api/relay/brain-file":
+            raw=urllib.parse.parse_qs(browse_route.query).get("path",[""])[0]
+            target=(BRAIN_IMPORT / raw).resolve()
+            if not raw or not target.is_relative_to(BRAIN_IMPORT) or not target.is_file() or target.suffix.lower() not in {".md", ".json", ".py", ".txt"}:
+                self._json(404,{"error":"Brain file not found"});return
+            self._json(200,{"path":str(target.relative_to(BRAIN_IMPORT)),"content":target.read_text(encoding="utf-8",errors="replace")[:180000]});return
         if browse_route.path == "/api/agent/tools":
             self._json(200, {"version": 1, "tools": [
                 {"id":"system","method":"GET","path":"/api/system","purpose":"Live storage, memory, and load summary."},
