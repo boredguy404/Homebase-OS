@@ -1,0 +1,9 @@
+{
+  "mode": "cpanel-static",
+  "host": "novashell.app",
+  "provider": "cPanel",
+  "repository": "boredguy404/novashell-deploy",
+  "node_version": "22",
+  "release_path": "/home/CPANEL_USER/novashell/releases",
+  "notes": "No credentials belong in this file. Add those only as private GitHub Actions secrets after the deploy repository exists."
+}

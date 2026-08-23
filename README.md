@@ -1,8 +1,8 @@
-# Homebase
+# NovaShell
 
-Homebase is a little OS-style home screen for a Chromebook or PC: one fullscreen place for apps, files, music, system information, and games you add yourself.
+NovaShell is a little OS-style home screen for a Chromebook or PC: one fullscreen place for apps, files, music, system information, and games you add yourself.
 
-> **What this is:** an installable local dashboard that sits on top of ChromeOS/Linux or Windows. It organizes the apps and files already on your computer, provides a private game shelf for games you add yourself, and adds touch/controller-friendly controls. It is **not** a replacement operating system, cloud service, or game download site.
+> **What this is:** an installable local dashboard that sits on top of ChromeOS/Linux or Windows. It organizes the apps and files already on your computer, provides a private game shelf for games you add yourself, and adds touch/controller-friendly controls. It is **not** a replacement operating system, cloud service, or game download site. Some `homebase-*` internal names remain temporarily so existing local preferences migrate cleanly.
 
 I wanted an easy way to get more out of a low-power Chromebook without bouncing between a pile of unrelated windows, so I made this. It is designed first for touch and an Xbox controller, but mouse and keyboard work normally too.
 
