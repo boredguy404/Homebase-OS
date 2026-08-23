@@ -1,0 +1,5 @@
+/* Dense visual programs never get to decide whether text is readable. */
+body:is([data-visual="pixel"],[data-visual="terminal"],[data-visual="radar"],[data-visual="tunnel"]) .hero h1{display:table;max-width:100%;padding:8px 10px;background:#071116ed!important;color:#f6fbff!important;border:1px solid #8edff366!important;box-shadow:0 8px 24px #000a;text-shadow:0 2px 5px #000!important}
+body:is([data-visual="pixel"],[data-visual="terminal"],[data-visual="radar"],[data-visual="tunnel"]) .hero h1 em{color:#9deeff!important;-webkit-text-stroke:0!important;text-shadow:0 1px 4px #000!important}
+html[data-theme="ultra-retro"] body:is([data-visual="pixel"],[data-visual="terminal"],[data-visual="radar"],[data-visual="tunnel"]) .hero h1{background:#d4d4d4!important;color:#111!important;border:2px solid #111!important;box-shadow:inset 2px 2px #fff,inset -2px -2px #666,3px 3px #111!important;text-shadow:none!important}
+html[data-theme="ultra-retro"] body:is([data-visual="pixel"],[data-visual="terminal"],[data-visual="radar"],[data-visual="tunnel"]) .hero h1 em{color:#000080!important;text-shadow:none!important}

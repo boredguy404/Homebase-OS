@@ -1,0 +1,9 @@
+/* The desktop keeps its classic geometry, but icons get purpose cues instead of
+   one repeated navy stamp.  The palette is deliberately muted and low-count. */
+html[data-theme="ultra-retro"] .homebase-desktop .tile i{background:var(--retro-icon,linear-gradient(135deg,#fff 0 47%,#c3c3c3 48% 100%))!important}
+html[data-theme="ultra-retro"] .homebase-desktop .tile:nth-child(5n+1) i{color:#000080!important;background:linear-gradient(135deg,#dbe7ff 0 48%,#819dc7 49% 100%)!important}
+html[data-theme="ultra-retro"] .homebase-desktop .tile:nth-child(5n+2) i{color:#704000!important;background:linear-gradient(135deg,#fff0ad 0 48%,#c89835 49% 100%)!important}
+html[data-theme="ultra-retro"] .homebase-desktop .tile:nth-child(5n+3) i{color:#075a4e!important;background:linear-gradient(135deg,#cff3e8 0 48%,#61ad99 49% 100%)!important}
+html[data-theme="ultra-retro"] .homebase-desktop .tile:nth-child(5n+4) i{color:#692b44!important;background:linear-gradient(135deg,#f3d9e5 0 48%,#b97792 49% 100%)!important}
+html[data-theme="ultra-retro"] .homebase-desktop .tile:nth-child(5n) i{color:#35434f!important;background:linear-gradient(135deg,#dbe5e7 0 48%,#91a7ad 49% 100%)!important}
+html[data-theme="ultra-retro"] .homebase-desktop .tile:hover i,html[data-theme="ultra-retro"] .homebase-desktop .tile:focus-visible i,html[data-theme="ultra-retro"] .homebase-desktop .tile.pad-focus i{color:#fff!important;background:#000080!important}
