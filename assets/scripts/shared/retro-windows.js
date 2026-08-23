@@ -31,8 +31,8 @@
     const existingClose=dialog.querySelector(':scope>.x,:scope>.close,:scope>.game-detail-x,:scope>.insight-x,:scope>.control-x,:scope>.detail-close');
     let title=dialog.querySelector(':scope>.bulletin-title,:scope>.retro-window-title');
     if(!title){title=document.createElement('div');title.className='retro-window-title';title.innerHTML='<span></span>';title.querySelector('span').textContent=labelFor(dialog).toUpperCase();dialog.prepend(title)}
-    let close=title.querySelector('button');if(!close&&existingClose){close=existingClose;title.append(close)}if(!close){close=document.createElement('button');close.type='button';close.setAttribute('aria-label','Close window');close.textContent='×';title.append(close);close.addEventListener('click',()=>closeDialog(dialog))}makeDraggable(dialog,title);
-    dialog.addEventListener('click',event=>{const box=dialog.getBoundingClientRect();if(event.target===dialog&&(event.clientX<box.left||event.clientX>box.right||event.clientY<box.top||event.clientY>box.bottom))closeDialog(dialog)});
+    let close=title.querySelector('button');if(!close&&existingClose){close=existingClose;title.append(close)}if(!close){close=document.createElement('button');close.type='button';close.setAttribute('aria-label','Close window');title.append(close)}close.textContent='×';close.setAttribute('aria-label','Close window');close.classList.add('retro-window-close');close.onclick=()=>closeDialog(dialog);dialog.style.resize='both';dialog.style.overflow='auto';makeDraggable(dialog,title);
+    dialog.addEventListener('click',event=>{if(event.target===dialog)closeDialog(dialog)});
   }
   const scan=root=>{if(root.matches?.('dialog'))enhance(root);root.querySelectorAll?.('dialog').forEach(enhance)};
   scan(document);new MutationObserver(records=>records.forEach(record=>record.addedNodes.forEach(node=>node.nodeType===1&&scan(node)))).observe(document.documentElement,{childList:true,subtree:true});
