@@ -1,0 +1,2 @@
+/* Shared breathing room beneath full-page return controls. */
+main>.back,.shell>.back,.console-shell>.back{margin-bottom:20px!important}@media(max-width:600px){main>.back,.shell>.back,.console-shell>.back{margin-bottom:15px!important}}html[data-theme="ultra-retro"] main>.back,html[data-theme="ultra-retro"] .shell>.back,html[data-theme="ultra-retro"] .console-shell>.back{margin-bottom:20px!important}

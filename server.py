@@ -46,6 +46,10 @@ BROWSE_CACHE = {}
 INSIGHT_CACHE = {"time": 0, "data": None}
 JOBS = {}
 JOBS_LOCK = threading.Lock()
+PROJECT_FEED_FILE = ROOT / "local" / "project-feed.json"
+PROJECT_FEED_LOCK = threading.RLock()
+RELAY_AGENT_RUNS = {}
+RELAY_AGENT_LOCK = threading.RLock()
 BACKUP_AREAS = {"box": HOME_ROOT / "My Library", "roms": ROOT / "roms", "saves": ROOT / "saves", "artwork": ROOT / "covers", "imports": ROOT / "imports", "mgba": HOME_ROOT / ".config" / "mgba", "orbit": HOME_ROOT / ".config" / "radio-orbit", "flatpak": HOME_ROOT / ".var" / "app"}
 HOMEBASE_CONFIG = HOME_ROOT / ".config" / "homebase" / "setup.json"
 SCAN_CHOICES = {"My Library": HOME_ROOT / "My Library", "Downloads": HOME_ROOT / "Downloads", "Desktop": HOME_ROOT / "Desktop", "Documents": HOME_ROOT / "Documents", "Pictures": HOME_ROOT / "Pictures"}
@@ -153,6 +157,17 @@ def relay_knowledge(topic=""):
         except OSError: continue
         if term and term not in (key+" "+content).casefold(): continue
         entries.append({"id":key,"path":str(path.relative_to(ROOT)),"content":content})
+    # An imported Brain archive is optional, ignored by Git, and read-only.
+    # Its notes can inform a local draft but never expand Relay's file authority.
+    if BRAIN_IMPORT.is_dir():
+        budget=48000
+        for path in sorted(BRAIN_IMPORT.rglob("*"), key=lambda value:str(value).casefold()):
+            if budget <= 0 or not path.is_file() or path.suffix.casefold() not in {".md", ".txt", ".json", ".yml", ".yaml"}: continue
+            try: content=path.read_text(encoding="utf-8")[:min(16000,budget)]
+            except (OSError, UnicodeDecodeError): continue
+            relative=str(path.relative_to(ROOT)); identifier="brain-"+re.sub(r"[^a-z0-9-]+","-",str(path.relative_to(BRAIN_IMPORT)).casefold()).strip("-")
+            if term and term not in (identifier+" "+relative+" "+content).casefold(): continue
+            entries.append({"id":identifier[:120],"path":relative,"content":content});budget-=len(content)
     return entries
 
 def user_apps():
@@ -200,7 +215,7 @@ def assistant_profile():
     """Read a local-only provider profile, with legacy OpenAI-key fallback."""
     try:
         profile=json.loads(ASSISTANT_CONFIG_FILE.read_text(encoding="utf-8"))
-        if profile.get("provider") in {"openai","openrouter"} and profile.get("key"):
+        if profile.get("provider") in {"openai","openrouter","groq","gemini"} and profile.get("key"):
             return profile
     except (OSError, ValueError, TypeError): pass
     try: key=ASSISTANT_KEY_FILE.read_text(encoding="utf-8").strip()
@@ -211,12 +226,23 @@ def relay_ai_response(instructions, input_text, max_tokens=1200, json_object=Fal
     profile=assistant_profile()
     if not profile: raise ValueError("connect an AI provider in Relay before drafting")
     provider,key=profile["provider"],profile["key"]
-    if provider=="openrouter":
+    if provider in {"openrouter", "groq"}:
+        base="https://openrouter.ai/api/v1/chat/completions" if provider=="openrouter" else "https://api.groq.com/openai/v1/chat/completions"
         payload={"model":profile.get("model") or "openrouter/free","messages":[{"role":"system","content":instructions},{"role":"user","content":input_text}],"max_tokens":max_tokens}
         if json_object: payload["response_format"]={"type":"json_object"}
-        request=urllib.request.Request("https://openrouter.ai/api/v1/chat/completions",data=json.dumps(payload).encode(),headers={"Authorization":"Bearer "+key,"Content-Type":"application/json","HTTP-Referer":"http://localhost","X-Title":"NovaShell Relay"},method="POST")
+        headers={"Authorization":"Bearer "+key,"Content-Type":"application/json"}
+        if provider=="openrouter": headers.update({"HTTP-Referer":"http://localhost","X-Title":"NovaShell Relay"})
+        request=urllib.request.Request(base,data=json.dumps(payload).encode(),headers=headers,method="POST")
         with urllib.request.urlopen(request,timeout=90) as response:data=json.load(response)
         return str((((data.get("choices") or [{}])[0].get("message") or {}).get("content")) or "").strip()
+    if provider=="gemini":
+        model=profile.get("model") or "gemini-2.5-flash"
+        payload={"system_instruction":{"parts":[{"text":instructions}]},"contents":[{"role":"user","parts":[{"text":input_text}]}],"generationConfig":{"maxOutputTokens":max_tokens}}
+        if json_object: payload["generationConfig"]["responseMimeType"]="application/json"
+        endpoint="https://generativelanguage.googleapis.com/v1beta/models/"+urllib.parse.quote(model,safe="-._")+":generateContent?key="+urllib.parse.quote(key,safe="")
+        request=urllib.request.Request(endpoint,data=json.dumps(payload).encode(),headers={"Content-Type":"application/json"},method="POST")
+        with urllib.request.urlopen(request,timeout=90) as response:data=json.load(response)
+        return "".join(str(part.get("text", "")) for part in (((data.get("candidates") or [{}])[0].get("content") or {}).get("parts") or [])).strip()
     payload={"model":profile.get("model") or os.environ.get("HOMEBASE_OPENAI_MODEL","gpt-4.1-mini"),"store":False,"instructions":instructions,"input":input_text,"max_output_tokens":max_tokens}
     if json_object: payload["text"]={"format":{"type":"json_object"}}
     request=urllib.request.Request("https://api.openai.com/v1/responses",data=json.dumps(payload).encode(),headers={"Authorization":"Bearer "+key,"Content-Type":"application/json"},method="POST")
@@ -302,6 +328,94 @@ def backup_destination(area):
     """Return the directory that receives files restored for a backup group."""
     source = BACKUP_AREAS[area]
     return source.parent if source.is_file() else source
+
+
+def default_project_feed():
+    return {"version": 1, "updated": int(time.time()), "tasks": [
+        {"id": "project-mosaic", "text": "Replace public README blur with a true pixel-mosaic game shelf", "lane": "doing"},
+        {"id": "project-orbit-dock", "text": "Stabilize mini-player center and edge docking", "lane": "doing"},
+        {"id": "project-relay-entry", "text": "Guide local Relay API entry and a true one-request route test", "lane": "doing"},
+        {"id": "project-readiness", "text": "Turn device measurements into safe, useful readiness guidance", "lane": "done"},
+        {"id": "project-publish", "text": "Validate, refresh safe documentation, and publish this pass", "lane": "todo"}
+    ], "events": [
+        {"time": int(time.time()), "message": "Relay build log is online. I will record actual local implementation milestones here.", "kind": "system"}
+    ]}
+
+
+def project_feed():
+    with PROJECT_FEED_LOCK:
+        try:
+            data=json.loads(PROJECT_FEED_FILE.read_text(encoding="utf-8"))
+            if isinstance(data.get("tasks"), list) and isinstance(data.get("events"), list): return data
+        except (OSError, ValueError, TypeError): pass
+        return default_project_feed()
+
+
+def save_project_feed(data):
+    data["updated"] = int(time.time())
+    PROJECT_FEED_FILE.parent.mkdir(parents=True, exist_ok=True)
+    temporary=PROJECT_FEED_FILE.with_suffix(".tmp")
+    temporary.write_text(json.dumps(data, indent=2), encoding="utf-8")
+    temporary.replace(PROJECT_FEED_FILE)
+
+def record_project_event(task_id, lane, message, title=""):
+    """Add an internal local build milestone without going through HTTP."""
+    with PROJECT_FEED_LOCK:
+        feed=project_feed()
+        task=next((item for item in feed["tasks"] if item.get("id")==task_id),None)
+        if not task:
+            task={"id":task_id,"text":title or task_id.replace("project-", "").replace("-", " ").title(),"lane":lane}
+            feed["tasks"].append(task)
+        else: task["lane"]=lane
+        feed["events"].append({"time":int(time.time()),"message":str(message)[:600],"kind":"relay"})
+        feed["events"]=feed["events"][-40:]
+        save_project_feed(feed)
+
+def agent_event_label(raw):
+    """Keep live browser status useful without echoing prompts, paths, or secrets."""
+    try:
+        event=json.loads(raw)
+        kind=str(event.get("type") or "agent event").replace("_", " ")
+        item=event.get("item") if isinstance(event.get("item"),dict) else {}
+        detail=str(item.get("type") or event.get("phase") or "")
+        return (kind+(" · "+detail if detail else ""))[:160]
+    except (ValueError,TypeError): return "agent activity"
+
+def start_relay_coding_agent(task):
+    """Run the locally authenticated Codex CLI only in this NovaShell checkout."""
+    task=str(task or "").strip()[:8000]
+    if not task: raise ValueError("describe the coding task")
+    runner=shutil.which("codex")
+    if not runner: raise ValueError("Codex CLI is not installed for this local user")
+    with RELAY_AGENT_LOCK:
+        if any(job.get("status") in {"queued","running"} for job in RELAY_AGENT_RUNS.values()):
+            raise ValueError("a local Relay coding run is already active")
+        job_id=uuid.uuid4().hex[:12]
+        job={"id":job_id,"status":"queued","started":int(time.time()),"events":[],"task":task[:240],"exit_code":None}
+        RELAY_AGENT_RUNS[job_id]=job
+    record_project_event("project-relay-agent-run","doing","Local Codex run queued in the fixed NovaShell workspace.","Run local Codex developer task")
+    def run():
+        command=[runner,"exec","--dangerously-bypass-approvals-and-sandbox","--json","--ephemeral","-C",str(ROOT),task]
+        try:
+            with RELAY_AGENT_LOCK: job["status"]="running";job["events"].append("local runner started")
+            record_project_event("project-relay-agent-run","doing","Local Codex is working in the NovaShell checkout; its status will refresh here.")
+            process=subprocess.Popen(command,cwd=str(ROOT),stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,bufsize=1,env={**os.environ,"NO_COLOR":"1"})
+            last_note=0
+            for raw in process.stdout or []:
+                label=agent_event_label(raw)
+                with RELAY_AGENT_LOCK:
+                    job["events"]=(job["events"]+[label])[-24:]
+                if time.time()-last_note>4:
+                    record_project_event("project-relay-agent-run","doing","Codex activity: "+label)
+                    last_note=time.time()
+            code=process.wait(timeout=7200)
+            with RELAY_AGENT_LOCK: job.update(status="completed" if code==0 else "failed",exit_code=code,finished=int(time.time()))
+            record_project_event("project-relay-agent-run","done" if code==0 else "todo","Local Codex run "+("completed." if code==0 else "stopped with exit code "+str(code)+"."))
+        except (OSError,subprocess.TimeoutExpired) as error:
+            with RELAY_AGENT_LOCK: job.update(status="failed",error=str(error)[:300],finished=int(time.time()))
+            record_project_event("project-relay-agent-run","todo","Local Codex runner failed: "+str(error)[:180])
+    threading.Thread(target=run,daemon=True,name="relay-codex-"+job_id).start()
+    return {key:value for key,value in job.items() if key!="task"}
 
 def start_job(kind, app_id, command):
     job_id = uuid.uuid4().hex[:12]
@@ -448,6 +562,9 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         browse_route = urllib.parse.urlsplit(self.path)
+        if browse_route.path == "/api/project-feed":
+            self._json(200, project_feed())
+            return
         if browse_route.path == "/api/browse/live":
             requested=urllib.parse.parse_qs(browse_route.query).get("url",[""])[0]
             if requested not in {entry[5] for entry in CURATED_PUBLIC_APIS}:
@@ -536,6 +653,11 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
         if self.path == "/api/assistant/status":
             profile=assistant_profile() or {}
             self._json(200, {"connected":bool(profile),"key_path":"local/relay-provider.json","provider":profile.get("provider","openai"),"model":profile.get("model") or os.environ.get("HOMEBASE_OPENAI_MODEL","gpt-4.1-mini")})
+            return
+        if self.path == "/api/relay/agent/status":
+            with RELAY_AGENT_LOCK:
+                jobs=[{key:value for key,value in job.items() if key!="task"} for job in RELAY_AGENT_RUNS.values()]
+            self._json(200,{"available":bool(shutil.which("codex")),"workspace":"NovaShell local checkout","jobs":sorted(jobs,key=lambda job:job.get("started",0),reverse=True)[:6]})
             return
         if self.path == "/api/setup/status":
             disk = shutil.disk_usage(HOME_ROOT)
@@ -922,6 +1044,34 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
             except (OSError, ValueError, TypeError) as error:
                 self._json(400, {"error": str(error)})
             return
+        if route.path == "/api/project-feed":
+            length=min(int(self.headers.get("Content-Length", "0")), 16 * 1024)
+            try:
+                payload=json.loads(self.rfile.read(length) or b"{}")
+                task_id=str(payload.get("task", "")).strip()
+                task_text=str(payload.get("text", "")).strip()
+                lane=str(payload.get("lane", "")).strip()
+                message=str(payload.get("message", "")).strip()
+                if lane not in {"todo", "doing", "done"}: raise ValueError("choose To Do, In Progress, or Complete")
+                if not re.fullmatch(r"project-[a-z0-9-]{2,80}", task_id): raise ValueError("choose a valid project task")
+                if not message or len(message) > 600: raise ValueError("write a short build update")
+                with PROJECT_FEED_LOCK:
+                    feed=project_feed()
+                    task=next((item for item in feed["tasks"] if item.get("id") == task_id), None)
+                    if not task:
+                        if not task_text or len(task_text) > 240: raise ValueError("new project tasks need a short title")
+                        task={"id": task_id, "text": task_text, "lane": lane}
+                        feed["tasks"].append(task)
+                    elif task_text:
+                        task["text"] = task_text[:240]
+                    task["lane"] = lane
+                    feed["events"].append({"time": int(time.time()), "message": message, "kind": "relay"})
+                    feed["events"] = feed["events"][-40:]
+                    save_project_feed(feed)
+                self._json(200, feed)
+            except (OSError, ValueError, TypeError) as error:
+                self._json(400, {"error": str(error)})
+            return
         if route.path == "/api/assistant":
             length = min(int(self.headers.get("Content-Length", "0")), 16 * 1024)
             try:
@@ -943,6 +1093,15 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                 self._json(200,{"reachable":True,"provider":profile["provider"],"model":profile.get("model"),"reply":reply[:80]})
             except (OSError, ValueError, KeyError) as error:
                 self._json(502,{"reachable":False,"provider":profile["provider"],"model":profile.get("model"),"error":str(error)[:300]})
+            return
+        if route.path == "/api/relay/agent/run":
+            length=min(int(self.headers.get("Content-Length","0")),12*1024)
+            try:
+                payload=json.loads(self.rfile.read(length) or b"{}")
+                if payload.get("confirm")!="RUN LOCAL CODEX": raise ValueError("type RUN LOCAL CODEX to start a local developer run")
+                if not assistant_profile(): raise ValueError("connect an AI provider in Relay first")
+                self._json(202,{"job":start_relay_coding_agent(payload.get("task",""))})
+            except (OSError,ValueError,TypeError) as error:self._json(400,{"error":str(error)})
             return
         if route.path == "/api/assistant/app":
             length=min(int(self.headers.get("Content-Length","0")),12*1024)
@@ -1004,10 +1163,11 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
             length = min(int(self.headers.get("Content-Length", "0")), 16 * 1024)
             try:
                 payload=json.loads(self.rfile.read(length) or b"{}");key=str(payload.get("key","")).strip();provider=str(payload.get("provider","openai")).strip();model=str(payload.get("model","")).strip()
-                if provider not in {"openai","openrouter"}:raise ValueError("choose OpenAI or OpenRouter")
+                if provider not in {"openai","openrouter","groq","gemini"}:raise ValueError("choose an available Relay provider")
                 if not re.fullmatch(r"[A-Za-z0-9_.$:/-]{12,220}",key):raise ValueError("that does not look like an API key")
-                if not re.fullmatch(r"[A-Za-z0-9_.:/-]{2,160}",model or ("openrouter/free" if provider=="openrouter" else "gpt-4.1-mini")):raise ValueError("model name contains unsupported characters")
-                profile={"provider":provider,"key":key,"model":model or ("openrouter/free" if provider=="openrouter" else "gpt-4.1-mini")};ASSISTANT_CONFIG_FILE.parent.mkdir(parents=True,exist_ok=True);ASSISTANT_CONFIG_FILE.write_text(json.dumps(profile)+"\n",encoding="utf-8");os.chmod(ASSISTANT_CONFIG_FILE,0o600)
+                defaults={"openai":"gpt-4.1-mini","openrouter":"openrouter/free","groq":"openai/gpt-oss-20b","gemini":"gemini-2.5-flash"}
+                if not re.fullmatch(r"[A-Za-z0-9_.:/-]{2,160}",model or defaults[provider]):raise ValueError("model name contains unsupported characters")
+                profile={"provider":provider,"key":key,"model":model or defaults[provider]};ASSISTANT_CONFIG_FILE.parent.mkdir(parents=True,exist_ok=True);ASSISTANT_CONFIG_FILE.write_text(json.dumps(profile)+"\n",encoding="utf-8");os.chmod(ASSISTANT_CONFIG_FILE,0o600)
                 self._json(200,{"saved":True,"provider":provider,"model":profile["model"]})
             except (OSError, ValueError, TypeError) as error: self._json(400, {"error": str(error)})
             return

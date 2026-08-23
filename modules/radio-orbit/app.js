@@ -38,7 +38,7 @@ async function select(s){
   updateNow(); render();
 }
 function updateNow(){
-  const s=state.current,shortName=s?shortStationName(s.name):''; $('#stationName').innerHTML=s?`${esc(shortName)}<br><em>on air.</em>`:'Find your<br><em>frequency.</em>';
+  const s=state.current,shortName=s?shortStationName(s.name):''; $('#stationName').innerHTML=s?`<span class="station-title">${esc(shortName)}</span><br><em>on air.</em>`:'<span class="station-title">Find your</span><br><em>frequency.</em>';
   $('#stationMeta').textContent=s?[s.tags||'Internet radio',s.language,s.codec].filter(Boolean).join(' · '):'Search thousands of independent stations broadcasting from every corner of the planet.';
   $('#nowPlaying').textContent=s?shortName.toUpperCase():'NO SIGNAL SELECTED'; $('#location').textContent=s?(s.country||'WORLDWIDE').toUpperCase():'WORLDWIDE';
   $('#play').textContent=state.playing?'Ⅱ':'▶'; $('#favorite').textContent=s&&isFav(s)?'♥':'♡'; $('#favorite').classList.toggle('saved',!!s&&isFav(s));

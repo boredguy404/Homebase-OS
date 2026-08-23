@@ -6,4 +6,6 @@ html[data-theme="ultra-retro"] body:is([data-visual="pixel"],[data-visual="termi
 /* The live station label is replaced after a stream is selected; it needs the
    same dependable plate as the title instead of inheriting visual colors. */
 #stationName em{display:inline-block;margin-top:3px;padding:2px 6px;border-radius:4px;background:#061116e8!important;color:#d9f7ff!important;font-style:normal;font-size:.42em;letter-spacing:.12em;text-shadow:0 1px 3px #000!important}
+#stationName .station-title{display:inline-block;max-width:100%;padding:4px 8px;border:1px solid #8ee8fa66;border-radius:5px;background:#061116e8!important;color:#f1fdff!important;box-shadow:0 5px 18px #0008;text-shadow:0 1px 3px #000!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 html[data-theme="ultra-retro"] #stationName em{border:1px solid #111;border-radius:0;background:#eef0ee!important;color:#000080!important;box-shadow:inset 1px 1px #fff,inset -1px -1px #777;text-shadow:none!important}
+html[data-theme="ultra-retro"] #stationName .station-title{border:2px inset #eee;border-radius:0;background:#eef0ee!important;color:#000080!important;box-shadow:inset 1px 1px #fff,inset -1px -1px #777;text-shadow:none!important}
