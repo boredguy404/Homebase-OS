@@ -51,6 +51,7 @@ HOMEBASE_CONFIG = HOME_ROOT / ".config" / "homebase" / "setup.json"
 SCAN_CHOICES = {"My Library": HOME_ROOT / "My Library", "Downloads": HOME_ROOT / "Downloads", "Desktop": HOME_ROOT / "Desktop", "Documents": HOME_ROOT / "Documents", "Pictures": HOME_ROOT / "Pictures"}
 ROM_CORES = {".gba": ("gba", "GBA"), ".gb": ("gb", "Game Boy"), ".gbc": ("gb", "GBC"), ".nes": ("nes", "NES"), ".sfc": ("snes", "SNES"), ".smc": ("snes", "SNES"), ".md": ("segaMD", "Genesis"), ".gen": ("segaMD", "Genesis"), ".z64": ("n64", "N64"), ".n64": ("n64", "N64"), ".v64": ("n64", "N64"), ".cue": ("psx", "PlayStation"), ".chd": ("psx", "PlayStation"), ".iso": ("psx", "PlayStation")}
 GAME_CATALOG = ROOT / "imports" / "homebase-game-catalog.json"
+BACKUP_AREAS["catalog"] = GAME_CATALOG
 ASSISTANT_KEY_FILE = ROOT / "local" / "openai-api-key.txt"
 ASSISTANT_CONFIG_FILE = ROOT / "local" / "relay-provider.json"
 BRAIN_IMPORT = ROOT / "local" / "brain-import"
@@ -285,6 +286,22 @@ def game_slug(value):
 def read_game_catalog():
     try: return json.loads(GAME_CATALOG.read_text(encoding="utf-8"))
     except (OSError, ValueError): return {}
+
+
+def backup_files(area):
+    """Yield (file, archive-relative-name) for one selectable backup group."""
+    source = BACKUP_AREAS[area]
+    if source.is_file():
+        return [(source, Path(source.name))]
+    if not source.is_dir():
+        return []
+    return [(path, path.relative_to(source)) for path in source.rglob("*") if path.is_file()]
+
+
+def backup_destination(area):
+    """Return the directory that receives files restored for a backup group."""
+    source = BACKUP_AREAS[area]
+    return source.parent if source.is_file() else source
 
 def start_job(kind, app_id, command):
     job_id = uuid.uuid4().hex[:12]
@@ -916,6 +933,17 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                 self._json(200, response)
             except (ValueError, TypeError) as error: self._json(400, {"error": str(error)})
             return
+        if route.path == "/api/assistant/test":
+            profile=assistant_profile()
+            if not profile:
+                self._json(409,{"error":"Connect an AI provider in Relay before testing it."});return
+            try:
+                reply=relay_ai_response("Reply with exactly: RELAY ROUTE READY. Do not add anything else.","Connection check.",max_tokens=16)
+                if not reply: raise ValueError("provider returned an empty reply")
+                self._json(200,{"reachable":True,"provider":profile["provider"],"model":profile.get("model"),"reply":reply[:80]})
+            except (OSError, ValueError, KeyError) as error:
+                self._json(502,{"reachable":False,"provider":profile["provider"],"model":profile.get("model"),"error":str(error)[:300]})
+            return
         if route.path == "/api/assistant/app":
             length=min(int(self.headers.get("Content-Length","0")),12*1024)
             try:
@@ -1023,26 +1051,37 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
             with zipfile.ZipFile(memory,"w",zipfile.ZIP_DEFLATED,compresslevel=5) as archive:
                 archive.writestr("homebase-backup.json",json.dumps({"format":1,"created":int(time.time()),"areas":selected,"preferences":payload.get("preferences",{}),"installed_apps":[{"id":app["id"],"name":app["name"]} for app in installed_apps().values()]},indent=2))
                 for key in selected:
-                    folder=BACKUP_AREAS[key]
-                    if folder.exists():
-                        for path in folder.rglob("*"):
-                            if path.is_file(): archive.write(path,"data/"+key+"/"+str(path.relative_to(folder)))
+                    for path, relative in backup_files(key):
+                        archive.write(path,"data/"+key+"/"+str(relative))
             body=memory.getvalue();self.send_response(200);self.send_header("Content-Type","application/zip");self.send_header("Content-Disposition",'attachment; filename="homebase-backup.zip"');self.send_header("Content-Length",str(len(body)));self.end_headers();self.wfile.write(body);return
+        if route.path == "/api/backup/inspect":
+            length=min(int(self.headers.get("Content-Length","0")),16*1024**3)
+            try:
+                with zipfile.ZipFile(io.BytesIO(self.rfile.read(length))) as archive:
+                    manifest=json.loads(archive.read("homebase-backup.json"))
+                areas=[key for key in manifest.get("areas",[]) if key in BACKUP_AREAS]
+                self._json(200,{"areas":areas,"created":manifest.get("created"),"installed_apps":manifest.get("installed_apps",[]),"has_preferences":bool(manifest.get("preferences"))})
+            except (zipfile.BadZipFile,KeyError,ValueError,OSError) as error:self._json(400,{"error":str(error)})
+            return
         if route.path == "/api/backup/import":
             length=min(int(self.headers.get("Content-Length","0")),16*1024**3)
             try:
                 with zipfile.ZipFile(io.BytesIO(self.rfile.read(length))) as archive:
-                    manifest=json.loads(archive.read("homebase-backup.json"));restored=[]
+                    manifest=json.loads(archive.read("homebase-backup.json"));restored=[];skipped=[]
+                    requested={key for key in self.headers.get("X-Homebase-Areas","").split(",") if key};replace=self.headers.get("X-Homebase-Conflict")=="replace"
                     for key in manifest.get("areas",[]):
-                        if key not in BACKUP_AREAS: continue
-                        destination=BACKUP_AREAS[key];destination.mkdir(parents=True,exist_ok=True);prefix="data/"+key+"/"
+                        if key not in BACKUP_AREAS or requested and key not in requested: continue
+                        destination=backup_destination(key);destination.mkdir(parents=True,exist_ok=True);prefix="data/"+key+"/"
                         for name in archive.namelist():
                             relative=Path(name[len(prefix):]) if name.startswith(prefix) else None
                             if not relative or name.endswith("/") or relative.is_absolute() or ".." in relative.parts: continue
-                            target=destination/relative;target.parent.mkdir(parents=True,exist_ok=True)
+                            target=destination/relative
+                            if target.exists() and not replace: skipped.append(str(relative));continue
+                            target.parent.mkdir(parents=True,exist_ok=True)
                             with archive.open(name) as source,target.open("wb") as output: shutil.copyfileobj(source,output)
                         restored.append(key)
-                self._json(200,{"restored":restored,"preferences":manifest.get("preferences",{}),"installed_apps":manifest.get("installed_apps",[])})
+                preferences=manifest.get("preferences",{}) if not requested or "preferences" in requested else {}
+                self._json(200,{"restored":restored,"skipped":len(skipped),"preferences":preferences,"installed_apps":manifest.get("installed_apps",[])})
             except (zipfile.BadZipFile,KeyError,ValueError,OSError) as error:self._json(400,{"error":str(error)})
             return
         if route.path == "/api/preview":

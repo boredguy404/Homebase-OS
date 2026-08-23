@@ -105,7 +105,7 @@ Orbit combines internet radio and local audio playlists with audio-reactive visu
 
 Relay works as a local guide without a key. For richer chat and drafts, its **AI Routes** panel can save either an OpenAI profile or an OpenRouter profile on this computer only. OpenRouter defaults to `openrouter/free`, which is useful for low-volume experimentation but can be rate-limited or unavailable. Its **Brain Files** browser exposes the locally imported Brain archive in read-only form: conventions, notes, structure, and utilities can be inspected without placing that private archive in Git.
 
-The **Workspace Editor** can load an allowlisted set of NovaShell core files, create a review-only AI draft, and apply a reviewed edit only after explicit typed confirmation. Every write makes a timestamped local backup. Generated mini-apps use the Web Components contract and remain isolated in `user-apps/`; they do not gain core-file access. Utility Desk also includes a local project Kanban, seeded with current work on first use and fully editable without an account.
+The **Workspace Editor** can load an allowlisted set of NovaShell core files, create a review-only AI draft, and apply a reviewed edit only after explicit typed confirmation. Every write makes a timestamped local backup. Generated mini-apps use the Web Components contract and remain isolated in `user-apps/`; they do not gain core-file access. Relay’s **Test saved route** button makes one small, on-demand request so a person can distinguish a missing key, unavailable provider, or a rate-limited free route before asking it to draft work. Utility Desk also includes a local project Kanban, seeded with current work on first use and fully editable without an account.
 
 ![Relay local assistant in Ultra Retro](media/relay-workspace.png)
 
@@ -143,7 +143,7 @@ File access is confined to the current user’s home folder by the local server.
 
 ![Settings and selective backup](media/settings-backup.png)
 
-Settings can export or merge independent data groups: My Library, user-provided ROMs, native saves, artwork, imports, mGBA data, Orbit playlists, Flatpak data, browser preferences, and an installed-app inventory. Restore defaults to merge-and-skip; replacing matching files requires an explicit choice.
+Settings can export or merge independent data groups: My Library, user-provided ROMs, **game-card details and controller notes**, native saves, artwork, imports, mGBA data, Orbit playlists, Flatpak data, browser preferences, and an installed-app inventory. Preferences include the local Project Board and desktop layout; provider credentials are never exported. Restore defaults to inspect-before-merge and skip conflicts; replacing matching files requires an explicit choice.
 
 The README uses a crisp current Settings capture. Pixel-mosaic treatment is reserved only for public game-shelf imagery that could expose local ROM covers or gameplay. A soft-focus presentation variant remains at [`media/settings-backup-blur.png`](media/settings-backup-blur.png).
 
