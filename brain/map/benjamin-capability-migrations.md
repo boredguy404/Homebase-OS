@@ -19,6 +19,7 @@ matters, appears through `/api/user-apps`, and passes the release audit.
 | Pantry inventory | `user-apps/utilities/pantry-ledger/` | local inventory, expiry and low-stock sorting, reversible edits | no household names, source inventory, or server storage |
 | Lord of the Rocks client | `user-apps/games/novashell-world/` | real 3D navigation and interaction model | only reviewed MIT runtime retained; no personal content |
 | Lumen visualizer | `modules/radio-orbit/` | audio-reactive Aurora visual language | no stations, media, or identifying content copied |
+| Riptide audio engine | `user-apps/media/loop-lab/` | local waveform, A/B loop points, playback speed and touch seeking | no bundled tracks, presets, source identity, or server code |
 
 ## Still under review
 
