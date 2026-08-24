@@ -1,4 +1,4 @@
-const CACHE='homebase-v121';
+const CACHE='homebase-v122';
 const SHELL=[
   '/', '/index.html', '/offline.html', '/manifest.webmanifest', '/assets/icons/homebase-icon.svg',
   '/pages/arcade.html', '/pages/discover.html', '/pages/files.html', '/pages/apps.html', '/pages/source-connection.html',
@@ -21,7 +21,7 @@ const SHELL=[
   '/assets/styles/shared/ultra-retro.css', '/assets/styles/shared/back-button-spacing.css', '/assets/styles/homebase/fake-virus-lab.css', '/assets/styles/apps/apps-icon-alignment.css', '/assets/scripts/homebase/deck.js', '/assets/scripts/homebase/command-palette.js', '/assets/scripts/homebase/first-run.js', '/assets/scripts/homebase/first-run-shortcuts.js', '/assets/scripts/shared/about-novashell.js',
   '/assets/scripts/homebase/deck-gestures.js', '/assets/scripts/homebase/gyro3d.js', '/assets/scripts/homebase/console.js', '/assets/scripts/homebase/relay-brain-panel.js','/assets/scripts/homebase/relay-live-build.js','/assets/scripts/homebase/project-board-interaction.js','/assets/scripts/homebase/relay-free-routes.js','/assets/scripts/homebase/window-layering.js','/assets/scripts/shared/about-novashell.js','/assets/scripts/shared/about-overview.js', '/assets/scripts/homebase/relay-brain-browser.js', '/assets/scripts/homebase/relay-workshop-components.js', '/assets/scripts/homebase/relay-provider-config.js', '/assets/scripts/homebase/relay-workspace.js', '/assets/scripts/homebase/utility-project-board.js', '/assets/scripts/homebase/update-check.js', '/assets/styles/homebase/console.css', '/assets/styles/homebase/relay-composer-flow.css', '/assets/styles/homebase/relay-brain-deck.css', '/assets/styles/homebase/relay-brain-browser.css', '/assets/styles/homebase/relay-brain-graph.css', '/assets/styles/homebase/relay-contrast-guard.css', '/assets/styles/homebase/relay-provider-config.css', '/assets/styles/homebase/relay-codex-runner.css',
   '/assets/scripts/homebase/clock.js', '/assets/scripts/homebase/system-insights.js', '/assets/scripts/homebase/neofetch-ambient.js', '/assets/scripts/homebase/utility-workspace-manifest.js', '/assets/scripts/homebase/utility-live-snapshot.js',
-  '/assets/scripts/homebase/scroll-motion.js', '/assets/scripts/arcade/game-controls.js',
+  '/assets/scripts/homebase/scroll-motion.js', '/assets/scripts/arcade/game-controls.js', '/assets/scripts/arcade/world-cabinet-handoff.js',
   '/assets/scripts/arcade/game-capture.js', '/assets/scripts/arcade/game-details.js', '/assets/scripts/arcade/launch-readiness.js',
   '/assets/scripts/arcade/library-extras.js', '/assets/scripts/arcade/performance.js',
   '/assets/scripts/arcade/multiplayer.js', '/assets/scripts/arcade/browser-saves.js',
