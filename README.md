@@ -176,6 +176,8 @@ Settings can export or merge independent data groups: My Library, user-provided 
 
 The README uses crisp current Settings captures. Pixel-mosaic treatment is reserved only for public game-shelf imagery that could expose local ROM covers or gameplay; it is a real low-resolution pixel mosaic, not a blur.
 
+Maintainers can run `./scripts/release-audit.sh` against a local NovaShell server before publishing. It checks core syntax, theme entry points, user-app registration, README media links, key routes, and that private runtime folders are not tracked. The separate controller smoke test still requires real hardware.
+
 EmulatorJS saves live in browser IndexedDB, so Homebase also includes a separate browser-save export/import tool for that protected data.
 
 ### Ultra Retro
