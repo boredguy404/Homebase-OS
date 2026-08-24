@@ -1,0 +1,41 @@
+/* One shared retro window chrome contract: Relay-sized across every dialog. */
+html[data-theme="ultra-retro"] dialog.retro-window-ready:not(.retro-bulletin){
+  padding-top:54px!important;
+}
+html[data-theme="ultra-retro"] dialog.retro-window-ready>.retro-window-title,
+html[data-theme="ultra-retro"] .retro-bulletin>.bulletin-title{
+  top:8px!important;
+  left:8px!important;
+  right:8px!important;
+  height:36px!important;
+  min-height:36px!important;
+  padding:0 52px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border:1px solid #000!important;
+  border-radius:0!important;
+  background:#000080!important;
+  color:#fff!important;
+  font:700 11px/1 "MS Sans Serif",Tahoma,sans-serif!important;
+  letter-spacing:.05em!important;
+  text-shadow:none!important;
+}
+html[data-theme="ultra-retro"] dialog.retro-window-ready>.retro-window-title span,
+html[data-theme="ultra-retro"] .retro-bulletin>.bulletin-title span{color:#fff!important;text-shadow:none!important}
+html[data-theme="ultra-retro"] dialog.retro-window-ready>.retro-window-title button,
+html[data-theme="ultra-retro"] .retro-bulletin>.bulletin-title button{
+  right:3px!important;
+  top:3px!important;
+  width:30px!important;
+  height:30px!important;
+  min-height:30px!important;
+  padding:0!important;
+  border:2px outset #eee!important;
+  border-radius:0!important;
+  background:#d4d4d4!important;
+  color:#000!important;
+  font-size:26px!important;
+  line-height:24px!important;
+  box-shadow:inset 1px 1px #fff,inset -1px -1px #666!important;
+}

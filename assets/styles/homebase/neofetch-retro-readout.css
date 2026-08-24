@@ -1,0 +1,60 @@
+/* A readable System 6 / Windows 3.x-style background diagnostic: no panel. */
+html[data-theme="ultra-retro"] #neofetch-ambient{
+  /* Keep this diagnostic in unused desktop space, never behind the system strip. */
+  top:510px;
+  right:clamp(22px,5vw,72px);
+  z-index:1;
+  gap:12px;
+  opacity:.88;
+  color:#000080;
+  font:11px/1.34 "MS Sans Serif",Tahoma,monospace;
+  letter-spacing:.025em;
+  mix-blend-mode:normal;
+  text-shadow:1px 1px #fff,-1px 0 #fff;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+html[data-theme="ultra-retro"] #neofetch-ambient .neofetch-mark{
+  color:#000080;
+  font-size:17px;
+  text-shadow:2px 2px #fff;
+}
+html[data-theme="ultra-retro"] #neofetch-ambient .neofetch-lines{
+  min-width:178px;
+  text-shadow:1px 1px #fff,-1px 0 #fff;
+}
+html[data-theme="ultra-retro"] .homebase-desktop .top .clock{
+  min-width:156px;
+  padding:5px 9px 6px;
+  border:2px outset #eee;
+  border-radius:0;
+  background:#d4d4d4;
+  box-shadow:inset 1px 1px #fff,inset -1px -1px #777,3px 3px #111;
+  color:#000!important;
+  backdrop-filter:none;
+}
+html[data-theme="ultra-retro"] .homebase-desktop .top .clock-time{
+  color:#000080!important;
+  font:700 14px "MS Sans Serif",Tahoma,sans-serif;
+}
+html[data-theme="ultra-retro"] .homebase-desktop .top .clock-date{
+  color:#111!important;
+  font:700 8px "MS Sans Serif",Tahoma,sans-serif;
+}
+html[data-theme="ultra-retro"] .homebase-desktop .top .clock:after{display:none}
+/* Retire the old decorative crosshatch box; the NeoFetch readout is the only diagnostic layer. */
+html[data-theme="ultra-retro"] .homebase-desktop:after{display:none!important}
+html[data-theme="ultra-retro"] .homebase-desktop .quick-fullscreen{
+  min-width:42px;
+  min-height:40px;
+  margin-top:12px;
+  border:2px outset #eee;
+  border-radius:0;
+  background:#d4d4d4;
+  color:#000080;
+  box-shadow:inset 1px 1px #fff,inset -1px -1px #777,3px 3px #111;
+  backdrop-filter:none;
+}
+@media(max-width:800px){html[data-theme="ultra-retro"] #neofetch-ambient{top:440px;right:14px;opacity:.72;font-size:9px}}
