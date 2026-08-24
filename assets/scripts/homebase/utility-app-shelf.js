@@ -7,7 +7,7 @@
     const clean=value=>{const node=document.createElement('span');node.textContent=String(value||'');return node.innerHTML};
     try{
       const data=await fetch('/api/user-apps',{cache:'no-store'}).then(response=>{if(!response.ok)throw Error('App index unavailable');return response.json()});
-      const groups={games:[],productivity:[],utilities:[],wellness:[],media:[],reference:[],other:[]};
+      const groups={games:[],productivity:[],utilities:[],creative:[],wellness:[],media:[],reference:[],other:[]};
       for(const app of data.apps||[]){const group=String(app.id||'').split('/')[0];(groups[group]||groups.other).push(app)}
       host.innerHTML=Object.entries(groups).filter(([,apps])=>apps.length).map(([name,apps])=>`<section><h3>${clean(name.toUpperCase())}</h3><div>${apps.map(app=>`<button data-url="${clean(app.url)}"><i>${clean(app.icon||'□')}</i><span><b>${clean(app.name)}</b><small>${clean(app.description)}</small></span><em>OPEN</em></button>`).join('')}</div></section>`).join('');
       badge.textContent=`${(data.apps||[]).length} INSTALLED`;
