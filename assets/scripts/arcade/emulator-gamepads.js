@@ -21,8 +21,14 @@
     emulator.updateGamepadLabels?.();renderStatus(pads.length);window.dispatchEvent(new CustomEvent('novashell:gamepads-bound',{detail:{count:pads.length}}));return pads.length;
   }
   function bindWhenReady(){
-    let tries=0;const timer=setInterval(()=>{if(bind()||tries++>240)clearInterval(timer)},50);
+    let tries=0,lastCount=-1,stableTicks=0;const timer=setInterval(()=>{
+      const count=bind();
+      stableTicks=count===lastCount?stableTicks+1:0;lastCount=count;
+      // Keep reconciling long enough for Chrome to expose a second Bluetooth/USB pad.
+      if((count>1&&stableTicks>20)||tries++>300)clearInterval(timer);
+    },50);
   }
   addEventListener('gamepadconnected',()=>setTimeout(()=>bind(),80));addEventListener('gamepaddisconnected',()=>setTimeout(()=>bind(),80));
+  addEventListener('focus',()=>bind());document.addEventListener('visibilitychange',()=>{if(!document.hidden)bind()});
   window.NovaShellGamepads={controls,bind,bindWhenReady};
 })();

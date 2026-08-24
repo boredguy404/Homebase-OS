@@ -38,6 +38,8 @@ navigation after the player is closed or Home is deliberately chosen.
 1. Connect two controllers and repeat the browser visibility check.
 2. Choose a game with an actual local-versus or multiplayer mode.
 3. Use the game’s own player-select/versus screen to verify both pads.
+4. For an N64 fighter, confirm both players can move, block, attack, pause, and
+   return to the match without either pad driving both fighters.
 
 Pass when the game receives independent player-one and player-two input. A
 single-player title is not a multiplayer failure; it should simply show the
