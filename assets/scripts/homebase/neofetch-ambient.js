@@ -1,4 +1,11 @@
 (() => {
+  if (!document.querySelector('link[data-neofetch-placement]')) {
+    const placement = document.createElement('link');
+    placement.rel = 'stylesheet';
+    placement.href = '/assets/styles/homebase/neofetch-placement.css?v=1';
+    placement.dataset.neofetchPlacement = 'true';
+    document.head.append(placement);
+  }
   const retireLegacyVisuals = () => {
     if (document.documentElement.dataset.theme !== 'ultra-retro') return;
     document.querySelectorAll('.gyro-stage,.nightglass-mark,.gesture-pad,.gesture-hint').forEach(node => node.remove());

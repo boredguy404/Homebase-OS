@@ -1,0 +1,15 @@
+/* Keep the ambient diagnostic in the desktop's lower-right utility space. */
+#neofetch-ambient{
+  top:auto!important;
+  right:clamp(18px,4vw,64px)!important;
+  bottom:34px!important;
+}
+html[data-theme="ultra-retro"] #neofetch-ambient{
+  top:auto!important;
+  right:clamp(18px,4vw,64px)!important;
+  bottom:72px!important;
+}
+@media(max-width:800px){
+  #neofetch-ambient{top:auto!important;right:14px!important;bottom:60px!important}
+}
+@media(max-width:520px){#neofetch-ambient{display:none!important}}
