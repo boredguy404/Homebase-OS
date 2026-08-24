@@ -123,6 +123,12 @@ Utility Desk is deliberately useful without an account or a network connection: 
 
 ![Workspace handoff in Ultra Retro](media/utility-workspace-handoff.png)
 
+### Maker Desk
+
+Maker Desk is a removable local app for sketching a compact 16 × 12 tile map on touch. It saves only in the current browser, then exports ordinary JSON for a future game-engine project. It does not contain an engine, game assets, or network calls.
+
+![Maker Desk in Ultra Retro](media/maker-desk.png)
+
 The quiet **About NovaShell** window is available from the desktop Help menu and My Library. It credits [boredguy404](https://github.com/boredguy404) without turning the desktop into an advertisement.
 
 ### App search and installation
