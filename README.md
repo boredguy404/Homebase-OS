@@ -274,6 +274,10 @@ roms/  bios/  saves/  imports/  covers/  emulatorjs/
 
 Selective backup archives can contain private data when the user asks for it, but those archives remain local and are also ignored.
 
+### Private source intake
+
+For a future capability audit of a user-owned server or archive, open the local **Source connection** page and save an explicit SFTP or FTPS profile. The credential file lives only in ignored `local/source-connection.json`, is owner-readable only, and is never returned by NovaShell’s API. Its test button makes one authenticated folder-list request only after the user requests it; it reports a safe summary rather than remote names or a password. See [Source intake review](docs/SOURCE_INTAKE_REVIEW.md) for the migration rules.
+
 ## Security boundaries
 
 - File routes resolve and re-check paths inside the current user’s home directory.
@@ -281,6 +285,7 @@ Selective backup archives can contain private data when the user asks for it, bu
 - Browser mutations require same-origin requests.
 - File deletion uses the recoverable system Trash.
 - App removal is restricted to detected Flatpak IDs.
+- Source credentials stay local, are never committed, and are only used for a user-requested test or later approved audit.
 - Public-release checks exclude game files, BIOS files, saves, music, logs, credentials, and downloaded runtimes.
 
 ## Current scope
