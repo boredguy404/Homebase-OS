@@ -1,0 +1,31 @@
+/* Full-surface inheritance for Orbit. Each NovaShell theme owns the radio, not only its accent. */
+html[data-theme="slate-glass"]{--ink:#101a22;--paper:#eff8fa;--acid:#79d8ff;--line:#46616e}
+html[data-theme="slate-glass"] body{background:#101a22;color:#eff8fa}
+html[data-theme="slate-glass"] header{background:#16252ee8;border-color:#46616e}
+html[data-theme="slate-glass"] .browser{background:#13232ddd;border-color:#46616e}
+html[data-theme="slate-glass"] footer{background:#14242de8!important;border-color:#46616e!important}
+html[data-theme="slate-glass"] .station:hover,html[data-theme="slate-glass"] .station.active{background:#1c3541}
+html[data-theme="slate-glass"] .status{background:#12242dde;color:#cde5eb}
+
+html[data-theme="tidal"]{--ink:#05272a;--paper:#f0fffb;--acid:#3ddbd9;--line:#43898a}
+html[data-theme="tidal"] body{background:#05272a;color:#f0fffb}
+html[data-theme="tidal"] header{background:#083437e8;border-color:#43898a}
+html[data-theme="tidal"] .browser{background:#073235dc;border-color:#43898a}
+html[data-theme="tidal"] footer{background:#073135e8!important;border-color:#43898a!important}
+html[data-theme="tidal"] .station:hover,html[data-theme="tidal"] .station.active{background:#0d494b}
+html[data-theme="tidal"] .status{background:#082d31df;color:#c8fffa}
+html[data-theme="tidal"] .modes button.active{background:#3ddbd9!important;border-color:#9bfffa!important;color:#05272a!important}
+
+html[data-theme="cobalt"] body{background:#0b1530}
+html[data-theme="cobalt"] header{background:#12203ce8;border-color:#4d6b9e}
+html[data-theme="cobalt"] .browser{background:#101d36de;border-color:#4d6b9e}
+html[data-theme="cobalt"] footer{background:#10203ae8!important;border-color:#4d6b9e!important}
+html[data-theme="cobalt"] .station:hover,html[data-theme="cobalt"] .station.active{background:#1b3159}
+html[data-theme="cobalt"] .status{background:#122448e8;color:#c7dbff}
+
+html[data-theme="ultra-retro"] footer{height:auto!important;min-height:96px!important;padding:8px 12px!important}
+html[data-theme="ultra-retro"] .modes{display:grid!important;grid-template-columns:repeat(5,minmax(74px,1fr));gap:6px;width:min(840px,100%);margin:auto;color:#000080!important}
+html[data-theme="ultra-retro"] .modes>span{grid-column:1/-1;margin:0!important;padding:2px 4px;color:#000080!important;font:700 9px "MS Sans Serif",Tahoma,sans-serif!important;letter-spacing:.08em}
+html[data-theme="ultra-retro"] .modes button{min-height:34px!important;padding:0 7px!important;border:2px outset #eee!important;border-radius:0!important;background:#d4d4d4!important;color:#000!important;box-shadow:inset 1px 1px #fff,inset -1px -1px #666!important;font:700 9px "MS Sans Serif",Tahoma,sans-serif!important}
+html[data-theme="ultra-retro"] .modes button.active{border:2px inset #eee!important;background:#000080!important;color:#fff!important;box-shadow:inset 1px 1px #000,inset -1px -1px #4a4aa4!important}
+@media(max-width:680px){html[data-theme="ultra-retro"] footer{min-height:124px!important}html[data-theme="ultra-retro"] .modes{grid-template-columns:repeat(3,minmax(0,1fr))}}
