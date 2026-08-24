@@ -406,7 +406,7 @@ def record_project_event(task_id, lane, message, title=""):
             task={"id":task_id,"text":title or task_id.replace("project-", "").replace("-", " ").title(),"lane":lane}
             feed["tasks"].append(task)
         else: task["lane"]=lane
-        feed["events"].append({"time":int(time.time()),"message":str(message)[:600],"kind":"relay"})
+        feed["events"].append({"time":int(time.time()),"task":task_id,"message":str(message)[:600],"kind":"relay"})
         feed["events"]=feed["events"][-40:]
         save_project_feed(feed)
 
@@ -1107,7 +1107,7 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                     elif task_text:
                         task["text"] = task_text[:240]
                     task["lane"] = lane
-                    feed["events"].append({"time": int(time.time()), "message": message, "kind": "relay"})
+                    feed["events"].append({"time": int(time.time()), "task": task_id, "message": message, "kind": "relay"})
                     feed["events"] = feed["events"][-40:]
                     save_project_feed(feed)
                 self._json(200, feed)
