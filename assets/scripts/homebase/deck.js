@@ -39,7 +39,7 @@ function closePocket() {
   setTimeout(dedupeDesktopChrome, 420);
 }
 
-function loadOrbitMiniEnhancements(){for(const [src,key] of [['/assets/scripts/homebase/orbit-pixel-reactive.js?v=78','orbitPixelReactive'],['/assets/scripts/homebase/orbit-pixel-final.js?v=94','orbitPixelFinal'],['/assets/scripts/homebase/orbit-pixel-guaranteed.js?v=84','orbitPixelGuaranteed'],['/assets/scripts/homebase/orbit-pixel-soft.js?v=96','orbitPixelSoft']]){if(document.querySelector('script[data-'+key+']'))continue;const script=document.createElement('script');script.src=src;script.dataset[key]='true';document.head.append(script)}}
+function loadOrbitMiniEnhancements(){/* Dense Pixel Field is rendered by the local compact player; legacy overlapping pixel renderers stay unloaded. */}
 async function openOrbit() {
   let player = document.querySelector('#orbit-player');
   if (!player) {
@@ -175,7 +175,7 @@ function drawDenseOrbitPixel(time){
     const cell=5,threshold=.61-e*.23-bass*.14-beat*.08;
     for(let y=0;y<h;y+=cell)for(let x=0;x<w;x+=cell){const field=e+bass*Math.sin(x*.075+time*.0012)+treble*Math.cos(y*.11-time*.0008)+beat*Math.sin((x+y)*.045+time*.002);if(field>threshold+((x/cell+y/cell)%6)*.018){ctx.fillStyle=retro?(field>threshold+.24?'#000080':'#1c3651'):`rgba(${rgb},${Math.min(.9,.22+(field-threshold)*1.15+beat*.1)})`;ctx.fillRect(x+1,y+1,cell-2,cell-2)}}
   }
-  requestAnimationFrame(drawDenseOrbitPixel);
+  if(canvas)requestAnimationFrame(drawDenseOrbitPixel);else setTimeout(()=>requestAnimationFrame(drawDenseOrbitPixel),500);
 }
 requestAnimationFrame(drawDenseOrbitPixel);
 
