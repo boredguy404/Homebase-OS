@@ -1,1 +1,12 @@
-{"version":"115","released":"2026-08-24","notes":"NovaShell World now uses a real low-spec pixel-3D scene.","changes":["The World has touch, keyboard, and Xbox-style movement around real NovaShell stations.","Orbit is an animated speaker/turntable station and Relay is an interactive AI NPC using the existing local connection.","The migration excludes the source game's content, server services, media, saves, and private operational files."]}
+{
+  "version": "116",
+  "released": "2026-08-24",
+  "notes": "Two-controller N64 play now uses distinct EmulatorJS controller slots and full analog input instead of a duplicate manual input loop.",
+  "changes": [
+    "Xbox pads are sorted by physical browser index and assigned independently to player one through player four.",
+    "The full EmulatorJS map now includes both analog sticks, triggers, D-pad, face buttons, shoulders, and stick clicks.",
+    "N64 games marked multiplayer—and known local-versus classics—show a direct two-player launch in their game sheet.",
+    "Rail Finder now has a private-key CTA departure and arrival board, and Reset Station has expanded breathing and recovery routines.",
+    "NovaShell World now uses a low-resolution multi-room pixel building with real local stations."
+  ]
+}
