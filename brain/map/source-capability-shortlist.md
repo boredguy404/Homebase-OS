@@ -22,6 +22,7 @@
 | Accessible-place finder | accessibility-first local search | review data completeness and avoid safety claims |
 | Skeletal animation tool | Maker Desk character/interaction editor | review engine isolation |
 | Round/interval timer | Focus Deck training mode or small utility | candidate |
+| Hydration/breath/reset PWA | removable Reset Station, rebuilt from FTP manifest concept | shipped |
 
 ## Exclude or consolidate
 
