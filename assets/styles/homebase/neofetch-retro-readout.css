@@ -3,7 +3,7 @@ html[data-theme="ultra-retro"] #neofetch-ambient{
   /* Keep this diagnostic in unused desktop space, never behind the system strip. */
   top:510px;
   right:clamp(22px,5vw,72px);
-  z-index:1;
+  z-index:0;
   gap:12px;
   opacity:.88;
   color:#000080;
@@ -16,6 +16,17 @@ html[data-theme="ultra-retro"] #neofetch-ambient{
   background:transparent!important;
   box-shadow:none!important;
 }
+/* The Retro desktop owns one ambient diagnostic.  Retire every former hero
+   visual here instead of leaving a faint frame/shadow behind the readout. */
+html[data-theme="ultra-retro"] body>.gyro-stage,
+html[data-theme="ultra-retro"] body>.gyro3d,
+html[data-theme="ultra-retro"] body>.nightglass-mark,
+html[data-theme="ultra-retro"] body>.gesture-pad,
+html[data-theme="ultra-retro"] body>.gesture-hint{display:none!important}
+html[data-theme="ultra-retro"] .shell{z-index:2}
+/* Divider rails belong above background diagnostics, never through them. */
+html[data-theme="ultra-retro"] .section-title{position:relative;z-index:4;isolation:isolate}
+html[data-theme="ultra-retro"] .section-title:after{position:relative;z-index:1}
 html[data-theme="ultra-retro"] #neofetch-ambient .neofetch-mark{
   color:#000080;
   font-size:17px;
