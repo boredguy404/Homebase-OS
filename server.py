@@ -16,6 +16,7 @@ import time
 import threading
 import uuid
 import platform
+import datetime
 import xml.etree.ElementTree as ET
 from functools import lru_cache
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -59,6 +60,7 @@ BACKUP_AREAS["catalog"] = GAME_CATALOG
 ASSISTANT_KEY_FILE = ROOT / "local" / "openai-api-key.txt"
 ASSISTANT_CONFIG_FILE = ROOT / "local" / "relay-provider.json"
 SOURCE_CONNECTION_FILE = ROOT / "local" / "source-connection.json"
+TRANSIT_CONFIG_FILE = ROOT / "local" / "transit-provider.json"
 BRAIN_IMPORT = ROOT / "local" / "brain-import"
 USER_APPS = ROOT / "user-apps"
 CORE_EDITABLE = {
@@ -148,6 +150,54 @@ CURATED_PUBLIC_APIS = [
     ("ViaCEP", "Brazilian postal-code and address lookup.", "https://viacep.com.br/ws", "GET", "/01001000/json/", "https://viacep.com.br/ws/01001000/json/", "https://viacep.com.br/"),
     ("World Bank Indicators", "Global development indicators by country and year.", "https://api.worldbank.org/v2", "GET", "/country/US/indicator/SP.POP.TOTL?format=json", "https://api.worldbank.org/v2/country/US/indicator/SP.POP.TOTL?format=json", "https://datahelpdesk.worldbank.org/knowledgebase/articles/889392"),
 ]
+
+TRANSIT_CACHE = {}
+CTA_LINES = {
+    "Red": ("Red Line", "#c60c30"), "Blue": ("Blue Line", "#00a1de"),
+    "Brn": ("Brown Line", "#8b5a2b"), "G": ("Green Line", "#009b3a"),
+    "Org": ("Orange Line", "#f57c00"), "P": ("Purple Line", "#7b4ab4"),
+    "Pink": ("Pink Line", "#d96d9e"), "Y": ("Yellow Line", "#b89b00"),
+}
+
+def transit_config():
+    try:
+        data=json.loads(TRANSIT_CONFIG_FILE.read_text(encoding="utf-8"))
+        return {"cta_train_key":str(data.get("cta_train_key","")).strip(),"metra_rt_token":str(data.get("metra_rt_token","")).strip()}
+    except (OSError,ValueError,TypeError): return {"cta_train_key":"","metra_rt_token":""}
+
+def transit_json(url, timeout=12):
+    request=urllib.request.Request(url,headers={"User-Agent":"NovaShell/1.0 (github.com/boredguy404/Homebase-OS)","Accept":"application/json"})
+    with urllib.request.urlopen(request,timeout=timeout) as response:return json.load(response)
+
+def transit_stations():
+    cached=TRANSIT_CACHE.get("stations")
+    if cached and time.time()-cached[0]<86400:return cached[1]
+    url="https://data.cityofchicago.org/resource/8pix-ypme.json?$limit=1200"
+    rows=transit_json(url);by={};flags={"red":"red","blue":"blue","g":"g","brn":"brn","o":"o","p":"p","pnk":"pnk","y":"y"}
+    for row in rows:
+        station_id=str(row.get("map_id","")).strip()
+        if not station_id:continue
+        location=row.get("location") or {};station=by.setdefault(station_id,{"id":station_id,"name":row.get("station_name","") or "Station","description":row.get("station_descriptive_name","") or "","ada":bool(row.get("ada")),"lat":float(location.get("latitude") or 0),"lon":float(location.get("longitude") or 0),"lines":[]})
+        station["ada"]=station["ada"] or bool(row.get("ada"))
+        for key,field in flags.items():
+            if row.get(field) is True and key not in station["lines"]:station["lines"].append(key)
+    result=sorted(by.values(),key=lambda item:item["name"].casefold());TRANSIT_CACHE["stations"]=(time.time(),result);return result
+
+def cta_arrivals(map_id):
+    config=transit_config();key=config["cta_train_key"]
+    if not key:raise ValueError("CTA Train Tracker key is not configured locally")
+    if not re.fullmatch(r"4\d{4}",str(map_id)):raise ValueError("choose a valid CTA station")
+    params=urllib.parse.urlencode({"key":key,"mapid":map_id,"max":12,"outputType":"JSON"})
+    data=transit_json("https://lapi.transitchicago.com/api/1.0/ttarrivals.aspx?"+params);root=data.get("ctatt") or {}
+    if str(root.get("errCd","0"))!="0":raise ValueError(str(root.get("errNm") or "CTA returned an error"))
+    records=root.get("eta") or [];records=records if isinstance(records,list) else [records];items=[]
+    for value in records:
+        try:
+            predicted=datetime.datetime.fromisoformat(str(value.get("prdt","")).replace(" ","T"));arrival=datetime.datetime.fromisoformat(str(value.get("arrT","")).replace(" ","T"));due=max(0,round((arrival-predicted).total_seconds()/60))
+        except (ValueError,TypeError):due=None
+        code=str(value.get("rt","")).strip();line=CTA_LINES.get(code,(code+" Line" if code else "CTA", "#4f7180"))
+        items.append({"run":str(value.get("rn","") or ""),"line":line[0],"color":line[1],"destination":value.get("destNm","") or "Destination unavailable","due":due,"arrival":value.get("arrT","") or "","approaching":str(value.get("isApp","0"))=="1","delayed":str(value.get("isDly","0"))=="1","scheduled":str(value.get("isSch","0"))=="1"})
+    return {"station_id":str(map_id),"generated":root.get("tmst","") or "","arrivals":items,"source":"CTA Train Tracker"}
 
 def relay_knowledge(topic=""):
     """Small, readable local knowledge base for Relay drafts and inspection."""
@@ -613,6 +663,18 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
         browse_route = urllib.parse.urlsplit(self.path)
         if browse_route.path == "/api/project-feed":
             self._json(200, project_feed())
+            return
+        if browse_route.path == "/api/transit/status":
+            config=transit_config();self._json(200,{"cta_configured":bool(config["cta_train_key"]),"metra_configured":bool(config["metra_rt_token"]),"secret_storage":"local/transit-provider.json","secrets_exposed":False});return
+        if browse_route.path == "/api/transit/stations":
+            try:self._json(200,{"stations":transit_stations(),"source":"City of Chicago Data Portal","cached":True})
+            except (OSError,ValueError,TypeError) as error:self._json(502,{"error":"station directory unavailable","detail":str(error)})
+            return
+        if browse_route.path == "/api/transit/cta/arrivals":
+            station=urllib.parse.parse_qs(browse_route.query).get("station",[""])[0]
+            try:self._json(200,cta_arrivals(station))
+            except ValueError as error:self._json(400,{"error":str(error)})
+            except (OSError,TypeError) as error:self._json(502,{"error":"CTA live arrivals unavailable","detail":str(error)})
             return
         if browse_route.path == "/api/browse/live":
             requested=urllib.parse.parse_qs(browse_route.query).get("url",[""])[0]
