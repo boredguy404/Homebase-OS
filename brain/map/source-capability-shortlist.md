@@ -11,7 +11,7 @@
 | Focus session engine | removable Focus Deck | shipped |
 | Pantry inventory | removable Pantry Ledger | shipped |
 | Local audio loop editor | removable Loop Lab | shipped |
-| Screenplay/file writer | removable Writer Desk | building |
+| Screenplay/file writer | Writer Desk with local drafts plus opt-in Chromium file handles | shipped |
 | 3D world and generated shelf | NovaShell World + Maker Desk | foundation shipped |
 | Knowledge graph | Relay Second Brain | foundation shipped |
 | Hyperlocal weather | improve Weather Station, not another app | reviewed |
