@@ -1,5 +1,6 @@
 (() => {
   document.head.insertAdjacentHTML('beforeend','<link rel="stylesheet" href="/assets/styles/arcade/archive-taskbar.css"><link rel="stylesheet" href="/assets/styles/arcade/arcade-save-prep.css?v=1">');
+  if(!document.querySelector('script[data-launch-readiness]')){const script=document.createElement('script');script.src='/assets/scripts/arcade/launch-readiness.js?v=1';script.dataset.launchReadiness='true';document.head.append(script)}
   const publicCapture = new URLSearchParams(location.search).has('public');
   if(!document.querySelector('.archive-taskbar')){const bar=document.createElement('nav');bar.className='archive-taskbar';bar.setAttribute('aria-label','Pocket Archive taskbar');bar.innerHTML='<b>POCKET ARCHIVE</b><button data-archive-go="home">⌂ Homebase</button><button data-archive-go="games">▦ Games</button><button data-archive-go="apps">＋ Apps</button><button data-archive-go="full">⛶ Fullscreen</button>';bar.onclick=event=>{const action=event.target.closest('[data-archive-go]')?.dataset.archiveGo;if(action==='home')parent.closePocket?.();if(action==='games')document.querySelector('#library')?.scrollIntoView({behavior:'smooth'});if(action==='apps')document.querySelector('#apps')?.scrollIntoView({behavior:'smooth'});if(action==='full'){const shell=parent!==window?parent.document.documentElement:document.documentElement;shell.requestFullscreen?.()}};document.body.append(bar)}
   const apps=document.querySelector('#apps .app-grid');if(apps&&!document.querySelector('[data-game-setup]'))apps.insertAdjacentHTML('afterbegin','<button class="app-card" data-game-setup onclick="parent.openPanel?parent.openPanel(\'/pages/game-setup.html\'):location.href=\'/pages/game-setup.html\'"><i>＋</i><b>Add your games</b><span>Simple private-file guide for ROMs, BIOS files, cover art, real gameplay GIFs, and controller layouts.</span></button>');
@@ -14,6 +15,7 @@
     window.EJS_biosUrl = core === 'psx' ? '/bios/scph1001.bin' : undefined;
     if(core==='psx'){window.EJS_disableCue=false;window.EJS_threads=false;window.EJS_CacheLimit=800*1024*1024}
     originalLaunch(url, name, core);
+    dispatchEvent(new Event('homebase-game-launch'));
     const originalGameStart=window.EJS_onGameStart;
     window.EJS_onGameStart=()=>{loading?.classList.add('done');originalGameStart?.()};
     if (core === 'n64') {

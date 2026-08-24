@@ -31,7 +31,7 @@
 [data-theme="ultra-retro"] ::selection{color:#fff;background:#000}
 [data-theme="ultra-retro"] body{padding-bottom:46px!important}
 [data-theme="ultra-retro"] .homebase-desktop .gyro-stage,[data-theme="ultra-retro"] .homebase-desktop .gesture-pad,[data-theme="ultra-retro"] .homebase-desktop .nightglass-mark,[data-theme="ultra-retro"] .homebase-desktop .gesture-hint{display:none!important}
-[data-theme="ultra-retro"] .homebase-desktop:after{content:""!important;position:fixed!important;z-index:0!important;left:auto!important;right:5vw!important;top:90px!important;bottom:auto!important;width:210px!important;height:150px!important;background:linear-gradient(135deg,transparent 48%,#000080 49% 51%,transparent 52%),linear-gradient(45deg,transparent 48%,#000080 49% 51%,transparent 52%)!important;background-size:24px 24px!important;border:2px solid #000080!important;box-shadow:inset 0 0 0 5px #d8d8d8,5px 5px #111!important;filter:none!important;opacity:.12!important;animation:none!important;pointer-events:none!important}
+
 [data-theme="ultra-retro"] .homebase-desktop .tile.motion-visible,[data-theme="ultra-retro"] .homebase-desktop .tile.motion-visible i{transform:none!important;transition:none!important;animation:none!important}
 [data-theme="ultra-retro"] .shell{width:100%!important;min-height:calc(100vh - 46px);padding-top:38px!important}
 [data-theme="ultra-retro"] .retro-menubar{position:fixed;isolation:isolate;z-index:1250;inset:0 0 auto;height:27px;display:flex;align-items:stretch;padding:2px 7px;border-bottom:2px solid #000;background:linear-gradient(#fff,#d2d2d2);box-shadow:0 1px #fff;color:#000;font:700 11px "MS Sans Serif",Tahoma,system-ui,sans-serif}

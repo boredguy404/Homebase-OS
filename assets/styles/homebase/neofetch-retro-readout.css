@@ -56,7 +56,20 @@ html[data-theme="ultra-retro"] .homebase-desktop .top .clock-date{
 }
 html[data-theme="ultra-retro"] .homebase-desktop .top .clock:after{display:none}
 /* Retire the old decorative crosshatch box; the NeoFetch readout is the only diagnostic layer. */
-html[data-theme="ultra-retro"] .homebase-desktop:after{display:none!important}
+/* Defensive removal for older theme sheets too: this was the retired
+   crosshatch/mystery box. Its pseudo-element cannot reserve or paint space. */
+html[data-theme="ultra-retro"] body.homebase-desktop:after,
+html[data-theme="ultra-retro"] .homebase-desktop:after{
+  content:none!important;
+  display:none!important;
+  visibility:hidden!important;
+  opacity:0!important;
+  width:0!important;
+  height:0!important;
+  border:0!important;
+  box-shadow:none!important;
+  background:none!important;
+}
 html[data-theme="ultra-retro"] .homebase-desktop .quick-fullscreen{
   min-width:42px;
   min-height:40px;
