@@ -245,7 +245,14 @@ def test_source_connection():
         command=["curl","--disable","--silent","--show-error","--fail","--list-only","--connect-timeout","12","--max-time","24","--netrc-file",handle.name]
         if protocol == "ftps": command.append("--ssl-reqd")
         result=subprocess.run(command+[remote],capture_output=True,text=True,timeout=28,check=False)
-        if result.returncode: raise ValueError("connection failed: check protocol, server, port, login, and remote folder")
+        if result.returncode:
+            detail=result.stderr.casefold()
+            if "could not resolve" in detail: reason="the server hostname could not be resolved"
+            elif "connection refused" in detail or "failed to connect" in detail: reason="the server did not accept that port"
+            elif "ssl" in detail or "tls" in detail or "certificate" in detail: reason="the TLS mode or certificate was rejected"
+            elif "login" in detail or "access denied" in detail or "authentication" in detail: reason="the login was rejected"
+            else: reason="the server rejected the protocol, login, or remote folder"
+            raise ValueError("connection failed: "+reason)
         entries=[line for line in result.stdout.splitlines() if line.strip()]
         return {"connected":True,"protocol":protocol,"host":host,"port":port,"directory":directory,"entries":len(entries),"message":f"Connected securely. The folder responded with {len(entries)} item{'s' if len(entries)!=1 else ''}."}
     except subprocess.TimeoutExpired: raise ValueError("connection timed out; check server, port, or network")
