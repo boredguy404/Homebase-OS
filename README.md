@@ -121,11 +121,17 @@ The **Workspace Editor** can load an allowlisted set of NovaShell core files, cr
 
 Utility Desk is deliberately useful without an account or a network connection: live device readings, notes, calculator, clipboard handoff, focus timer, converter, local SHA-256 file verification, quick queue, Kanban, and a **Workspace handoff** tool. Choose a folder and it creates a downloadable JSON inventory with relative names, timestamps, sizes, and fingerprints—never file contents or absolute paths. That makes a copied folder, backup, or support handoff explainable without uploading private data.
 
+**Quick commands** is the matching local command layer: press `Ctrl`/`⌘` + `K`, or use its desktop tile, to search the same visible NovaShell routes. It opens only explicit in-app panels and display controls; Xbox D-pad/A/B works while the palette is open.
+
 ![Workspace handoff in Ultra Retro](media/utility-workspace-handoff.png)
 
 ### Maker Desk
 
 Maker Desk is a removable local app for sketching a compact 16 × 12 tile map on touch. It saves only in the current browser, then exports ordinary JSON for a future game-engine project. It does not contain an engine, game assets, or network calls.
+
+**Quest Board** is the companion dashboard for that map contract. It browses the saved local project, opens Maker Desk for editing, and provides an original top-down playable preview with keyboard and Xbox D-pad movement. It uses no copied archived game code or assets.
+
+![Quest Board in Ultra Retro](media/quest-board.png)
 
 ![Maker Desk in Ultra Retro](media/maker-desk.png)
 

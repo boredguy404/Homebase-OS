@@ -1,0 +1,7 @@
+{
+  "name": "Quest Board",
+  "description": "A local dashboard and playable top-down preview for Maker Desk maps.",
+  "category": "games",
+  "entry": "index.html",
+  "icon": "♜"
+}
