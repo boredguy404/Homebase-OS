@@ -51,13 +51,13 @@ apps_json="$(curl -fsS "$base/api/user-apps")"
 printf '%s' "$apps_json" | node -e '
   let raw="";process.stdin.on("data",chunk=>raw+=chunk).on("end",()=>{
     const data=JSON.parse(raw),apps=Array.isArray(data)?data:(data.apps||[]);
-    const expected=["Maker Desk","Quest Board","NovaShell World","Pokedex Browser","Weather Station","Focus Deck","Pantry Ledger","Loop Lab"];
+    const expected=["Maker Desk","Quest Board","NovaShell World","Pokedex Browser","Weather Station","Focus Deck","Pantry Ledger","Loop Lab","Writer Desk"];
     const missing=expected.filter(name=>!apps.some(app=>app.name===name));
     if(missing.length){console.error("Missing registered user apps: "+missing.join(", "));process.exit(1)}
     console.log("✓ user-app registration ("+apps.length+" apps)");
   });'
 
-for route in / /pages/arcade.html /pages/files.html /pages/browse.html /pages/settings.html /pages/utility-desk.html /modules/radio-orbit/index.html /user-apps/games/quest-board/index.html /user-apps/games/novashell-world/index.html /user-apps/reference/pokedex-browser/index.html /user-apps/productivity/focus-deck/index.html /user-apps/utilities/pantry-ledger/index.html /user-apps/media/loop-lab/index.html; do
+for route in / /pages/arcade.html /pages/files.html /pages/browse.html /pages/settings.html /pages/utility-desk.html /modules/radio-orbit/index.html /user-apps/games/quest-board/index.html /user-apps/games/novashell-world/index.html /user-apps/reference/pokedex-browser/index.html /user-apps/productivity/focus-deck/index.html /user-apps/productivity/writer-desk/index.html /user-apps/utilities/pantry-ledger/index.html /user-apps/media/loop-lab/index.html; do
   curl -fsS "$base$route" >/dev/null
 done
 echo "✓ key routes respond"

@@ -1,0 +1,19 @@
+(()=>{
+  const KEY='novashell-writer-docs-v1',ACTIVE='novashell-writer-active-v1',$=s=>document.querySelector(s),docs=$('#docs'),editor=$('#editor'),title=$('#title'),kind=$('#kind');
+  let records=read(),active=localStorage.getItem(ACTIVE)||'',saveTimer=0;
+  function read(){try{const value=JSON.parse(localStorage.getItem(KEY));if(Array.isArray(value)&&value.length)return value}catch{}return[{id:crypto.randomUUID(),title:'Welcome',kind:'text',body:'Writer Desk keeps drafts in this browser.\n\nImport a text file, start a screenplay, or make a fresh document.',updated:Date.now()}]}
+  function current(){return records.find(doc=>doc.id===active)||records[0]}
+  function esc(value){const span=document.createElement('span');span.textContent=value;return span.innerHTML}
+  function persist(){localStorage.setItem(KEY,JSON.stringify(records));localStorage.setItem(ACTIVE,active);$('#status').textContent='Saved locally'}
+  function stats(){const text=editor.value.trim();$('#words').textContent=`${text?text.split(/\s+/).length:0} words`;$('#chars').textContent=`${editor.value.length} characters`}
+  function renderList(){docs.innerHTML=records.sort((a,b)=>b.updated-a.updated).map(doc=>`<button data-id="${doc.id}" class="${doc.id===active?'active':''}"><b>${esc(doc.title||'Untitled')}</b><br><small>${new Date(doc.updated).toLocaleDateString()}</small></button>`).join('')}
+  function open(id){active=id;const doc=current();title.value=doc.title;kind.value=doc.kind;editor.value=doc.body;renderList();stats();localStorage.setItem(ACTIVE,active)}
+  function update(){const doc=current();doc.title=title.value.trim()||'Untitled';doc.kind=kind.value;doc.body=editor.value;doc.updated=Date.now();$('#status').textContent='Saving…';clearTimeout(saveTimer);saveTimer=setTimeout(()=>{persist();renderList()},300);stats()}
+  function create(name='Untitled',body='',type='text'){const doc={id:crypto.randomUUID(),title:name,kind:type,body,updated:Date.now()};records.unshift(doc);active=doc.id;persist();open(active);title.select()}
+  docs.onclick=event=>{const button=event.target.closest('[data-id]');if(button)open(button.dataset.id)};$('#new').onclick=()=>create();[title,kind,editor].forEach(node=>node.addEventListener(node===kind?'change':'input',update));
+  $('#focus').onclick=()=>{document.body.classList.toggle('focus');$('#focus').textContent=document.body.classList.contains('focus')?'Exit focus':'Focus'};
+  $('#import').onchange=async event=>{const file=event.target.files[0];if(!file)return;const ext=file.name.split('.').pop().toLowerCase(),type=ext==='fountain'?'fountain':ext==='md'?'markdown':'text';create(file.name.replace(/\.[^.]+$/,''),await file.text(),type);event.target.value=''};
+  $('#export').onclick=()=>{const doc=current(),ext=doc.kind==='fountain'?'fountain':doc.kind==='markdown'?'md':'txt',blob=new Blob([doc.body],{type:'text/plain'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`${doc.title.replace(/[^a-z0-9 _-]/gi,'').trim()||'draft'}.${ext}`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
+  const remove=$('#remove');$('#delete').onclick=()=>remove.showModal();remove.onclick=event=>{if(event.target===remove)remove.close()};remove.querySelector('.window-title button').onclick=()=>remove.close();$('#keep').onclick=()=>remove.close();$('#confirm').onclick=()=>{records=records.filter(doc=>doc.id!==active);if(!records.length)records=[{id:crypto.randomUUID(),title:'Untitled',kind:'text',body:'',updated:Date.now()}];active=records[0].id;persist();remove.close();open(active)};
+  if(!records.some(doc=>doc.id===active))active=records[0].id;persist();open(active);
+})();
