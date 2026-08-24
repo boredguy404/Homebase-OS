@@ -16,11 +16,21 @@ Here is the more organized AI-slop explanation.
 
 ## Hosted NovaShell companion
 
-[Open NovaShell on the web →](https://novashell.app) *(deployment is being prepared; the local companion remains the full Chromebook/PC edition until this link is live.)*
+[Open NovaShell on the web →](https://novashell.app) *(the browser build is ready; the domain remains a deployment target until its private cPanel release is approved.)*
 
-The hosted companion is intended to carry the PWA shell, touch/controller navigation, browser game imports, Orbit, playlists, notes, kanban, discovery, weather, and browser-backed storage. Local Linux app launching, unrestricted file scanning, and native helpers remain clearly labeled local-only capabilities.
+The hosted companion is now a tested static PWA with Ultra Retro and Cobalt,
+touch/controller navigation, an IndexedDB shelf for game files explicitly
+chosen by the person, Orbit local audio and streams, Notes, Kanban, live/cached
+Weather, public-source discovery, a browser-safe Relay guide, and inspectable
+browser-data backup. It does not pretend an emulator runtime, filesystem scan,
+Linux installer, system reader, or local coding agent is available on a normal
+website.
 
-Deployment credentials, host setup, and operator notes are deliberately private. The separate **NovaShell web** repository is reserved for the deployable browser companion when it is ready—not for publishing infrastructure instructions.
+| Hosted Ultra Retro | Hosted mobile board |
+| --- | --- |
+| ![NovaShell hosted companion in Ultra Retro](media/hosted-companion-retro.png) | ![NovaShell hosted companion mobile Project Board](media/hosted-companion-mobile.png) |
+
+Deployment credentials, host setup, and operator notes remain deliberately private. The separate **NovaShell web** source is not linked from this public README.
 
 See the [hosted companion parity matrix](docs/HOSTED_COMPANION_PARITY.md) for the exact local-vs-web boundary before deploying a companion build.
 

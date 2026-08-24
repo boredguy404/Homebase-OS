@@ -1,8 +1,10 @@
 {
-  "version": "120",
+  "version": "121",
   "released": "2026-08-24",
-  "notes": "Quick Commands now recognizes safe plain-language intents and previews their data boundary and effects before opening a local report or backup screen.",
+  "notes": "The hosted NovaShell companion is now a tested static PWA instead of a placeholder, with honest browser-safe equivalents and public privacy-safe screenshots.",
   "changes": [
+    "Hosted NovaShell now includes Retro/Cobalt, touch/controller navigation, explicit IndexedDB game selection, Orbit, Notes, Kanban, Weather, Browse, Relay guidance, and browser backup.",
+    "Public docs and the parity matrix now identify exactly which hosted features work and which still require local NovaShell.",
     "Show large files, open my music folder, and back up game saves now resolve to explicit NovaShell routes instead of falling through as unknown text.",
     "Sensitive-looking intents show a controller-compatible preview stating what data is read and confirming that no file or backup changes happen automatically.",
     "The import screen now has one transaction owner and sends the required catalog key and source path after a local ROM copy.",

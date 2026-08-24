@@ -5,9 +5,9 @@ NovaShell’s hosted build is a static PWA. Upload only public files: never uplo
 ## Fast path
 
 1. In cPanel, create `novashell.app` (or its subdomain) and point its document root to an empty folder such as `public_html/novashell`.
-2. Download the public release ZIP or clone the public repository on your computer.
-3. Remove local/private folders listed above, then upload the remaining project files through **File Manager → Upload**.
-4. Confirm `index.html`, `manifest.webmanifest`, `sw.js`, and `assets/` are directly inside the document root.
+2. In the private hosted-companion source, run `npm ci && npm test`.
+3. Upload only the generated `dist/` contents through **File Manager → Upload** or the approved restricted release script.
+4. Confirm `index.html`, `manifest.webmanifest`, `sw.js`, `app.js`, `app.css`, and `icon.svg` are directly inside the document root.
 5. Open `https://your-domain/`, use the browser’s **Install app** option, and test the mobile navigation bar.
 
 ## cPanel checks
@@ -19,7 +19,7 @@ NovaShell’s hosted build is a static PWA. Upload only public files: never uplo
 
 ## What remains local
 
-Hosted NovaShell keeps browser-only features such as notes, playlists, visualizers, discovery, and the UI shell. Native Linux launches, full file scanning, emulator ROM access, local app install/uninstall, local backups, and Relay core editing require the local Python server and remain intentionally unavailable on a public host.
+Hosted NovaShell keeps browser-only features such as explicit IndexedDB game selection, local audio, streams, visualizers, notes, Kanban, live/cached weather, discovery, Relay guidance, and portable browser-data backup. Native Linux launches, automatic ROM/filesystem scans, a bundled emulator runtime, local app install/uninstall, operating-system readings, native backups, and Relay core editing require the local Python server and remain intentionally unavailable on a public host.
 
 ## Optional agentic deploy credentials
 
