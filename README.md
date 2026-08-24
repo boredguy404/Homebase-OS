@@ -10,7 +10,7 @@ Here is the more organized AI-slop explanation.
 
 ![NovaShell in its default Ultra Retro desktop](media/ultra-retro.png)
 
-**Ultra Retro is Homebase’s advertised default:** a full desktop-style shell with a taskbar, menu bar, windows, and pixel-era visual language. For a contemporary alternative, switch to **Cobalt + Radar** in Settings.
+**Ultra Retro is NovaShell’s advertised default:** a full desktop-style shell with a taskbar, menu bar, windows, and pixel-era visual language. For a contemporary alternative, switch to **Cobalt + Radar** in Settings.
 
 > **Why does it look retro?** On purpose. NovaShell’s first-class identity is an intentionally chunky late-'80s/early-'90s desktop: pixel-era controls, teal wallpaper, classic windows, and low-spec-friendly motion. It is not a placeholder, a broken dark mode, or a generic dashboard that forgot to finish loading. If that is not your thing, **Cobalt + Radar** is the polished modern alternative—same features, different surface.
 
@@ -24,9 +24,9 @@ Deployment credentials, host setup, and operator notes are deliberately private.
 
 See the [hosted companion parity matrix](docs/HOSTED_COMPANION_PARITY.md) for the exact local-vs-web boundary before deploying a companion build.
 
-## Install Homebase
+## Install NovaShell
 
-You do not need to be a developer. Pick your computer, paste the highlighted line once, and Homebase handles the project download and startup.
+You do not need to be a developer. Pick your computer, paste the highlighted line once, and NovaShell handles the project download and startup.
 
 ### Chromebook or Linux
 
@@ -48,17 +48,17 @@ curl -fsSL https://raw.githubusercontent.com/boredguy404/Homebase-OS/main/instal
 powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/boredguy404/Homebase-OS/main/install-windows.ps1 | iex"
 ```
 
-Homebase opens automatically. In Chrome or Edge, choose **Install Homebase** to make it fullscreen and remove the address bar. Your games, saves, music, and personal files stay on your computer and are not uploaded to GitHub.
+NovaShell opens automatically. In Chrome or Edge, choose **Install NovaShell** to make it fullscreen and remove the address bar. Your games, saves, music, and personal files stay on your computer and are not uploaded to GitHub.
 
 On its first launch, the three-step welcome setup shows the local device reading, asks exactly which folders may be scanned, then gives direct shortcuts to My Library, owned-game setup, backup and restore, and controller help. The retro update bulletin never covers this setup flow.
 
 ### EmulatorJS runtime (automatic)
 
-Both installers download and unpack the local **EmulatorJS 4.2.3 runtime** on first install (roughly 290 MB), then verify `emulatorjs/data/loader.js` exists before Homebase starts. On Windows, the installer uses the free 7-Zip helper and offers to install it through Winget when needed. It is a local dependency—not something users need to add by hand—and remains ignored by Git. If a first install was interrupted, run the same installer command again; it resumes by installing only a missing runtime. The official EmulatorJS 4.2.3 release is the runtime source. [EmulatorJS release](https://github.com/EmulatorJS/EmulatorJS/releases)
+Both installers download and unpack the local **EmulatorJS 4.2.3 runtime** on first install (roughly 290 MB), then verify `emulatorjs/data/loader.js` exists before NovaShell starts. On Windows, the installer uses the free 7-Zip helper and offers to install it through Winget when needed. It is a local dependency—not something users need to add by hand—and remains ignored by Git. If a first install was interrupted, run the same installer command again; it resumes by installing only a missing runtime. The official EmulatorJS 4.2.3 release is the runtime source. [EmulatorJS release](https://github.com/EmulatorJS/EmulatorJS/releases)
 
 ### Add games you own
 
-Homebase ships without commercial games. To add a backup you legally made:
+NovaShell ships without commercial games. To add a backup you legally made:
 
 1. Open the installed `Homebase-OS` folder.
 2. Put game files in `roms/` and required PlayStation BIOS files in `bios/`.
@@ -97,7 +97,9 @@ This is not a replacement operating system. It is a fast console-like layer over
 |---|---|
 | ![Pocket Archive with intentionally pixelated local game artwork](media/pocket-archive.png) | ![Browse, Homebase’s retro internet-style discovery browser](media/rom-discovery.png) |
 
-Pocket Archive launches a locally installed EmulatorJS runtime for GBA, Game Boy, GBC, NES, SNES, Genesis, N64, and PlayStation files supplied by the user. Each game can have a detail sheet, swipeable gallery, Xbox controller diagram, save controls, performance profile, and fullscreen CRT presentation. Two connected Xbox controllers are forwarded to player one and player two for every supported core; a game that has no local multiplayer simply ignores player two. In the library, Xbox **B** closes an open detail sheet before returning Homebase; once a game is running, the emulator owns B normally.
+Pocket Archive launches a locally installed EmulatorJS runtime for GBA, Game Boy, GBC, NES, SNES, Genesis, N64, and PlayStation files supplied by the user. Each game can have a detail sheet, swipeable gallery, Xbox controller diagram, save controls, performance profile, and fullscreen CRT presentation. Connected Xbox controllers are sorted into distinct EmulatorJS player slots with the complete face-button, D-pad, trigger, shoulder, stick-click, and analog-stick map. Known N64 versus games—and imported N64 games marked multiplayer—show a direct **2 players · versus** launch. A single-player title simply ignores the extra slot. In the library, Xbox **B** closes an open detail sheet before returning NovaShell; once a game is running, the emulator owns B normally.
+
+The controller contract and a simulated two-pad assignment test run in the release audit. Real acceptance still requires two physical controllers on the target Chromebook: open the game’s own versus/player-select screen and verify each pad controls a different player. See the [Xbox controller smoke test](docs/HARDWARE_CONTROLLER_SMOKE.md).
 
 The shelf scans `roms/` and My Library when it opens, so newly added supported files appear without maintaining a second list. Its compact **System** and **Type** filters are touch-sized, spaced apart, and scroll horizontally on narrow screens. Existing owner-supplied cover PNGs and gameplay GIFs are used first; when no local artwork exists, NovaShell shows an honest system card instead of a broken image.
 
@@ -127,7 +129,11 @@ The **Workspace Editor** can load an allowlisted set of NovaShell core files, cr
 
 Utility Desk is deliberately useful without an account or a network connection: live device readings, notes, calculator, clipboard handoff, focus timer, converter, local SHA-256 file verification, quick queue, Kanban, and a **Workspace handoff** tool. Choose a folder and it creates a downloadable JSON inventory with relative names, timestamps, sizes, and fingerprints—never file contents or absolute paths. That makes a copied folder, backup, or support handoff explainable without uploading private data.
 
-Its **Local App Shelf** automatically discovers removable modules rather than hiding them in folders. Current local-first tools include Focus Deck (recoverable focus sessions plus work/rest training rounds), Pantry Ledger (inventory and expiry), Loop Lab (user-owned audio waveform and A/B loops), Writer Desk (private autosaved drafts plus opt-in real text, Markdown, and Fountain file handles on Chromium), Reset Station (private hydration/breath/reset routines), Rail Finder (official station/accessibility directory with nearest-stop sorting), Weather Station, Pokedex Browser, Maker Desk, Quest Board, and NovaShell World. Adding a valid `user-apps/<category>/<app>/app.json` makes another module appear without hardcoding a desktop tile.
+Its **Local App Shelf** automatically discovers removable modules rather than hiding them in folders. Current local-first tools include Focus Deck (recoverable focus sessions plus work/rest training rounds), Pantry Ledger (inventory and expiry), Loop Lab (user-owned audio waveform and A/B loops), Writer Desk (private autosaved drafts plus opt-in real text, Markdown, and Fountain file handles on Chromium), Reset Station (seven paced-breathing choices, hydration, recovery breaks, optional phase chimes, and local history), Rail Finder (all 144 Chicago L stations, accessibility and nearest-stop search, private server-side CTA predictions, and a direct departure-to-arrival board), Weather Station, Pokedex Browser, Maker Desk, Quest Board, and NovaShell World. Adding a valid `user-apps/<category>/<app>/app.json` makes another module appear without hardcoding a desktop tile.
+
+| Reset Station | Rail Finder |
+|---|---|
+| ![Reset Station paced breathing and daily cadence tools in Ultra Retro](media/reset-station.png) | ![Rail Finder departure, arrival, and live CTA board in Ultra Retro](media/rail-finder.png) |
 
 **Quick commands** is the matching local command layer: press `Ctrl`/`⌘` + `K`, or use its desktop tile, to search the same visible NovaShell routes. It opens only explicit in-app panels and display controls; Xbox D-pad/A/B works while the palette is open.
 
@@ -139,7 +145,7 @@ Maker Desk is a removable local app for sketching a compact 16 × 12 tile map on
 
 ### NovaShell World
 
-NovaShell World is the optional playable representation of the OS. It is a low-resolution Three.js room built from the owner-approved migration path: arcade cabinets open Pocket Archive, the file cabinet opens My Library, the computer opens system detail, the speaker/turntable opens Orbit, and Relay is an interactive AI NPC using the existing assistant connection. It is usable with touch, keyboard, and Xbox-style D-pad/A/B input; the separate game’s characters, story, media, server routes, and saves are not included.
+NovaShell World is the optional playable representation of the OS. It is a low-resolution, nearest-neighbor Three.js pixel building with an Arcade Hall, Library + Files room, Orbit Lounge, System Workshop, connecting corridor, collision-aware walls and doors, an animated code-drawn character, and detailed procedural furniture. Local cabinets open Pocket Archive, file stations open My Library, computers open real NovaShell tools, the speaker stack opens Orbit, and the Relay terminal opens the existing assistant. It is usable with touch, keyboard, and Xbox-style input. The approved migration reuses the old engine architecture—not its characters, story, media, services, saves, or private operational data.
 
 ![NovaShell World in Ultra Retro](media/novashell-world.png)
 
