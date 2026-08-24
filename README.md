@@ -12,6 +12,8 @@ Here is the more organized AI-slop explanation.
 
 **Ultra Retro is Homebase’s advertised default:** a full desktop-style shell with a taskbar, menu bar, windows, and pixel-era visual language. For a contemporary alternative, switch to **Cobalt + Radar** in Settings.
 
+> **Why does it look retro?** On purpose. NovaShell’s first-class identity is an intentionally chunky late-'80s/early-'90s desktop: pixel-era controls, teal wallpaper, classic windows, and low-spec-friendly motion. It is not a placeholder, a broken dark mode, or a generic dashboard that forgot to finish loading. If that is not your thing, **Cobalt + Radar** is the polished modern alternative—same features, different surface.
+
 ## Hosted NovaShell companion
 
 [Open NovaShell on the web →](https://novashell.app) *(deployment is being prepared; the local companion remains the full Chromebook/PC edition until this link is live.)*
@@ -70,6 +72,8 @@ Homebase ships without commercial games. To add a backup you legally made:
 Supported systems include Game Boy, GBC, GBA, NES, SNES, Genesis, N64, and PlayStation.
 
 For a real one- or two-controller validation on the target device, use the short [Xbox controller smoke test](docs/HARDWARE_CONTROLLER_SMOKE.md). It separates Chrome gamepad visibility, shelf navigation, emulator input ownership, and local multiplayer so a game-specific control issue is easy to identify.
+
+Maintainers can also run `./scripts/controller-contract-audit.sh` to catch source-level ownership regressions before the physical test. It is a guardrail, not a substitute for pressing buttons on the actual Chromebook.
 
 ![NovaShell supported systems: Game Boy, GBC, GBA, NES, SNES, Genesis, N64, and PlayStation](media/supported-systems.svg)
 
