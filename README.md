@@ -135,6 +135,15 @@ Its **Local App Shelf** automatically discovers removable modules rather than hi
 |---|---|
 | ![Reset Station paced breathing and daily cadence tools in Ultra Retro](media/reset-station.png) | ![Rail Finder departure, arrival, and live CTA board in Ultra Retro](media/rail-finder.png) |
 
+**Weather Station** turns an ordinary city search into a full daily console:
+current conditions, wind and gusts, humidity, precipitation, pressure, daylight,
+the next 12 hours, seven days, air quality, sunrise, sunset, and UV. It uses
+Open-Meteo directly, needs no NovaShell account, and keeps the last successful
+report on the device as an offline fallback. A local-only default location can
+be configured without publishing it to Git.
+
+![Weather Station live forecast console in Ultra Retro](media/weather-station.png)
+
 **Quick commands** is the matching local command layer: press `Ctrl`/`⌘` + `K`, or use its desktop tile, to search the same visible NovaShell routes. It opens only explicit in-app panels and display controls; Xbox D-pad/A/B works while the palette is open.
 
 ![Workspace handoff in Ultra Retro](media/utility-workspace-handoff.png)
@@ -262,6 +271,7 @@ The PWA shell, browser emulators, Xbox input, Orbit, My Library, browser saves, 
 | My Library, Settings, saves, and backups | Local and offline |
 | Local Orbit playlists | Local and offline |
 | Internet radio and YouTube | Requires internet |
+| Weather Station | Live search requires internet; the last successful report remains available locally |
 | Flathub search/install and remote app screenshots | Requires internet |
 | ROM Discovery text catalog | Local; remote reference media may require internet |
 

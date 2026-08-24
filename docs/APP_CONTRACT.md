@@ -23,7 +23,10 @@ user-apps/
 └── experiments/     # prototypes awaiting promotion or removal
 ```
 
-The current `weather-station/` is a compact example app. New Relay work should use a taxonomy folder, then expose its `app.json` through `/api/user-apps`.
+The current `weather-station/` is a complete reference app: its markup, styles,
+behavior, cached fallback, and manifest live together in one taxonomy folder.
+New Relay work should follow that boundary, then expose its `app.json` through
+`/api/user-apps`.
 
 ## App manifest
 

@@ -1,8 +1,10 @@
 {
-  "version": "117",
+  "version": "118",
   "released": "2026-08-24",
-  "notes": "Two-controller N64 play now keeps reconciling late-arriving Xbox pads and recognizes a wider set of local-versus fighters.",
+  "notes": "Weather Station is now a complete daily forecast console with hourly, weekly, air-quality, sun, UV, responsive themes, and an offline last-report fallback.",
   "changes": [
+    "Weather Station now uses one self-contained modular runtime instead of layered legacy scripts and styles.",
+    "Forecast URLs can specify a place, public captures skip private local defaults, and the last successful report remains usable when weather sources are offline.",
     "Xbox pads are sorted by physical browser index and assigned independently to player one through player four, including controllers exposed after the emulator starts.",
     "N64 fighter detection now includes Mortal Kombat, Killer Instinct, ClayFighter, Fighter's Destiny, Mace, War Gods, Dark Rift, and other local-versus titles.",
     "The full EmulatorJS map now includes both analog sticks, triggers, D-pad, face buttons, shoulders, and stick clicks.",
