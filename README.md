@@ -135,6 +135,12 @@ Utility Desk is deliberately useful without an account or a network connection: 
 
 Maker Desk is a removable local app for sketching a compact 16 × 12 tile map on touch. It saves only in the current browser, then exports ordinary JSON for a future game-engine project. It does not contain an engine, game assets, or network calls.
 
+### NovaShell World
+
+NovaShell World is the optional playable representation of the OS. Its floor can use the local Maker Desk map; the arcade cabinets open Pocket Archive, the file cabinet opens My Library, the computer opens system detail, the speaker/turntable opens Orbit, and Relay opens the existing assistant connection. It is original canvas art and route wiring—not copied code or assets—and is usable with touch, keyboard, and Xbox-style D-pad/A/B input.
+
+![NovaShell World in Ultra Retro](media/novashell-world.png)
+
 **Quest Board** is the companion dashboard for that map contract. It browses the saved local project, opens Maker Desk for editing, and provides an original top-down playable preview with keyboard and Xbox D-pad movement. It uses no copied archived game code or assets.
 
 ![Quest Board in Ultra Retro](media/quest-board.png)

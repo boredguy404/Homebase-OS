@@ -1,0 +1,7 @@
+{
+  "name": "NovaShell World",
+  "description": "A playable, touch- and controller-ready 2.5D map of NovaShell's real arcade, files, system desk, Orbit sound system, settings, and Relay.",
+  "category": "games",
+  "entry": "index.html",
+  "icon": "◈"
+}
