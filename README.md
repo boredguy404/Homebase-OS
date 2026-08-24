@@ -69,6 +69,8 @@ Homebase ships without commercial games. To add a backup you legally made:
 
 Supported systems include Game Boy, GBC, GBA, NES, SNES, Genesis, N64, and PlayStation.
 
+For a real one- or two-controller validation on the target device, use the short [Xbox controller smoke test](docs/HARDWARE_CONTROLLER_SMOKE.md). It separates Chrome gamepad visibility, shelf navigation, emulator input ownership, and local multiplayer so a game-specific control issue is easy to identify.
+
 ![NovaShell supported systems: Game Boy, GBC, GBA, NES, SNES, Genesis, N64, and PlayStation](media/supported-systems.svg)
 
 The in-app **Add your games** guide explains filenames, artwork, privacy, and recommended GIF sizes. ROMs, BIOS files, saves, and private artwork are ignored by Git and remain local.
