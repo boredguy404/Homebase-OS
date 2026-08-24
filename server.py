@@ -229,6 +229,30 @@ def source_connection_status():
     except (OSError, ValueError, TypeError): profile={}
     return {"configured":bool(profile.get("password")),"protocol":profile.get("protocol",""),"host":profile.get("host",""),"port":profile.get("port",0),"username":profile.get("username",""),"directory":profile.get("directory","")}
 
+def test_source_connection():
+    """Authenticate once and list a directory without printing credentials or file names."""
+    try: profile=json.loads(SOURCE_CONNECTION_FILE.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError): raise ValueError("save a local connection profile first")
+    protocol=profile.get("protocol");host=profile.get("host");port=profile.get("port");directory=profile.get("directory", "/")
+    if protocol not in {"sftp", "ftps"} or not host or not profile.get("username") or not profile.get("password"): raise ValueError("the saved profile is incomplete")
+    def netrc_value(value): return '"'+str(value).replace('\\','\\\\').replace('"','\\"')+'"'
+    handle=tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", prefix="novashell-netrc-", delete=False)
+    try:
+        handle.write("machine %s login %s password %s\n" % (host, netrc_value(profile["username"]), netrc_value(profile["password"])))
+        handle.close();os.chmod(handle.name,0o600)
+        scheme="ftp" if protocol == "ftps" else "sftp"
+        remote=f"{scheme}://{host}:{port}"+urllib.parse.quote(directory if directory.startswith("/") else "/"+directory, safe="/%")
+        command=["curl","--disable","--silent","--show-error","--fail","--list-only","--connect-timeout","12","--max-time","24","--netrc-file",handle.name]
+        if protocol == "ftps": command.append("--ssl-reqd")
+        result=subprocess.run(command+[remote],capture_output=True,text=True,timeout=28,check=False)
+        if result.returncode: raise ValueError("connection failed: check protocol, server, port, login, and remote folder")
+        entries=[line for line in result.stdout.splitlines() if line.strip()]
+        return {"connected":True,"protocol":protocol,"host":host,"port":port,"directory":directory,"entries":len(entries),"message":f"Connected securely. The folder responded with {len(entries)} item{'s' if len(entries)!=1 else ''}."}
+    except subprocess.TimeoutExpired: raise ValueError("connection timed out; check server, port, or network")
+    finally:
+        try: os.unlink(handle.name)
+        except OSError: pass
+
 def relay_ai_response(instructions, input_text, max_tokens=1200, json_object=False):
     profile=assistant_profile()
     if not profile: raise ValueError("connect an AI provider in Relay before drafting")
@@ -1205,6 +1229,10 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                 if removed: SOURCE_CONNECTION_FILE.unlink()
                 self._json(200, {"removed":removed})
             except OSError as error: self._json(400, {"error":str(error)})
+            return
+        if route.path == "/api/source-connection/test":
+            try: self._json(200, test_source_connection())
+            except (OSError, ValueError, TypeError) as error: self._json(400, {"error":str(error)})
             return
         if route.path == "/api/assistant/key":
             length = min(int(self.headers.get("Content-Length", "0")), 16 * 1024)
