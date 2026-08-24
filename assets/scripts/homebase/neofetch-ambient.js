@@ -1,4 +1,8 @@
 (() => {
+  const retireLegacyVisuals = () => {
+    if (document.documentElement.dataset.theme !== 'ultra-retro') return;
+    document.querySelectorAll('.gyro-stage,.nightglass-mark,.gesture-pad,.gesture-hint').forEach(node => node.remove());
+  };
   const esc = value => String(value ?? '—').replace(/[&<>]/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[character]));
   const render = async () => {
     if (document.querySelector('#neofetch-ambient')) return;
@@ -18,6 +22,7 @@ LOAD    reading…
 INPUT   reading…
 <span class="neofetch-cursor">█</span></pre>`;
     document.body.prepend(panel);
+    retireLegacyVisuals();
     try {
       const [system, setup] = await Promise.all([
         fetch('/api/insights', {cache: 'no-store'}).then(response => response.json()),
@@ -31,4 +36,5 @@ INPUT   reading…
     }
   };
   addEventListener('DOMContentLoaded', render);
+  addEventListener('nightglass-theme', retireLegacyVisuals);
 })();
