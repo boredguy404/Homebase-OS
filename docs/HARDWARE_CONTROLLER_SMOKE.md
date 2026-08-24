@@ -37,6 +37,8 @@ navigation after the player is closed or Home is deliberately chosen.
 
 1. Connect two controllers and repeat the browser visibility check.
 2. Choose a game with an actual local-versus or multiplayer mode.
+   The launch button should say **2 pads ready**. If it says **connect P2**,
+   press a button on each controller and tap the button again.
 3. Use the game’s own player-select/versus screen to verify both pads.
 4. For an N64 fighter, confirm both players can move, block, attack, pause, and
    return to the match without either pad driving both fighters.

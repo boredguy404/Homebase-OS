@@ -25,6 +25,7 @@ require "gamepadSelection\[player\]=pad\?" assets/scripts/arcade/emulator-gamepa
 require "1:cloneForPlayer\(1\)" assets/scripts/arcade/emulator-gamepads.js "Player-two controls are missing."
 require "LEFT_STICK_X:\+1" assets/scripts/arcade/emulator-gamepads.js "Analog stick mappings are missing."
 require "markedMultiplayer=.*playerInfo" assets/scripts/arcade/game-details.js "Imported multiplayer metadata no longer enables the N64 versus launch."
+require "connectedPads\(\)\.length<2" assets/scripts/arcade/game-details.js "N64 versus launch no longer verifies that Chrome can see both controllers."
 require "count>1&&stableTicks>20" assets/scripts/arcade/emulator-gamepads.js "Late second-controller reconciliation is missing."
 if rg -q "function pumpStick|simulateInput\(player" pages/arcade.html; then
   echo "Controller contract failed: legacy double-input loop is still active." >&2
