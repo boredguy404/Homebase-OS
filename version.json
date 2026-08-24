@@ -1,8 +1,10 @@
 {
-  "version": "119",
+  "version": "120",
   "released": "2026-08-24",
-  "notes": "Owned-game import now preserves the server-returned location identity so the ROM copy and its private catalog card complete as one reliable flow.",
+  "notes": "Quick Commands now recognizes safe plain-language intents and previews their data boundary and effects before opening a local report or backup screen.",
   "changes": [
+    "Show large files, open my music folder, and back up game saves now resolve to explicit NovaShell routes instead of falling through as unknown text.",
+    "Sensitive-looking intents show a controller-compatible preview stating what data is read and confirming that no file or backup changes happen automatically.",
     "The import screen now has one transaction owner and sends the required catalog key and source path after a local ROM copy.",
     "Existing owned games update their private card without overwriting existing artwork, and interrupted metadata appears in the review queue rather than vanishing.",
     "Manage local games now has All, Needs details, and Multiplayer queues plus search, location identity, a consistent editor window, and owner-art replacement with ignored local backups.",

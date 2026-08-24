@@ -153,7 +153,7 @@ be configured without publishing it to Git.
 
 ![Weather Station live forecast console in Ultra Retro](media/weather-station.png)
 
-**Quick commands** is the matching local command layer: press `Ctrl`/`⌘` + `K`, or use its desktop tile, to search the same visible NovaShell routes. It opens only explicit in-app panels and display controls; Xbox D-pad/A/B works while the palette is open.
+**Quick commands** is the matching local command layer: press `Ctrl`/`⌘` + `K`, or use its desktop tile, to search the same visible NovaShell routes. Plain-language safe intents such as **show large files**, **open my music folder**, and **back up game saves** resolve to explicit in-app destinations. Storage and backup intents first preview their data boundary and state exactly what will—or will not—change. It never treats free text as shell permission; Xbox D-pad/A/B works in both the result list and preview.
 
 ![Workspace handoff in Ultra Retro](media/utility-workspace-handoff.png)
 
