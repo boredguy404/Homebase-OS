@@ -234,13 +234,13 @@ def test_source_connection():
     try: profile=json.loads(SOURCE_CONNECTION_FILE.read_text(encoding="utf-8"))
     except (OSError, ValueError, TypeError): raise ValueError("save a local connection profile first")
     protocol=profile.get("protocol");host=profile.get("host");port=profile.get("port");directory=profile.get("directory", "/")
-    if protocol not in {"sftp", "ftps"} or not host or not profile.get("username") or not profile.get("password"): raise ValueError("the saved profile is incomplete")
+    if protocol not in {"ftp", "sftp", "ftps"} or not host or not profile.get("username") or not profile.get("password"): raise ValueError("the saved profile is incomplete")
     def netrc_value(value): return '"'+str(value).replace('\\','\\\\').replace('"','\\"')+'"'
     handle=tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", prefix="novashell-netrc-", delete=False)
     try:
         handle.write("machine %s login %s password %s\n" % (host, netrc_value(profile["username"]), netrc_value(profile["password"])))
         handle.close();os.chmod(handle.name,0o600)
-        scheme="ftp" if protocol == "ftps" else "sftp"
+        scheme="sftp" if protocol == "sftp" else "ftp"
         remote=f"{scheme}://{host}:{port}"+urllib.parse.quote(directory if directory.startswith("/") else "/"+directory, safe="/%")
         command=["curl","--disable","--silent","--show-error","--fail","--list-only","--connect-timeout","12","--max-time","24","--netrc-file",handle.name]
         if protocol == "ftps": command.append("--ssl-reqd")
@@ -254,7 +254,8 @@ def test_source_connection():
             else: reason="the server rejected the protocol, login, or remote folder"
             raise ValueError("connection failed: "+reason)
         entries=[line for line in result.stdout.splitlines() if line.strip()]
-        return {"connected":True,"protocol":protocol,"host":host,"port":port,"directory":directory,"entries":len(entries),"message":f"Connected securely. The folder responded with {len(entries)} item{'s' if len(entries)!=1 else ''}."}
+        wording="Connected securely" if protocol in {"sftp", "ftps"} else "Connected via plain FTP"
+        return {"connected":True,"protocol":protocol,"host":host,"port":port,"directory":directory,"entries":len(entries),"message":f"{wording}. The folder responded with {len(entries)} item{'s' if len(entries)!=1 else ''}."}
     except subprocess.TimeoutExpired: raise ValueError("connection timed out; check server, port, or network")
     finally:
         try: os.unlink(handle.name)
@@ -1214,11 +1215,11 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                 payload=json.loads(self.rfile.read(length) or b"{}")
                 protocol=str(payload.get("protocol", "ftps")).casefold()
                 host=str(payload.get("host", "")).strip().casefold()
-                port=int(payload.get("port") or (990 if protocol == "ftps" else 22))
+                port=int(payload.get("port") or {"ftp":21,"ftps":990,"sftp":22}.get(protocol,22))
                 username=str(payload.get("username", "")).strip()
                 password=str(payload.get("password", ""))
                 directory=str(payload.get("directory", "")).strip() or "/"
-                if protocol not in {"ftps", "sftp"}: raise ValueError("choose FTPS or SFTP; plain FTP is intentionally disabled")
+                if protocol not in {"ftp", "ftps", "sftp"}: raise ValueError("choose FTP, FTPS, or SFTP")
                 if not re.fullmatch(r"[a-z0-9.-]{1,253}", host) or ".." in host: raise ValueError("enter only a server hostname or IP address")
                 if not 1 <= port <= 65535: raise ValueError("port must be between 1 and 65535")
                 if not username or len(username)>120 or any(ord(char)<32 for char in username): raise ValueError("enter a valid username")
