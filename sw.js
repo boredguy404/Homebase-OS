@@ -1,4 +1,4 @@
-const CACHE='homebase-v135';
+const CACHE='homebase-v137';
 const SHELL=[
   '/', '/index.html', '/offline.html', '/manifest.webmanifest', '/assets/icons/homebase-icon.svg', '/user-apps/wellness/reset-station/index.html', '/user-apps/wellness/reset-station/app.json', '/user-apps/wellness/reset-station/app.css', '/user-apps/wellness/reset-station/app.js',
   '/pages/arcade.html', '/pages/discover.html', '/pages/files.html', '/pages/apps.html', '/pages/source-connection.html',
@@ -34,7 +34,7 @@ const SHELL=[
   '/assets/styles/homebase/relay-composer-flow.css', '/assets/styles/homebase/relay-keyring.css',
   '/assets/scripts/homebase/relay-keyring.js'
 ];
-SHELL.push('/user-apps/productivity/focus-deck/rounds.css','/user-apps/productivity/focus-deck/rounds.js','/user-apps/creative/pose-lab/index.html','/user-apps/creative/pose-lab/app.json','/user-apps/creative/pose-lab/app.css','/user-apps/creative/pose-lab/app.js','/user-apps/utilities/rail-finder/index.html','/user-apps/utilities/rail-finder/app.json','/user-apps/utilities/rail-finder/app.css','/user-apps/utilities/rail-finder/app.js','/assets/styles/homebase/neofetch-placement.css');
+SHELL.push('/user-apps/productivity/focus-deck/rounds.css','/user-apps/productivity/focus-deck/rounds.js','/user-apps/utilities/rail-finder/index.html','/user-apps/utilities/rail-finder/app.json','/user-apps/utilities/rail-finder/app.css','/user-apps/utilities/rail-finder/app.js','/assets/styles/homebase/neofetch-placement.css','/user-apps/games/novashell-world/engine/pixel-renderer.js','/user-apps/games/novashell-world/engine/pixel-actor.js','/user-apps/games/novashell-world/engine/world.js','/user-apps/games/novashell-world/content/building.js');
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;event.respondWith(fetch(event.request).then(response=>{const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy));return response}).catch(async()=>{const exact=await caches.match(event.request),pathFallback=await caches.match(event.request,{ignoreSearch:true});return exact||pathFallback||(event.request.mode==='navigate'?caches.match('/offline.html'):Response.error())}))});

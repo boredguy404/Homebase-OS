@@ -1,0 +1,41 @@
+export class PixelWorld {
+  constructor(THREE,scene,definition){this.THREE=THREE;this.scene=scene;this.definition=definition;this.colliders=[];this.stations=[];this.build()}
+  material(color,emissive=0){return new this.THREE.MeshLambertMaterial({color,emissive,emissiveIntensity:1})}
+  cube(group,w,h,d,color,x=0,y=h/2,z=0,emissive=0){const mesh=new this.THREE.Mesh(new this.THREE.BoxGeometry(w,h,d),this.material(color,emissive));mesh.position.set(x,y,z);group.add(mesh);return mesh}
+  cylinder(group,rt,rb,h,color,x=0,y=h/2,z=0){const mesh=new this.THREE.Mesh(new this.THREE.CylinderGeometry(rt,rb,h,8),this.material(color));mesh.position.set(x,y,z);group.add(mesh);return mesh}
+  texture(def){const canvas=document.createElement('canvas');canvas.width=canvas.height=32;const ctx=canvas.getContext('2d'),seed=(Math.abs(def.x*17+def.z*31)|0)+7;ctx.fillStyle=def.floor;ctx.fillRect(0,0,32,32);ctx.fillStyle=def.line;for(let i=0;i<32;i+=8){ctx.fillRect(i,0,1,32);ctx.fillRect(0,i,32,1)}for(let i=0;i<30;i++){const x=(Math.sin(seed+i*91)*9999%32+32)%32,y=(Math.sin(seed+i*47)*7777%32+32)%32;ctx.globalAlpha=.18;ctx.fillRect(x|0,y|0,1,1)}ctx.globalAlpha=1;const texture=new this.THREE.CanvasTexture(canvas);texture.magFilter=texture.minFilter=this.THREE.NearestFilter;texture.wrapS=texture.wrapT=this.THREE.RepeatWrapping;texture.repeat.set(def.w/4,def.d/4);texture.generateMipmaps=false;return texture}
+  build(){
+    this.scene.add(new this.THREE.HemisphereLight(0xc8b8a0,0x24202b,1.9));const sun=new this.THREE.DirectionalLight(0xffd9a1,1.15);sun.position.set(-9,18,8);this.scene.add(sun);
+    for(const room of this.definition.rooms){const floor=new this.THREE.Mesh(new this.THREE.PlaneGeometry(room.w,room.d),new this.THREE.MeshLambertMaterial({map:this.texture(room)}));floor.rotation.x=-Math.PI/2;floor.position.set(room.x,0,room.z);this.scene.add(floor)}
+    for(const [x,z,hw,hd] of this.definition.walls){const group=new this.THREE.Group();this.cube(group,hw*2,4.8,hd*2,'#786d72',0,2.4,0);this.cube(group,hw*2+.12,.24,hd*2+.12,'#aa9a86',0,4.7,0);group.position.set(x,0,z);this.scene.add(group);this.colliders.push({x,z,hw,hd})}
+    for(const item of this.definition.furniture)this.addFurniture(item);
+    for(const station of this.definition.stations)this.addStation(station);
+  }
+  addFurniture(item){
+    const g=new this.THREE.Group(),c=item.color||'#73604d',ry=item.ry||0;g.position.set(item.x,0,item.z);g.rotation.y=ry;const cube=(...args)=>this.cube(g,...args),cyl=(...args)=>this.cylinder(g,...args);
+    let w=item.w||2,d=item.d||2,solid=true;
+    if(item.type==='rug'){cube(w,.035,d,c,0,.025,0);solid=false}
+    else if(item.type==='counter'){cube(w,1.25,d,c);cube(w+.2,.16,d+.2,'#a17c55',0,1.32,0)}
+    else if(item.type==='vending'){w=2.3;d=1.5;cube(w,4.2,d,c);cube(1.75,2.25,.07,'#cfe7c7',0,2.85,.79,.25);for(let y=.75;y<1.8;y+=.34)cube(1.5,.08,.08,'#e0cf75',0,y,.84)}
+    else if(item.type==='stool'){w=d=1.1;cyl(.55,.55,.24,'#9b724b',0,1.35,0);for(const x of[-.38,.38])for(const z of[-.38,.38])cube(.1,1.3,.1,'#4c3a30',x,.65,z)}
+    else if(item.type==='shelf'){w=item.w||6;d=1.2;cube(w,3.8,d,c);for(const y of[.7,1.55,2.4,3.25])cube(w-.2,.12,d+.18,'#a17b4f',0,y,0);const colors=['#8c3f45','#315b78','#987439','#4f764c','#73527d'];for(let i=0;i<12;i++)cube(.28,.55+(i%3)*.1,.72,colors[i%colors.length],-w/2+.42+i*(w-.6)/12,1.05+(i%2)*.82,.17)}
+    else if(item.type==='file'){w=2.4;d=1.25;cube(w,4,d,c);for(const y of[.72,1.65,2.58,3.5]){cube(2.05,.72,.08,'#a9a18a',0,y,.67);cube(.72,.1,.08,'#4e493f',0,y,.73)}}
+    else if(item.type==='table'){w=item.w||6;d=item.d||3;cube(w,.28,d,c,0,1.8,0);for(const x of[-w/2+.3,w/2-.3])for(const z of[-d/2+.3,d/2-.3])cube(.2,1.75,.2,'#49372d',x,.88,z)}
+    else if(item.type==='chair'){w=d=1.45;cube(1.35,.18,1.35,c,0,1.05,0);cube(1.35,1.55,.18,c,0,1.75,-.6);for(const x of[-.48,.48])for(const z of[-.48,.48])cube(.13,1,.13,'#3e3430',x,.5,z)}
+    else if(item.type==='plant'){w=d=1.35;cyl(.65,.48,.75,'#855d42',0,.38,0);for(const [x,z,s] of[[-.35,0,.7],[.35,0,.75],[0,.28,.85],[0,-.28,.65]]){const leaf=new this.THREE.Mesh(new this.THREE.SphereGeometry(s,6,4),this.material('#47754d'));leaf.position.set(x,1.05+s*.45,z);g.add(leaf)}solid=false}
+    else if(item.type==='couch'){w=5;d=2.2;cube(4.9,.75,2,c,0,.65,0);cube(4.9,1.55,.55,c,0,1.45,-.78);cube(.48,1.05,2,c,-2.25,.9,0);cube(.48,1.05,2,c,2.25,.9,0);cube(2.25,.12,1.65,'#9a6a63',-1.18,1.08,.12);cube(2.25,.12,1.65,'#9a6a63',1.18,1.08,.12)}
+    else if(item.type==='speaker'){w=2;d=1.5;cube(w,4,d,'#181b22');for(const y of[1.1,2.7]){const cone=cyl(.55,.55,.12,'#577f91',0,y,.81);cone.rotation.x=Math.PI/2}cube(1.25,.18,.08,'#d5c26b',0,3.65,.82)}
+    else if(item.type==='record'){w=4;d=1.2;cube(w,3.2,d,'#694d37');for(const y of[.75,1.55,2.35])cube(w-.2,.12,d+.08,'#a2744d',0,y,0);for(let i=0;i<10;i++)cube(.23,.65,.72,['#b45252','#4f7490','#d2a84a','#5f885e'][i%4],-1.65+i*.36,1.1+(i%2)*.78,.2)}
+    else if(item.type==='lamp'){w=d=.9;cyl(.09,.12,3,'#5b5046',0,1.5,0);const shade=new this.THREE.Mesh(new this.THREE.ConeGeometry(.75,1.1,8,1,true),this.material('#d2a968',.2));shade.position.y=3;g.add(shade);const light=new this.THREE.PointLight(0xffc76a,.75,9);light.position.y=2.7;g.add(light);solid=false}
+    else if(item.type==='desk'||item.type==='workbench'){w=item.type==='workbench'?7:6;d=2.4;cube(w,.28,d,c,0,1.7,0);for(const x of[-w/2+.35,w/2-.35])cube(.25,1.65,2,'#493b34',x,.83,0);if(item.type==='desk'){cube(2.5,1.7,.28,'#282b30',0,2.8,-.35);cube(2.15,1.35,.06,'#5fa9a2',0,2.8,-.19,.35);cube(2,.07,.7,'#aaa092',0,1.9,.35)}else{for(let i=0;i<6;i++)cube(.45,.18,.2,['#be774d','#668a99','#d0b24f'][i%3],-2+i*.8,1.96,.2)}}
+    else if(item.type==='server'){w=2.25;d=1.6;cube(w,5,d,'#272c34');for(let y=.55;y<4.7;y+=.48){cube(1.85,.33,.07,'#424a55',0,y,.84);for(let x=-.65;x<.8;x+=.42)cube(.1,.1,.05,(Math.round(y*10)+Math.round(x*10))%3?'#55c07a':'#d69b4b',x,y,.9,.3)}}
+    else if(item.type==='crate'){w=d=1.7;cube(w,1.7,d,c);cube(w+.04,.12,d+.04,'#9b7047',0,.42,0);cube(w+.04,.12,d+.04,'#9b7047',0,1.28,0)}
+    this.scene.add(g);if(solid){const turn=Math.abs(Math.sin(ry))>.5;this.colliders.push({x:item.x,z:item.z,hw:(turn?d:w)/2,hd:(turn?w:d)/2})}
+  }
+  label(text){const canvas=document.createElement('canvas');canvas.width=256;canvas.height=48;const ctx=canvas.getContext('2d');ctx.fillStyle='#101018';ctx.fillRect(0,0,256,48);ctx.strokeStyle='#d8c39a';ctx.lineWidth=3;ctx.strokeRect(2,2,252,44);ctx.fillStyle='#fff4d2';ctx.font='bold 18px monospace';ctx.textAlign='center';ctx.fillText(text.slice(0,22),128,31);const texture=new this.THREE.CanvasTexture(canvas);texture.magFilter=texture.minFilter=this.THREE.NearestFilter;const sprite=new this.THREE.Sprite(new this.THREE.SpriteMaterial({map:texture,transparent:true}));sprite.scale.set(4.8,.9,1);return sprite}
+  addStation(station){const marker=new this.THREE.Group();marker.position.set(station.x,0,station.z);const pad=this.cube(marker,2.6,.08,2.6,'#315f77',0,.06,0,.25),tag=this.label(station.name);tag.position.set(0,4.6,0);marker.add(tag);this.scene.add(marker);this.stations.push({...station,marker,pad})}
+  addArcade(game,index){const x=-27+(index%4)*7.2,z=-17+Math.floor(index/4)*8,g=new this.THREE.Group();g.position.set(x,0,z);this.cube(g,3.4,4.8,2,'#1d1c24');this.cube(g,2.65,1.7,.08,['#d4775a','#5e99c7','#8b6aa7','#d1aa55'][index%4],0,3.35,1.04,.25);this.cube(g,2.8,.35,1.1,'#3f3940',0,2.2,1.05);for(const bx of[-.55,.55])this.cylinder(g,.15,.15,.16,bx<0?'#d85c5c':'#e4c65c',bx,2.45,1.55);this.scene.add(g);this.colliders.push({x,z,hw:1.7,hd:1});this.stations.push({id:'game-'+index,name:String(game.name||'LOCAL GAME').toUpperCase().slice(0,22),x,z:z+1.8,game,marker:g})}
+  resolve(x,z,r=.5){for(const c of this.colliders){const dx=x-c.x,dz=z-c.z,ox=c.hw+r-Math.abs(dx),oz=c.hd+r-Math.abs(dz);if(ox>0&&oz>0){if(ox<oz)x=c.x+Math.sign(dx||1)*(c.hw+r);else z=c.z+Math.sign(dz||1)*(c.hd+r)}}return{x,z}}
+  nearest(x,z){return this.stations.map(station=>({...station,distance:Math.hypot(x-station.x,z-station.z)})).filter(station=>station.distance<3.5).sort((a,b)=>a.distance-b.distance)[0]||null}
+  roomAt(x,z){const room=this.definition.rooms.find(candidate=>Math.abs(x-candidate.x)<=candidate.w/2&&Math.abs(z-candidate.z)<=candidate.d/2);return room?.name||'MAIN CORRIDOR'}
+}
