@@ -137,7 +137,7 @@ Maker Desk is a removable local app for sketching a compact 16 × 12 tile map on
 
 ### NovaShell World
 
-NovaShell World is the optional playable representation of the OS. Its floor can use the local Maker Desk map; the arcade cabinets open Pocket Archive, the file cabinet opens My Library, the computer opens system detail, the speaker/turntable opens Orbit, and Relay opens the existing assistant connection. It is original canvas art and route wiring—not copied code or assets—and is usable with touch, keyboard, and Xbox-style D-pad/A/B input.
+NovaShell World is the optional playable representation of the OS. It is a low-resolution Three.js room built from the owner-approved migration path: arcade cabinets open Pocket Archive, the file cabinet opens My Library, the computer opens system detail, the speaker/turntable opens Orbit, and Relay is an interactive AI NPC using the existing assistant connection. It is usable with touch, keyboard, and Xbox-style D-pad/A/B input; the separate game’s characters, story, media, server routes, and saves are not included.
 
 ![NovaShell World in Ultra Retro](media/novashell-world.png)
 

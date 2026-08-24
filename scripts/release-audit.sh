@@ -22,6 +22,7 @@ python3 -m py_compile server.py
 node --check assets/scripts/homebase/deck.js
 node --check assets/scripts/homebase/command-palette.js
 node --check modules/radio-orbit/app.js
+node --check user-apps/games/novashell-world/world3d.js
 echo "✓ core syntax"
 
 ./scripts/verify-theme-contract.sh "$base"
