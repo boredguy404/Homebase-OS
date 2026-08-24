@@ -16,7 +16,7 @@
 | Knowledge graph | Relay Second Brain | foundation shipped |
 | Hyperlocal weather | improve Weather Station, not another app | reviewed |
 | Markets watchlist | local watchlist with clearly sourced delayed data | review API and financial disclaimers |
-| Live transit | transit panel in Browse/Utility Desk | review stable public feeds and CORS |
+| Live transit | Rail Finder ships the keyless station/accessibility directory; predictions remain gated on an approved CTA key | partial, honest boundary shipped |
 | Sports scores | Browse live-data category | review stable public feeds and attribution |
 | Route-stop finder | travel utility using user-entered locations | review map/data licensing |
 | Accessible-place finder | accessibility-first local search | review data completeness and avoid safety claims |
