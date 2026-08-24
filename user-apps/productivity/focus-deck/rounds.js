@@ -1,0 +1,18 @@
+(()=>{
+  const KEY='novashell-focus-rounds-v1',CONFIG='novashell-focus-round-config-v1',$=s=>document.querySelector(s);
+  const focus=$('#focus-panel'),round=$('#round-panel'),focusTab=$('#focus-mode'),roundTab=$('#round-mode');let ticker=0,audio=null,state=null;
+  function read(key,fallback){try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}}
+  const config=read(CONFIG,{work:3,rest:60,rounds:3,cue:true});$('#work-min').value=config.work;$('#rest-sec').value=config.rest;$('#rounds').value=config.rounds;$('#cue').checked=config.cue;state=read(KEY,null);
+  const saveConfig=()=>localStorage.setItem(CONFIG,JSON.stringify({work:Number($('#work-min').value),rest:Number($('#rest-sec').value),rounds:Number($('#rounds').value),cue:$('#cue').checked}));
+  function show(which){const rounds=which==='round';focus.hidden=rounds;round.hidden=!rounds;focusTab.classList.toggle('active',!rounds);roundTab.classList.toggle('active',rounds)}
+  focusTab.onclick=()=>show('focus');roundTab.onclick=()=>show('round');
+  function duration(phase){return phase==='work'?Number($('#work-min').value)*60000:Number($('#rest-sec').value)*1000}
+  function remaining(){if(!state)return duration('work');return Math.max(0,state.pausedRemaining??(state.ends-Date.now()))}
+  function sound(){if(!$('#cue').checked)return;try{audio ||= new AudioContext();const oscillator=audio.createOscillator(),gain=audio.createGain();oscillator.frequency.value=state?.phase==='rest'?520:820;gain.gain.setValueAtTime(.08,audio.currentTime);gain.gain.exponentialRampToValueAtTime(.001,audio.currentTime+.22);oscillator.connect(gain).connect(audio.destination);oscillator.start();oscillator.stop(audio.currentTime+.23)}catch{}}
+  function next(){if(state.phase==='work'&&state.round>=state.total){sound();localStorage.removeItem(KEY);state=null;render('COMPLETE');return}if(state.phase==='work')state={...state,phase:'rest',ends:Date.now()+duration('rest')};else state={...state,phase:'work',round:state.round+1,ends:Date.now()+duration('work')};delete state.pausedRemaining;localStorage.setItem(KEY,JSON.stringify(state));sound();render()}
+  function fmt(ms){const seconds=Math.ceil(ms/1000);return `${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}`}
+  function render(message=''){if(state&&!state.pausedRemaining&&remaining()<=0){next();return}$('#round-time').textContent=fmt(remaining());$('#round-phase').textContent=message||(state?(state.pausedRemaining?'PAUSED':state.phase.toUpperCase()):'READY');$('#round-count').textContent=`ROUND ${state?.round||1} / ${state?.total||Number($('#rounds').value)}`;const running=Boolean(state),paused=Boolean(state?.pausedRemaining);$('#round-start').disabled=running;$('#round-pause').disabled=!running;$('#round-reset').disabled=!running;$('#round-pause').textContent=paused?'Resume':'Pause';document.querySelectorAll('.round-config input').forEach(input=>input.disabled=running)}
+  $('#round-start').onclick=()=>{saveConfig();audio ||= new AudioContext();state={phase:'work',round:1,total:Number($('#rounds').value),ends:Date.now()+duration('work')};localStorage.setItem(KEY,JSON.stringify(state));sound();render()};
+  $('#round-pause').onclick=()=>{if(!state)return;if(state.pausedRemaining){state.ends=Date.now()+state.pausedRemaining;delete state.pausedRemaining}else state.pausedRemaining=remaining();localStorage.setItem(KEY,JSON.stringify(state));render()};
+  $('#round-reset').onclick=()=>{state=null;localStorage.removeItem(KEY);render()};document.querySelectorAll('.round-config input').forEach(input=>input.onchange=()=>{saveConfig();render()});if(state)show('round');ticker=setInterval(render,250);addEventListener('pagehide',()=>clearInterval(ticker));render();
+})();
