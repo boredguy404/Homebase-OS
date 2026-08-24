@@ -1,12 +1,38 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Manage local games · NovaShell</title><script src="/assets/scripts/shared/theme-sync.js"></script>
-<style>body{margin:0;background:#101719;color:#eef5f2;font:15px system-ui}.shell{max-width:1050px;margin:auto;padding:24px}.back,button,input,textarea{font:inherit}button,.back{min-height:44px;border:1px solid #ffffff44;border-radius:9px;background:#ffffff12;color:inherit;padding:0 13px;cursor:pointer}.back{text-decoration:none;display:inline-flex;align-items:center}h1{font-size:clamp(38px,7vw,65px);margin:34px 0 8px}.intro{max-width:720px;color:#b7cdd2}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.game{padding:0;overflow:hidden;text-align:left}.game img,.art{display:grid;width:100%;height:120px;object-fit:cover;place-items:center;background:#263b3f}.game b,.game span{display:block;padding:0 12px}.game b{padding-top:12px}.game span{padding-bottom:12px;color:#b7cdd2;font-size:12px}.editor{display:grid;gap:10px;margin-top:22px;padding:18px;border:1px solid #ffffff33;border-radius:14px;background:#0b1216}.editor[hidden]{display:none}.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}label{display:grid;gap:5px;font-size:11px}input,textarea{padding:10px;border:1px solid #ffffff33;border-radius:8px;background:#071015;color:#fff}textarea{min-height:90px}.editor .mosaic{display:flex;align-items:center;gap:8px;font-size:13px}.editor .mosaic input{width:auto}@media(max-width:600px){.fields{grid-template-columns:1fr}}html[data-theme=ultra-retro] body{background:#aaa;color:#111}html[data-theme=ultra-retro] .editor,html[data-theme=ultra-retro] .game{border:2px solid #111;border-radius:0;background:#d4d4d4;box-shadow:inset 2px 2px #fff,inset -2px -2px #666,4px 4px #111}html[data-theme=ultra-retro] input,html[data-theme=ultra-retro] textarea{background:#fff;color:#111;border:2px inset #eee}</style></head>
-<body><main class="shell"><button class="back" onclick="parent!==window?parent.closePocket():history.back()">← Pocket Archive</button><h1>Manage local games.</h1><p class="intro">Edit private shelf details without changing a ROM. Games found in either <code>roms/</code> or My Library are supported. Mosaic is a display/privacy preference for this device.</p><section id="games" class="grid">Loading local games…</section><form id="editor" class="editor" hidden><b id="editing"></b><div class="fields"><label>Title<input name="title"></label><label>System<input name="system"></label><label>Genre<input name="genre"></label><label>Year<input name="year"></label><label>Players<input name="players"></label><label>Xbox controls<input name="controls"></label></div><label>Description<textarea name="description"></textarea></label><label class="mosaic"><input type="checkbox" name="mosaic"> Use private pixel-mosaic display</label><button>Save local details</button><small id="status"></small></form></main>
-<script>
-const $=selector=>document.querySelector(selector),form=$('#editor'),games=$('#games');let current;
-const esc=value=>{const node=document.createElement('i');node.textContent=value||'';return node.innerHTML};
-async function load(){try{const data=await fetch('/api/games',{cache:'no-store'}).then(response=>response.json());games.innerHTML=data.games.map((game,index)=>'<button class="game" data-index="'+index+'">'+(game.media[0]?'<img src="'+game.media[0]+'" alt="">':'<div class="art">'+esc(game.system)+'</div>')+'<b>'+esc(game.name)+'</b><span>'+esc(game.system)+' · '+esc(game.source)+' · '+(game.mosaic?'mosaic on':'normal art')+'</span></button>').join('')||'No supported local games found.';games.querySelectorAll('button').forEach(button=>button.onclick=()=>edit(data.games[Number(button.dataset.index)]))}catch{games.textContent='Local game catalog is unavailable. Restart NovaShell and try again.'}}
-function edit(game){current=game;form.hidden=false;$('#editing').textContent='Editing '+game.name;for(const key of ['title','system','genre','year','players','controls','description'])form.elements[key].value=game[key]||'';form.elements.mosaic.checked=!!game.mosaic;form.scrollIntoView({behavior:'smooth',block:'start'})}
-form.onsubmit=async event=>{event.preventDefault();if(!current)return;const data=Object.fromEntries(new FormData(form));data.mosaic=form.elements.mosaic.checked;data.slug=(data.title||current.name).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');data.rom_name=current.rom_name;data.catalog_key=current.catalog_key;data.source_path=current.source_path;$('#status').textContent='Saving private catalog…';try{const response=await fetch('/api/game-import/metadata',{method:'POST',headers:{'Content-Type':'application/json','X-Homebase-Local':'1'},body:JSON.stringify(data)}),result=await response.json();$('#status').textContent=response.ok?'Saved. Refreshing shelf…':(result.error||'Could not save details.');if(response.ok)load()}catch{$('#status').textContent='Could not save details.'}};
-load();
-</script></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Manage local games · NovaShell</title>
+  <script src="/assets/scripts/shared/theme-sync.js"></script>
+  <link rel="stylesheet" href="/assets/styles/arcade/game-manager.css">
+</head>
+<body>
+  <main class="shell">
+    <nav><button class="back" type="button" onclick="parent!==window&&parent.closePocket?parent.closePocket():history.back()">← Pocket Archive</button><a href="/pages/game-setup.html">＋ Import owned game</a></nav>
+    <header><small>PRIVATE CATALOG WORKBENCH</small><h1>Manage local games.</h1><p>Edit the shelf card without renaming or changing the owned game file. Entries from <code>roms/</code> and My Library retain separate location identities.</p></header>
+    <section class="queue" aria-label="Game review filters">
+      <div><b id="queue-summary">Reading private catalog…</b><span>Interrupted or auto-scanned imports stay visible here until reviewed.</span></div>
+      <input id="game-search" type="search" placeholder="Search local games…" aria-label="Search local games">
+      <div class="filters"><button type="button" data-filter="all">All</button><button type="button" data-filter="needs">Needs details</button><button type="button" data-filter="multi">Multiplayer</button></div>
+    </section>
+    <section id="games" class="grid" aria-live="polite">Loading local games…</section>
+  </main>
+
+  <dialog id="game-editor" class="game-editor">
+    <form id="editor">
+      <header class="window-title"><b>EDIT PRIVATE GAME CARD</b><button type="button" data-close aria-label="Close editor">×</button></header>
+      <div class="editor-body">
+        <div class="identity"><img id="editing-art" alt=""><div><small id="editing-state"></small><h2 id="editing"></h2><p id="editing-path"></p></div></div>
+        <div class="fields"><label>Title<input name="title" required></label><label>System<input name="system"></label><label>Genre<input name="genre"></label><label>Year<input name="year" inputmode="numeric" maxlength="4"></label><label>Players<input name="players"></label><label>Xbox controls<input name="controls"></label></div>
+        <label>Description<textarea name="description" required></textarea></label>
+        <label class="mosaic"><input type="checkbox" name="mosaic"> Use private pixel-mosaic display</label>
+        <section class="artwork"><div><b>Owner-supplied artwork</b><span>Add or replace the card image. Replacements make a local backup first.</span></div><label>Cover or screenshot<input id="cover-edit" type="file" accept="image/png,image/jpeg,image/webp,image/gif"></label><label>Gameplay preview<input id="preview-edit" type="file" accept="image/png,image/jpeg,image/webp,image/gif"></label></section>
+        <section id="replace-warning" class="replace-warning" hidden><b>Replace existing artwork?</b><p>The current file will be copied to ignored local backup storage. The game file is never changed.</p><div><button type="button" data-keep>Keep current art</button><button type="button" data-replace>Back up and replace</button></div></section>
+        <div class="actions"><button type="button" data-close>Cancel</button><button class="save" type="submit">Save local details</button></div><p id="status" role="status" aria-live="polite"></p>
+      </div>
+    </form>
+  </dialog>
+  <script src="/assets/scripts/arcade/game-manager.js"></script>
+</body>
+</html>

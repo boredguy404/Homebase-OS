@@ -1327,7 +1327,7 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
             except (OSError, ValueError, TypeError) as error: self._json(400, {"error": str(error)})
             return
         if route.path == "/api/game-import/file":
-            kind = urllib.parse.parse_qs(route.query).get("kind", [""])[0]; raw_name = urllib.parse.unquote(self.headers.get("X-File-Name", "")); name = Path(raw_name).name; slug = game_slug(self.headers.get("X-Game-Slug", Path(name).stem)); length=min(int(self.headers.get("Content-Length","0")),4*1024**3)
+            query=urllib.parse.parse_qs(route.query);kind=query.get("kind", [""])[0];replace_requested=query.get("replace",[""])[0]=="1" and self.headers.get("X-Replace-Existing")=="yes";raw_name = urllib.parse.unquote(self.headers.get("X-File-Name", "")); name = Path(raw_name).name; slug = game_slug(self.headers.get("X-Game-Slug", Path(name).stem)); length=min(int(self.headers.get("Content-Length","0")),4*1024**3)
             suffix=Path(name).suffix.casefold()
             if name!=raw_name or not length or kind=="rom" and suffix not in ROM_CORES or kind not in {"rom","cover","preview1","preview2","preview3"}:
                 self._json(400,{"error":"unsupported or invalid import file"});return
@@ -1337,15 +1337,22 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                 if suffix not in allowed:self._json(400,{"error":"artwork must be PNG, JPG, WebP, or GIF"});return
                 suffix=".jpg" if suffix==".jpeg" else suffix;label="cover" if kind=="cover" else "gameplay"+("" if kind=="preview1" else "-"+kind[-1]);destination=ROOT/"covers"/(slug+"-"+label+suffix)
             destination.parent.mkdir(parents=True,exist_ok=True)
-            if destination.exists():self._json(409,{"error":"that file is already imported","path":str(destination.relative_to(ROOT))});return
+            if destination.exists() and not replace_requested:self._json(409,{"error":"that file is already imported","path":str(destination.relative_to(ROOT))});return
+            if replace_requested and kind=="rom":self._json(400,{"error":"owned game files cannot be replaced through artwork editing"});return
             try:
-                with destination.open("wb") as output:
+                backed_up=False
+                if destination.exists():
+                    backup_dir=ROOT/"local"/"artwork-backups";backup_dir.mkdir(parents=True,exist_ok=True);backup=backup_dir/(str(int(time.time()))+"-"+uuid.uuid4().hex[:8]+"-"+destination.name);shutil.copy2(destination,backup);backed_up=True
+                with tempfile.NamedTemporaryFile("wb",dir=destination.parent,prefix="."+destination.name+"-",delete=False) as output:
+                    temporary=Path(output.name)
                     remaining=length
                     while remaining:
                         chunk=self.rfile.read(min(1024*1024,remaining))
                         if not chunk:break
                         output.write(chunk);remaining-=len(chunk)
-                self._json(201,{"path":str(destination.relative_to(ROOT)),"bytes":destination.stat().st_size})
+                if remaining:
+                    temporary.unlink(missing_ok=True);raise OSError("upload ended before the declared file size")
+                temporary.replace(destination);self._json(200 if backed_up else 201,{"path":str(destination.relative_to(ROOT)),"bytes":destination.stat().st_size,"backed_up":backed_up})
             except OSError as error:self._json(500,{"error":str(error)})
             return
         if route.path == "/api/game-import/metadata":

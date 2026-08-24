@@ -21,6 +21,7 @@ echo "  server: $base"
 python3 -m py_compile server.py
 node --check assets/scripts/homebase/deck.js
 node --check assets/scripts/homebase/command-palette.js
+node --check assets/scripts/arcade/game-import.js
 node --check modules/radio-orbit/app.js
 node --check user-apps/games/novashell-world/world3d.js
 echo "✓ core syntax"
@@ -57,9 +58,9 @@ printf '%s' "$apps_json" | node -e '
     console.log("✓ user-app registration ("+apps.length+" apps)");
   });'
 
-for route in / /pages/arcade.html /pages/files.html /pages/browse.html /pages/settings.html /pages/utility-desk.html /modules/radio-orbit/index.html /user-apps/games/quest-board/index.html /user-apps/games/novashell-world/index.html /user-apps/reference/pokedex-browser/index.html /user-apps/productivity/focus-deck/index.html /user-apps/productivity/writer-desk/index.html /user-apps/utilities/pantry-ledger/index.html /user-apps/media/loop-lab/index.html /user-apps/wellness/reset-station/index.html /user-apps/utilities/rail-finder/index.html; do
+for route in / /pages/arcade.html /pages/game-setup.html /pages/game-manager.html /pages/files.html /pages/browse.html /pages/settings.html /pages/utility-desk.html /modules/radio-orbit/index.html /user-apps/games/quest-board/index.html /user-apps/games/novashell-world/index.html /user-apps/reference/pokedex-browser/index.html /user-apps/productivity/focus-deck/index.html /user-apps/productivity/writer-desk/index.html /user-apps/utilities/pantry-ledger/index.html /user-apps/media/loop-lab/index.html /user-apps/wellness/reset-station/index.html /user-apps/utilities/rail-finder/index.html /user-apps/utilities/weather-station/index.html; do
   curl -fsS "$base$route" >/dev/null
 done
 echo "✓ key routes respond"
 
-printf 'Release audit passed. Run docs/HARDWARE_CONTROLLER_SMOKE.md separately with real controller hardware.\n'
+printf 'Release audit passed. Run scripts/game-import-live-test.sh and docs/HARDWARE_CONTROLLER_SMOKE.md separately for stateful/hardware acceptance.\n'

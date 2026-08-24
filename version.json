@@ -1,8 +1,11 @@
 {
-  "version": "118",
+  "version": "119",
   "released": "2026-08-24",
-  "notes": "Weather Station is now a complete daily forecast console with hourly, weekly, air-quality, sun, UV, responsive themes, and an offline last-report fallback.",
+  "notes": "Owned-game import now preserves the server-returned location identity so the ROM copy and its private catalog card complete as one reliable flow.",
   "changes": [
+    "The import screen now has one transaction owner and sends the required catalog key and source path after a local ROM copy.",
+    "Existing owned games update their private card without overwriting existing artwork, and interrupted metadata appears in the review queue rather than vanishing.",
+    "Manage local games now has All, Needs details, and Multiplayer queues plus search, location identity, a consistent editor window, and owner-art replacement with ignored local backups.",
     "Weather Station now uses one self-contained modular runtime instead of layered legacy scripts and styles.",
     "Forecast URLs can specify a place, public captures skip private local defaults, and the last successful report remains usable when weather sources are offline.",
     "Xbox pads are sorted by physical browser index and assigned independently to player one through player four, including controllers exposed after the emulator starts.",

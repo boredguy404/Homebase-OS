@@ -103,6 +103,15 @@ The controller contract and a simulated two-pad assignment test run in the relea
 
 The shelf scans `roms/` and My Library when it opens, so newly added supported files appear without maintaining a second list. Its compact **System** and **Type** filters are touch-sized, spaced apart, and scroll horizontally on narrow screens. Existing owner-supplied cover PNGs and gameplay GIFs are used first; when no local artwork exists, NovaShell shows an honest system card instead of a broken image.
 
+The owned-game intake is a location-aware transaction: after the private file
+copy, NovaShell records the exact server-returned catalog identity instead of
+guessing from the title. **Manage local games** provides All, Needs details,
+and Multiplayer review queues, search, metadata editing, and explicit artwork
+replacement. Replacing owner-supplied art first creates an ignored local
+backup; it never renames or changes the game file. Maintainers can exercise the
+disposable upload/catalog/duplicate/art-backup contract with
+`./scripts/game-import-live-test.sh`.
+
 ROM Discovery is deliberately separate from the installed library. It contains recommendations, hardware-fit notes, multiplayer information, expected emulator cores, and links for researching legal copies. It does not download ROMs and does not claim a suggested game is installed.
 
 The Pocket Archive documentation capture uses a deliberate pixel-mosaic privacy treatment over local game imagery. It communicates the real shelf without publishing sharp cover art or gameplay captures; in the installed local app, owners still see their own real images. Personal ROMs, saves, and source artwork are not committed.
