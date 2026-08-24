@@ -1,0 +1,3 @@
+/* Cobalt keeps diagnostics atmospheric, but they must remain readable on its dark field. */
+html[data-theme="cobalt"] #neofetch-ambient{color:#a9d9ff;mix-blend-mode:screen;opacity:.42}
+html[data-theme="cobalt"] #neofetch-ambient .neofetch-lines{text-shadow:0 0 14px #317bc499}
