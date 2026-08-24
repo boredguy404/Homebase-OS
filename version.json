@@ -1,8 +1,14 @@
 {
-  "version": "122",
+  "version": "123",
   "released": "2026-08-24",
-  "notes": "NovaShell now verifies two-controller N64 versus readiness and adds a read-only cleanup and recovery coach with completed-backup status.",
+  "notes": "NovaShell 123 restores Relay's complete review harness, standardizes built-in app navigation, hardens the Orbit mini player, and adds a colorful retro pattern pack.",
   "changes": [
+    "Every built-in NovaShell app now inherits one centered, touch-sized Back control, including apps that previously had a mismatched link or no Back control.",
+    "Orbit's compact player now recovers unsupported and stale visual states instead of occasionally showing a blank canvas.",
+    "The top-left signal beacon now uses matching loop endpoints for fluid motion without a visible restart seam.",
+    "Retro Settings adds sixteen original CSS-only mixed-color pattern wallpapers that remain fast and offline.",
+    "Relay's Second Brain, provider routes, guarded core workspace, Web Component app workshop, and local action history now load together as one visible harness.",
+    "Generated apps use a review-only sandbox preview, an explicit CREATE APP confirmation, a four-file module layout, and a local plan-preview-confirm-result ledger.",
     "N64 versus launch now confirms Chrome sees two distinct controllers before starting and clearly shows whether player two is ready.",
     "Storage details now include a read-only cleanup and recovery coach for stale Downloads, recoverable Trash, and the last completed selective backup.",
     "Backup completion state is stored only in ignored local data and never includes credentials or file contents.",

@@ -1,0 +1,38 @@
+.relay-action-history { margin: 18px 0; padding: 14px; border: 1px solid #77dbe955; border-radius: 16px; background: #0a171cdf; color: #e9f8fa; }
+.relay-action-history > header { display: flex; justify-content: space-between; gap: 14px; align-items: start; }
+.relay-action-history h2 { margin: 3px 0; font-size: 20px; }
+.relay-action-history header p { margin: 0; color: #aec3c7; font-size: 11px; }
+.relay-action-history header button { min-height: 42px; cursor: pointer; }
+.relay-action-groups { display: grid; gap: 7px; margin-top: 12px; }
+.relay-action-card { display: grid; grid-template-columns: auto minmax(0,1fr) auto auto; gap: 10px; align-items: center; width: 100%; min-height: 58px; padding: 9px; border: 1px solid #ffffff1d; border-radius: 9px; background: #ffffff08; color: inherit; text-align: left; cursor: pointer; }
+.relay-action-card:hover, .relay-action-card:focus-visible { border-color: #8ee8fa; outline: 2px solid #8ee8fa; }
+.relay-action-kind { padding: 4px 6px; border: 1px solid #8ee8fa66; border-radius: 4px; color: #9cedf4; font: 700 9px ui-monospace,monospace; text-transform: uppercase; }
+.relay-action-copy b, .relay-action-copy small { display: block; }
+.relay-action-copy small { margin-top: 2px; color: #a8bdc1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.relay-action-stages { display: flex; gap: 3px; }
+.relay-action-stages i { padding: 3px 4px; border: 1px solid #ffffff1b; color: #6f8084; font: 8px ui-monospace,monospace; font-style: normal; }
+.relay-action-stages i.done { border-color: #7be3b5; color: #a8f4cf; }
+.relay-action-card.failed .relay-action-stages i.done { border-color: #f09b9b; color: #ffc5c5; }
+.relay-action-card time { color: #93a8ac; font-size: 9px; }
+.relay-action-dialog { width: min(720px, 94vw); max-height: 86vh; padding: 0; border: 1px solid #79dae9; border-radius: 14px; background: #0d181d; color: #edf8fa; }
+.relay-action-dialog::backdrop { background: #0009; backdrop-filter: blur(6px); }
+.relay-action-title { display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; background: #153944; }
+.relay-action-title button { width: 44px; height: 44px; cursor: pointer; }
+.relay-action-dialog > header, .relay-action-dialog ol { margin: 14px; }
+.relay-action-dialog ol { display: grid; gap: 8px; padding: 0; list-style: none; }
+.relay-action-dialog li { display: grid; grid-template-columns: 70px 1fr; gap: 10px; padding: 10px; border: 1px solid #ffffff1d; }
+.relay-action-dialog li > i { color: #9cebf4; font: 700 10px ui-monospace,monospace; font-style: normal; text-transform: uppercase; }
+.relay-action-dialog li b, .relay-action-dialog li p, .relay-action-dialog li time { display: block; }
+.relay-action-dialog li p { margin: 3px 0; color: #b8c9cc; font-size: 11px; }
+html[data-theme="ultra-retro"] .relay-action-history { border: 3px solid #111; border-radius: 0; background: #d4d4d4; color: #111; box-shadow: inset 2px 2px #fff, inset -2px -2px #666, 4px 4px #111; }
+html[data-theme="ultra-retro"] .relay-action-history > header { margin: -12px -12px 10px; padding: 8px 10px; background: #000080; color: #fff; }
+html[data-theme="ultra-retro"] .relay-action-history header p { color: #fff; }
+html[data-theme="ultra-retro"] .relay-action-card { border: 1px solid #555; border-radius: 0; background: #eee; color: #111; }
+html[data-theme="ultra-retro"] .relay-action-kind, html[data-theme="ultra-retro"] .relay-action-stages i.done { border-color: #000080; border-radius: 0; color: #000080; }
+html[data-theme="ultra-retro"] .relay-action-copy small, html[data-theme="ultra-retro"] .relay-action-card time { color: #222; }
+html[data-theme="ultra-retro"] .relay-action-dialog { border: 3px solid #111; border-radius: 0; background: #d4d4d4; color: #111; }
+html[data-theme="ultra-retro"] .relay-action-title { background: #000080; color: #fff; }
+html[data-theme="ultra-retro"] .relay-action-dialog li { border: 1px solid #555; background: #eee; }
+html[data-theme="ultra-retro"] .relay-action-dialog li > i { color: #000080; }
+html[data-theme="ultra-retro"] .relay-action-dialog li p { color: #222; }
+@media (max-width: 720px) { .relay-action-card { grid-template-columns: auto 1fr auto; } .relay-action-stages { grid-column: 2 / -1; flex-wrap: wrap; } .relay-action-card time { grid-column: 3; grid-row: 1; } }

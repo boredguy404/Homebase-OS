@@ -1,0 +1,20 @@
+.relay-app-review { margin: 12px 0; padding: 12px; border: 1px solid #8ee8fa55; border-radius: 12px; background: #08151b; color: #e7f8fb; }
+.relay-app-review[hidden] { display: none; }
+.relay-app-review header { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
+.relay-app-review header small, .relay-app-review header b, .relay-app-review header p { display: block; }
+.relay-app-review header p { margin: 4px 0; color: #b9d0d4; font-size: 12px; }
+.relay-app-review header > button { width: 44px; min-width: 44px; height: 44px; cursor: pointer; }
+.relay-app-files { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 10px 0; }
+.relay-app-files span { padding: 7px; border: 1px solid #ffffff1c; background: #ffffff08; }
+.relay-app-files b, .relay-app-files small { display: block; overflow-wrap: anywhere; }
+.relay-app-review iframe { width: 100%; height: 260px; border: 1px solid #8ee8fa55; background: #d4d4d4; }
+.relay-app-review label { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
+.relay-app-review label input { flex: 1; min-height: 44px; }
+.relay-app-review-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.relay-app-review-actions button { min-height: 44px; cursor: pointer; }
+html[data-theme="ultra-retro"] .relay-app-review { border: 3px solid #111; border-radius: 0; background: #d4d4d4; color: #111; box-shadow: inset 2px 2px #fff, inset -2px -2px #666; }
+html[data-theme="ultra-retro"] .relay-app-review header { margin: -10px -10px 10px; padding: 7px 9px; background: #000080; color: #fff; }
+html[data-theme="ultra-retro"] .relay-app-review header p { color: #fff; }
+html[data-theme="ultra-retro"] .relay-app-files span { border: 1px solid #555; background: #eee; }
+html[data-theme="ultra-retro"] .relay-app-review input, html[data-theme="ultra-retro"] .relay-app-review button { border: 2px outset #eee; border-radius: 0; background: #d4d4d4; color: #111; }
+@media (max-width: 650px) { .relay-app-files { grid-template-columns: 1fr 1fr; } .relay-app-review-actions button { flex: 1; } }

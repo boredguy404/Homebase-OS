@@ -1,6 +1,6 @@
 (() => {
   const boot = () => {
-    const panel = document.querySelector('.relay-brain-panel');
+    const panel = document.querySelector('.relay-brain-deck');
     if (!panel || panel.querySelector('[data-tab="free"]')) return false;
     const tabs = panel.querySelector('.relay-brain-tabs');
     const button = document.createElement('button');

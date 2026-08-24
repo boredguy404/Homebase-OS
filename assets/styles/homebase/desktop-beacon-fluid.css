@@ -1,0 +1,5 @@
+/* Identical start/end frames make the top-left signal loop without a jump. */
+.desktop-dancer-spot.is-live .desktop-beacon{animation:beaconFluidBreathe 3.6s cubic-bezier(.45,0,.55,1) infinite!important}
+.desktop-dancer-spot.is-live .beacon-line{animation:beaconFluidSweep 2.4s cubic-bezier(.45,0,.55,1) infinite!important}
+@keyframes beaconFluidBreathe{0%,100%{filter:brightness(1)}50%{filter:brightness(1.12)}}
+@keyframes beaconFluidSweep{0%,100%{opacity:.72;scale:.82 1}50%{opacity:1;scale:1.16 1}}

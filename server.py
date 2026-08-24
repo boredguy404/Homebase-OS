@@ -21,6 +21,7 @@ import xml.etree.ElementTree as ET
 from functools import lru_cache
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from modules.relay.runtime import action_history, install_app_draft, load_app_draft, preview_document, record_action, save_app_draft
 
 ROOT = Path(__file__).resolve().parent
 HOME_ROOT = Path.home().resolve()
@@ -49,9 +50,12 @@ JOBS = {}
 JOBS_LOCK = threading.Lock()
 PROJECT_FEED_FILE = ROOT / "local" / "project-feed.json"
 BACKUP_STATUS_FILE = ROOT / "local" / "backup-status.json"
+RELAY_ACTION_FILE = ROOT / "local" / "relay-action-history.json"
+RELAY_APP_DRAFT_DIR = ROOT / "local" / "relay-app-drafts"
 PROJECT_FEED_LOCK = threading.RLock()
 RELAY_AGENT_RUNS = {}
 RELAY_AGENT_LOCK = threading.RLock()
+RELAY_ACTION_LOCK = threading.RLock()
 BACKUP_AREAS = {"box": HOME_ROOT / "My Library", "roms": ROOT / "roms", "saves": ROOT / "saves", "artwork": ROOT / "covers", "imports": ROOT / "imports", "mgba": HOME_ROOT / ".config" / "mgba", "orbit": HOME_ROOT / ".config" / "radio-orbit", "flatpak": HOME_ROOT / ".var" / "app"}
 HOMEBASE_CONFIG = HOME_ROOT / ".config" / "homebase" / "setup.json"
 SCAN_CHOICES = {"My Library": HOME_ROOT / "My Library", "Downloads": HOME_ROOT / "Downloads", "Desktop": HOME_ROOT / "Desktop", "Documents": HOME_ROOT / "Documents", "Pictures": HOME_ROOT / "Pictures"}
@@ -380,31 +384,22 @@ def draft_core_edit(file_id, instruction):
     if not content or len(content)>250000: raise ValueError("Relay returned an unusable draft; nothing was changed")
     return {"summary":str(draft.get("summary") or "Review the draft before applying it.")[:500],"content":content}
 
-def create_relay_app(description, framework):
-    """Generate a small, self-contained user app. Core Homebase files are never writable here."""
+def draft_relay_app(description, framework):
+    """Generate and save a review-only Web Components app draft."""
     if framework != "Web Components":
         raise ValueError("Relay user apps use the Web Components contract only")
     if not assistant_profile(): raise ValueError("connect an AI provider in Relay before generating an app")
     prompt=("Create one small offline-first Homebase user app from this request: "+description+
-        "\nFramework: Web Components only. Return JSON only with name, description, html, css, js. "
-        "Use only browser APIs and localStorage; no external scripts, iframes, network calls, forms posting data, eval, or imports. "
-        "The HTML must be body contents only. Keep it touch-friendly and useful.")
+        "\nFramework: Web Components only. Return JSON only with name, description, icon, html, css, js. "
+        "html must contain exactly one <homebase-generated-app></homebase-generated-app> mount and no script or style tags. "
+        "js must define customElements.define('homebase-generated-app', class extends HTMLElement { ... }) and render the complete UI inside that component. "
+        "Use only browser APIs and localStorage; no external resources, URLs, scripts, iframes, network calls, forms posting data, eval, imports, cookies, or telemetry. "
+        "Keep it touch-friendly, keyboard-usable, self-contained, and genuinely useful.")
     try:
         raw=relay_ai_response("You are a careful local NovaShell modular app generator.",prompt,6000,True)
         app=json.loads(raw)
     except (OSError, ValueError, KeyError) as error: raise ValueError("Relay could not generate that app: "+str(error)[:140])
-    name=re.sub(r"\s+"," ",str(app.get("name") or "Untitled app")).strip()[:60]
-    slug=game_slug(name); category="experiments"; folder=USER_APPS/category/slug; suffix=2
-    while folder.exists(): folder=USER_APPS/(slug+"-"+str(suffix));suffix+=1
-    parts={key:str(app.get(key) or "") for key in ("html","css","js")}
-    if not parts["html"]: raise ValueError("Relay returned an empty app")
-    blocked=re.compile(r"<\s*script|<\s*iframe|\b(fetch|xmlhttprequest|websocket|eval|import\s*\(|document\.cookie)\b",re.I)
-    if any(blocked.search(value) for value in parts.values()): raise ValueError("Relay generated an unsafe browser capability; nothing was saved")
-    folder.mkdir(parents=True)
-    page="<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>"+html.escape(name)+" · Homebase</title><link rel=\"stylesheet\" href=\"/assets/styles/shared/ultra-retro.css\"><script src=\"/assets/scripts/shared/theme-sync.js\"></script><style>body{margin:0;background:#101719;color:#edf5f2;font:16px system-ui}.app{max-width:900px;margin:auto;padding:30px 20px 80px}button,input,textarea{font:inherit}button{min-height:44px;cursor:pointer} "+parts["css"]+"</style></head><body><main class=\"app\">"+parts["html"]+"</main><script>"+parts["js"]+"</script></body></html>"
-    (folder/"index.html").write_text(page,encoding="utf-8")
-    (folder/"app.json").write_text(json.dumps({"name":name,"description":str(app.get("description") or "Relay-generated local app.")[:180],"icon":"✦","entry":"index.html","framework":framework},indent=2),encoding="utf-8")
-    return next(app for app in user_apps() if app["id"]==str(folder.relative_to(USER_APPS)).replace(os.sep,"/"))
+    return save_app_draft(RELAY_APP_DRAFT_DIR,app,description)
 
 def game_slug(value):
     return re.sub(r"(^-|-$)", "", re.sub(r"[^a-z0-9]+", "-", value.casefold()))[:80] or "game"
@@ -470,6 +465,12 @@ def record_project_event(task_id, lane, message, title=""):
         feed["events"].append({"time":int(time.time()),"task":task_id,"message":str(message)[:600],"kind":"relay"})
         feed["events"]=feed["events"][-40:]
         save_project_feed(feed)
+
+
+def log_relay_action(**entry):
+    """Serialize the ignored local Relay ledger across request threads."""
+    with RELAY_ACTION_LOCK:
+        return record_action(RELAY_ACTION_FILE, **entry)
 
 def agent_event_label(raw):
     """Keep live browser status useful without echoing prompts, paths, or secrets."""
@@ -680,6 +681,21 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         browse_route = urllib.parse.urlsplit(self.path)
+        if browse_route.path == "/api/relay/actions":
+            self._json(200, {"actions": list(reversed(action_history(RELAY_ACTION_FILE))), "local_only": True})
+            return
+        preview_match = re.fullmatch(r"/api/assistant/app/draft/([a-f0-9]{16})/preview", browse_route.path)
+        if preview_match:
+            try:
+                document = preview_document(load_app_draft(RELAY_APP_DRAFT_DIR, preview_match.group(1))).encode()
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.send_header("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data: blob:; connect-src 'none'; frame-ancestors 'self'")
+                self.send_header("Cache-Control", "no-store")
+                self.send_header("Content-Length", str(len(document)))
+                self.end_headers(); self.wfile.write(document)
+            except ValueError as error: self._json(404, {"error": str(error)})
+            return
         if browse_route.path == "/api/project-feed":
             self._json(200, project_feed())
             return
@@ -1178,11 +1194,16 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
             profile=assistant_profile()
             if not profile:
                 self._json(409,{"error":"Connect an AI provider in Relay before testing it."});return
+            action_id="network-"+uuid.uuid4().hex[:12]
+            log_relay_action(action_id=action_id,kind="network",stage="plan",title="Test saved AI route",detail="One deliberately small provider request; no file or setting changes.",state="working")
+            log_relay_action(action_id=action_id,kind="network",stage="confirm",title="Network request approved",detail="Started only after Test saved route was pressed.")
             try:
                 reply=relay_ai_response("Reply with exactly: RELAY ROUTE READY. Do not add anything else.","Connection check.",max_tokens=16)
                 if not reply: raise ValueError("provider returned an empty reply")
+                log_relay_action(action_id=action_id,kind="network",stage="result",title="AI route responded",detail=profile["provider"]+" · "+str(profile.get("model") or "configured model"))
                 self._json(200,{"reachable":True,"provider":profile["provider"],"model":profile.get("model"),"reply":reply[:80]})
             except (OSError, ValueError, KeyError) as error:
+                log_relay_action(action_id=action_id,kind="network",stage="result",title="AI route unavailable",detail=str(error)[:300],state="failed")
                 self._json(502,{"reachable":False,"provider":profile["provider"],"model":profile.get("model"),"error":str(error)[:300]})
             return
         if route.path == "/api/relay/agent/run":
@@ -1194,20 +1215,49 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                 self._json(202,{"job":start_relay_coding_agent(payload.get("task",""))})
             except (OSError,ValueError,TypeError) as error:self._json(400,{"error":str(error)})
             return
-        if route.path == "/api/assistant/app":
+        if route.path in {"/api/assistant/app", "/api/assistant/app/draft"}:
             length=min(int(self.headers.get("Content-Length","0")),12*1024)
+            action_id="app-"+uuid.uuid4().hex[:12]
             try:
                 payload=json.loads(self.rfile.read(length) or b"{}"); description=str(payload.get("description","")).strip()[:3000]; framework=str(payload.get("framework","Vanilla HTML/CSS/JS"))[:50]
                 if not description: raise ValueError("describe the app first")
-                self._json(200,{"app":create_relay_app(description,framework)})
-            except (OSError, ValueError, TypeError) as error:self._json(400,{"error":str(error)})
+                action_id=str(payload.get("action_id") or action_id)
+                log_relay_action(action_id=action_id,kind="app",stage="plan",title="Draft removable app",detail=description,state="working",target="user-apps/experiments/")
+                draft=draft_relay_app(description,framework)
+                log_relay_action(action_id=action_id,kind="app",stage="preview",title=draft["name"]+" draft ready",detail="Four reviewable files · sandboxed preview · no app folder written yet",target="local/relay-app-drafts/"+draft["id"]+".json")
+                self._json(200,{"draft":draft,"action_id":action_id,"requires_confirmation":True})
+            except (OSError, ValueError, TypeError) as error:
+                log_relay_action(action_id=action_id,kind="app",stage="result",title="App draft failed",detail=str(error),state="failed")
+                self._json(400,{"error":str(error),"action_id":action_id})
+            return
+        if route.path == "/api/assistant/app/apply":
+            length=min(int(self.headers.get("Content-Length","0")),8*1024)
+            action_id="app-"+uuid.uuid4().hex[:12]
+            try:
+                payload=json.loads(self.rfile.read(length) or b"{}");draft_id=str(payload.get("draft_id","")).strip();action_id=str(payload.get("action_id") or action_id)
+                if payload.get("confirm")!="CREATE APP":raise ValueError("review the preview and type CREATE APP")
+                draft=load_app_draft(RELAY_APP_DRAFT_DIR,draft_id)
+                log_relay_action(action_id=action_id,kind="app",stage="confirm",title="Create app confirmed",detail=draft["name"]+" · four-file Web Components module",target="user-apps/experiments/")
+                installed=install_app_draft(RELAY_APP_DRAFT_DIR,USER_APPS,draft_id)
+                app=next(item for item in user_apps() if item["id"]==installed["id"])
+                log_relay_action(action_id=action_id,kind="app",stage="result",title=app["name"]+" installed",detail="index.html · app.css · app.js · app.json",target="user-apps/"+app["id"]+"/")
+                self._json(201,{"app":app,"action_id":action_id})
+            except (OSError, ValueError, TypeError, StopIteration) as error:
+                log_relay_action(action_id=action_id,kind="app",stage="result",title="App install failed",detail=str(error),state="failed")
+                self._json(400,{"error":str(error),"action_id":action_id})
             return
         if route.path == "/api/relay/workspace/draft":
             length=min(int(self.headers.get("Content-Length","0")),16*1024)
+            action_id="core-"+uuid.uuid4().hex[:12]
             try:
-                payload=json.loads(self.rfile.read(length) or b"{}"); file_id=str(payload.get("file","")).strip(); instruction=str(payload.get("instruction","")).strip()
-                self._json(200,draft_core_edit(file_id,instruction))
-            except (OSError, ValueError, TypeError) as error:self._json(400,{"error":str(error)})
+                payload=json.loads(self.rfile.read(length) or b"{}"); file_id=str(payload.get("file","")).strip(); instruction=str(payload.get("instruction","")).strip();action_id=str(payload.get("action_id") or action_id)
+                log_relay_action(action_id=action_id,kind="core",stage="plan",title="Draft guarded core edit",detail=instruction,state="working",target=file_id)
+                draft=draft_core_edit(file_id,instruction)
+                log_relay_action(action_id=action_id,kind="core",stage="preview",title="Core draft ready for review",detail=draft.get("summary", "Review the complete replacement file."),target=file_id)
+                self._json(200,{**draft,"action_id":action_id})
+            except (OSError, ValueError, TypeError) as error:
+                log_relay_action(action_id=action_id,kind="core",stage="result",title="Core draft failed",detail=str(error),state="failed")
+                self._json(400,{"error":str(error),"action_id":action_id})
             return
         if route.path == "/api/assistant/app/delete":
             length=min(int(self.headers.get("Content-Length","0")),4*1024)
@@ -1216,24 +1266,29 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                 if payload.get("confirm")!="DELETE" or not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,63}(?:/[a-z0-9][a-z0-9-]{0,63})?",app_id): raise ValueError("a confirmed app folder is required")
                 target=(USER_APPS/app_id).resolve()
                 if not target.is_dir() or not target.is_relative_to(USER_APPS): raise ValueError("app folder not found")
-                shutil.rmtree(target);self._json(200,{"deleted":app_id})
+                action_id="app-delete-"+uuid.uuid4().hex[:10];log_relay_action(action_id=action_id,kind="app",stage="confirm",title="Remove app confirmed",detail="Only the selected removable folder will be deleted.",target="user-apps/"+app_id+"/");shutil.rmtree(target);log_relay_action(action_id=action_id,kind="app",stage="result",title="Removable app deleted",detail=app_id,target="user-apps/"+app_id+"/");self._json(200,{"deleted":app_id,"action_id":action_id})
             except (OSError, ValueError, TypeError) as error:self._json(400,{"error":str(error)})
             return
         if route.path == "/api/relay/workspace/apply":
             length=min(int(self.headers.get("Content-Length","0")),300*1024)
+            action_id="core-"+uuid.uuid4().hex[:12]
             try:
-                payload=json.loads(self.rfile.read(length) or b"{}");file_id=str(payload.get("file",""));content=str(payload.get("content",""));path=CORE_EDITABLE.get(file_id)
+                payload=json.loads(self.rfile.read(length) or b"{}");file_id=str(payload.get("file",""));content=str(payload.get("content",""));path=CORE_EDITABLE.get(file_id);action_id=str(payload.get("action_id") or action_id)
                 if payload.get("confirm")!="APPLY CORE EDIT" or not path:raise ValueError("choose an allowed file and type the exact confirmation")
                 if not content.strip() or "\x00" in content:raise ValueError("workspace edit must contain normal text")
                 if len(content)>250000:raise ValueError("workspace edit is too large")
                 # Reject a Python syntax error before it can take down the local
                 # server. Other formats are intentionally review-only text files.
                 if path.suffix==".py": compile(content,str(path),"exec")
+                log_relay_action(action_id=action_id,kind="core",stage="confirm",title="Core edit confirmed",detail="A local backup is created before the reviewed replacement.",target=file_id)
                 backup=ROOT/"local"/"workspace-backups"/(file_id+"-"+str(int(time.time()))+path.suffix);backup.parent.mkdir(parents=True,exist_ok=True)
                 if path.exists():shutil.copy2(path,backup)
                 temporary=path.with_suffix(path.suffix+".tmp");temporary.write_text(content,encoding="utf-8");temporary.replace(path)
-                self._json(200,{"saved":file_id,"backup":str(backup.relative_to(ROOT))})
-            except (OSError,ValueError,TypeError,SyntaxError) as error:self._json(400,{"error":str(error)})
+                log_relay_action(action_id=action_id,kind="core",stage="result",title="Core edit saved",detail="Backup: "+str(backup.relative_to(ROOT)),target=file_id)
+                self._json(200,{"saved":file_id,"backup":str(backup.relative_to(ROOT)),"action_id":action_id})
+            except (OSError,ValueError,TypeError,SyntaxError) as error:
+                log_relay_action(action_id=action_id,kind="core",stage="result",title="Core edit failed",detail=str(error),state="failed")
+                self._json(400,{"error":str(error),"action_id":action_id})
             return
         if route.path == "/api/relay/workspace/restore":
             length=min(int(self.headers.get("Content-Length","0")),8*1024)

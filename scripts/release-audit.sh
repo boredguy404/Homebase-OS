@@ -25,6 +25,9 @@ node --check assets/scripts/arcade/game-import.js
 node --check modules/radio-orbit/app.js
 node --check user-apps/games/novashell-world/world3d.js
 python3 scripts/recovery-insight-test.py
+python3 scripts/relay-runtime-test.py
+node scripts/user-app-navigation-test.mjs
+node scripts/orbit-mini-resilience-test.mjs
 echo "✓ core syntax"
 
 ./scripts/verify-theme-contract.sh "$base"

@@ -1,0 +1,9 @@
+.novashell-app-back{box-sizing:border-box!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;min-width:132px!important;min-height:48px!important;padding:0 14px!important;border:1px solid rgba(255,255,255,.34)!important;border-radius:9px!important;background:rgba(15,28,37,.82)!important;color:#f4fbff!important;font:700 13px/1 system-ui,-apple-system,sans-serif!important;letter-spacing:0!important;text-align:center!important;text-decoration:none!important;white-space:nowrap!important;cursor:pointer!important;touch-action:manipulation}
+.novashell-app-back__arrow,.novashell-app-back__label{display:inline-flex;align-items:center;justify-content:center;line-height:1}
+.novashell-app-back__arrow{width:16px;font:800 18px/1 ui-monospace,SFMono-Regular,monospace;transform:translateY(-1px)}
+.novashell-app-back:hover,.novashell-app-back:focus-visible{border-color:#a8ddeb!important;background:rgba(32,61,76,.94)!important;outline:2px solid transparent}
+.novashell-app-back:focus-visible{box-shadow:0 0 0 3px rgba(138,216,235,.3)!important}
+html[data-theme="ultra-retro"] .novashell-app-back{border:2px outset #eee!important;border-radius:0!important;background:#d4d4d4!important;color:#111!important;box-shadow:none!important;font-family:"MS Sans Serif",Tahoma,sans-serif!important}
+html[data-theme="ultra-retro"] .novashell-app-back:hover,html[data-theme="ultra-retro"] .novashell-app-back:focus-visible{border:2px outset #fff!important;background:#b7c9df!important;color:#000!important;outline:1px dotted #111;outline-offset:-5px}
+html[data-theme="paper-glass"] .novashell-app-back{border-color:#887b6b!important;background:rgba(250,246,235,.92)!important;color:#28221c!important}
+@media(max-width:560px){.novashell-app-back{min-width:124px!important;min-height:50px!important}}
