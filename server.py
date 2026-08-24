@@ -157,7 +157,17 @@ def relay_knowledge(topic=""):
         try: content=path.read_text(encoding="utf-8")[:24000]
         except OSError: continue
         if term and term not in (key+" "+content).casefold(): continue
-        entries.append({"id":key,"path":str(path.relative_to(ROOT)),"content":content})
+        entries.append({"id":key,"path":str(path.relative_to(ROOT)),"content":content,"source":"NovaShell built-in"})
+    known_paths={item["path"] for item in entries}
+    for path in sorted((ROOT / "brain").rglob("*"), key=lambda value:str(value).casefold()):
+        if not path.is_file() or path.suffix.casefold() not in {".md", ".txt", ".json", ".yml", ".yaml"}: continue
+        relative=str(path.relative_to(ROOT))
+        if relative in known_paths: continue
+        try: content=path.read_text(encoding="utf-8")[:24000]
+        except (OSError, UnicodeDecodeError): continue
+        identifier="brain-"+re.sub(r"[^a-z0-9-]+","-",str(path.relative_to(ROOT / "brain")).casefold()).strip("-")
+        if term and term not in (identifier+" "+relative+" "+content).casefold(): continue
+        entries.append({"id":identifier[:120],"path":relative,"content":content,"source":"NovaShell built-in"})
     # An imported Brain archive is optional, ignored by Git, and read-only.
     # Its notes can inform a local draft but never expand Relay's file authority.
     if BRAIN_IMPORT.is_dir():
@@ -168,7 +178,7 @@ def relay_knowledge(topic=""):
             except (OSError, UnicodeDecodeError): continue
             relative=str(path.relative_to(ROOT)); identifier="brain-"+re.sub(r"[^a-z0-9-]+","-",str(path.relative_to(BRAIN_IMPORT)).casefold()).strip("-")
             if term and term not in (identifier+" "+relative+" "+content).casefold(): continue
-            entries.append({"id":identifier[:120],"path":relative,"content":content});budget-=len(content)
+            entries.append({"id":identifier[:120],"path":relative,"content":content,"source":"Optional local import"});budget-=len(content)
     return entries
 
 def user_apps():
@@ -632,7 +642,7 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
             self._json(200,{"id":file_id,"path":str(path.relative_to(ROOT)),"content":path.read_text(encoding="utf-8")[:250000]});return
         if browse_route.path == "/api/relay/knowledge":
             topic=urllib.parse.parse_qs(browse_route.query).get("q",[""])[0]
-            self._json(200,{"entries":[{"id":item["id"],"path":item["path"],"bytes":len(item["content"])} for item in relay_knowledge(topic)]});return
+            self._json(200,{"entries":[{"id":item["id"],"path":item["path"],"bytes":len(item["content"]),"source":item.get("source","NovaShell built-in")} for item in relay_knowledge(topic)]});return
         if browse_route.path.startswith("/api/relay/knowledge/"):
             key=urllib.parse.unquote(browse_route.path.rsplit("/",1)[-1])
             item=next((value for value in relay_knowledge() if value["id"]==key),None)

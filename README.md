@@ -113,13 +113,15 @@ Orbit combines internet radio and local audio playlists with audio-reactive visu
 
 ### Relay workspace
 
-Relay works as a local guide without a key. Its normal chat reports approved local status, can navigate NovaShell, and mirrors the current build feed. For richer chat and drafts, **AI Routes** can save an OpenAI, OpenRouter, Groq, or Gemini profile on this computer only. Before saving a key, Relay plainly states that route’s best use, account/free-tier limit, data boundary, and the distinction between AI drafting and command execution. Free tiers are optional, rate-limited, and provider-controlled. Its **Brain Files** browser exposes the locally imported Brain archive in read-only form: conventions, notes, structure, and utilities can be inspected without placing that private archive in Git.
+Relay works as a local guide without a key. Its normal chat reports approved local status, can navigate NovaShell, and mirrors the current build feed. For richer chat and drafts, **AI Routes** can save an OpenAI, OpenRouter, Groq, or Gemini profile on this computer only. Before saving a key, Relay plainly states that route’s best use, account/free-tier limit, data boundary, and the distinction between AI drafting and command execution. Free tiers are optional, rate-limited, and provider-controlled. Its first-class **Second Brain** is a searchable, read-only library of built-in NovaShell maps, conventions, and decisions; an optional local Brain import appears beside those notes with a clear local-only label. Reading a note never expands Relay’s authority or places private notes in Git.
 
 Its **Local Keyring** shows only safe configuration status—provider, model, storage boundary, and backup exclusion. It never displays a secret value. A deliberate two-tap control can remove NovaShell’s saved Relay provider profile without touching a separate legacy key file.
 
 The **Workspace Editor** can load an allowlisted set of NovaShell core files, create a review-only AI draft, and apply a reviewed edit only after explicit typed confirmation. Every write makes a timestamped local backup. Generated mini-apps use the Web Components contract and remain isolated in `user-apps/`; they do not gain core-file access. The separate **Local Codex** tool runs only in the fixed local checkout and requires a typed confirmation before it starts; it is intentionally powerful and is not exposed by the hosted companion. Relay’s **Test saved route** button makes one small, on-demand request so a person can distinguish a missing key, unavailable provider, or a rate-limited route before asking it to draft work. Utility Desk also includes a local project Kanban, seeded with current work on first use and fully editable without an account.
 
 ![Relay local assistant in Ultra Retro](media/relay-workspace.png)
+
+![Relay Second Brain in Ultra Retro](media/relay-second-brain.png)
 
 ### Utility Desk and local handoffs
 
