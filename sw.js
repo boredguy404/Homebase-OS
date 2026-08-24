@@ -1,7 +1,7 @@
-const CACHE='homebase-v106';
+const CACHE='homebase-v108';
 const SHELL=[
   '/', '/index.html', '/offline.html', '/manifest.webmanifest', '/assets/icons/homebase-icon.svg',
-  '/pages/arcade.html', '/pages/discover.html', '/pages/files.html', '/pages/apps.html',
+  '/pages/arcade.html', '/pages/discover.html', '/pages/files.html', '/pages/apps.html', '/pages/source-connection.html',
   '/pages/settings.html', '/pages/github-setup.html', '/pages/readme-studio.html',
   '/pages/browse.html', '/pages/game-setup.html', '/pages/game-manager.html', '/pages/console.html', '/version.json', '/modules/radio-orbit/index.html', '/modules/radio-orbit/style.css', '/modules/radio-orbit/embedded.css', '/modules/radio-orbit/colorful.css', '/modules/radio-orbit/classic-gray.css', '/modules/radio-orbit/orbit-controls.css', '/modules/radio-orbit/retro-visual-fix.css', '/modules/radio-orbit/orbit-contrast.css', '/modules/radio-orbit/orbit-contrast-plus.css', '/modules/radio-orbit/orbit-channel-rail.css', '/modules/radio-orbit/theme-inherit.css', '/modules/radio-orbit/app.js', '/assets/styles/discovery/browse.css', '/assets/scripts/discovery/browse.js',
   '/assets/styles/homebase/visual-deck.css', '/assets/styles/homebase/shell.css', '/assets/styles/homebase/first-run.css', '/assets/styles/homebase/first-run-shortcuts.css',

@@ -58,6 +58,7 @@ GAME_CATALOG = ROOT / "imports" / "homebase-game-catalog.json"
 BACKUP_AREAS["catalog"] = GAME_CATALOG
 ASSISTANT_KEY_FILE = ROOT / "local" / "openai-api-key.txt"
 ASSISTANT_CONFIG_FILE = ROOT / "local" / "relay-provider.json"
+SOURCE_CONNECTION_FILE = ROOT / "local" / "source-connection.json"
 BRAIN_IMPORT = ROOT / "local" / "brain-import"
 USER_APPS = ROOT / "user-apps"
 CORE_EDITABLE = {
@@ -221,6 +222,12 @@ def assistant_profile():
     try: key=ASSISTANT_KEY_FILE.read_text(encoding="utf-8").strip()
     except OSError: key=""
     return {"provider":"openai","key":key,"model":os.environ.get("HOMEBASE_OPENAI_MODEL","gpt-4.1-mini")} if key else None
+
+def source_connection_status():
+    """Expose only connection metadata; passwords never leave the local file."""
+    try: profile=json.loads(SOURCE_CONNECTION_FILE.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError): profile={}
+    return {"configured":bool(profile.get("password")),"protocol":profile.get("protocol",""),"host":profile.get("host",""),"port":profile.get("port",0),"username":profile.get("username",""),"directory":profile.get("directory","")}
 
 def relay_ai_response(instructions, input_text, max_tokens=1200, json_object=False):
     profile=assistant_profile()
@@ -653,6 +660,9 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
         if self.path == "/api/assistant/status":
             profile=assistant_profile() or {}
             self._json(200, {"connected":bool(profile),"key_path":"local/relay-provider.json","provider":profile.get("provider","openai"),"model":profile.get("model") or os.environ.get("HOMEBASE_OPENAI_MODEL","gpt-4.1-mini")})
+            return
+        if browse_route.path == "/api/source-connection/status":
+            self._json(200, source_connection_status())
             return
         if self.path == "/api/relay/agent/status":
             with RELAY_AGENT_LOCK:
@@ -1166,6 +1176,35 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                 if removed: ASSISTANT_CONFIG_FILE.unlink()
                 self._json(200,{"removed":removed})
             except (OSError, ValueError) as error: self._json(400,{"error":str(error)})
+            return
+        if route.path == "/api/source-connection/profile":
+            length=min(int(self.headers.get("Content-Length", "0")), 16 * 1024)
+            try:
+                payload=json.loads(self.rfile.read(length) or b"{}")
+                protocol=str(payload.get("protocol", "ftps")).casefold()
+                host=str(payload.get("host", "")).strip().casefold()
+                port=int(payload.get("port") or (990 if protocol == "ftps" else 22))
+                username=str(payload.get("username", "")).strip()
+                password=str(payload.get("password", ""))
+                directory=str(payload.get("directory", "")).strip() or "/"
+                if protocol not in {"ftps", "sftp"}: raise ValueError("choose FTPS or SFTP; plain FTP is intentionally disabled")
+                if not re.fullmatch(r"[a-z0-9.-]{1,253}", host) or ".." in host: raise ValueError("enter only a server hostname or IP address")
+                if not 1 <= port <= 65535: raise ValueError("port must be between 1 and 65535")
+                if not username or len(username)>120 or any(ord(char)<32 for char in username): raise ValueError("enter a valid username")
+                if not password or len(password)>500 or any(ord(char)<32 and char not in "\t" for char in password): raise ValueError("enter a valid password")
+                if len(directory)>300 or not directory.startswith("/") or any(ord(char)<32 for char in directory): raise ValueError("directory must start with /")
+                SOURCE_CONNECTION_FILE.parent.mkdir(parents=True, exist_ok=True)
+                SOURCE_CONNECTION_FILE.write_text(json.dumps({"protocol":protocol,"host":host,"port":port,"username":username,"password":password,"directory":directory})+"\n", encoding="utf-8")
+                os.chmod(SOURCE_CONNECTION_FILE, 0o600)
+                self._json(200, {"saved":True, **source_connection_status()})
+            except (OSError, ValueError, TypeError) as error: self._json(400, {"error":str(error)})
+            return
+        if route.path == "/api/source-connection/remove":
+            try:
+                removed=SOURCE_CONNECTION_FILE.exists()
+                if removed: SOURCE_CONNECTION_FILE.unlink()
+                self._json(200, {"removed":removed})
+            except OSError as error: self._json(400, {"error":str(error)})
             return
         if route.path == "/api/assistant/key":
             length = min(int(self.headers.get("Content-Length", "0")), 16 * 1024)
