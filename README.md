@@ -148,6 +148,7 @@ My Library is a real browser for files inside the current user account. It suppo
 - Folder navigation and breadcrumbs
 - Search and name/newest/size sorting
 - Image thumbnails plus image, audio, video, text, and PDF previews
+- A local Gallery mode for the images in the current folder, reusing the same in-app preview
 - Touch upload and desktop drag-and-drop
 - New folders, rename, native open, and recoverable move-to-Trash
 - Long-press or right-click actions for folders and files
