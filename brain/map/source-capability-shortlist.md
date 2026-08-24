@@ -20,7 +20,7 @@
 | Sports scores | Browse live-data category | review stable public feeds and attribution |
 | Route-stop finder | travel utility using user-entered locations | review map/data licensing |
 | Accessible-place finder | accessibility-first local search | review data completeness and avoid safety claims |
-| Skeletal animation tool | removable Pose Lab with Maker/Relay JSON handoff | shipped |
+| Skeletal animation tool | do not substitute a generic draggable rig; revisit only after a faithful source-workflow review | rejected prototype removed |
 | Round/interval timer | Focus Deck training mode | shipped |
 | Hydration/breath/reset PWA | removable Reset Station, rebuilt from FTP manifest concept | shipped |
 

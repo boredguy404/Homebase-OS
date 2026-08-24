@@ -20,7 +20,7 @@ function openPanel(url) {
   const layer = document.querySelector('#pocket-layer');
   const frame = document.querySelector('#pocket-frame');
   frame.src = url;
-  const back=layer.querySelector('.layer-back');if(back)back.hidden=url.startsWith('/pages/')||document.documentElement.dataset.theme==='ultra-retro';
+  const back=layer.querySelector('.layer-back');if(back)back.hidden=url.startsWith('/pages/')||url.startsWith('/user-apps/')||document.documentElement.dataset.theme==='ultra-retro';
   layer.classList.add('open');
   window.raiseHomebaseWindow?.('app');
   document.body.classList.add('app-open');
