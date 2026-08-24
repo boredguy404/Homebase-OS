@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="orbit-contrast.css?v=99">
   <link rel="stylesheet" href="orbit-contrast-plus.css?v=1">
   <link rel="stylesheet" href="orbit-channel-rail.css?v=1">
+  <link rel="stylesheet" href="theme-inherit.css?v=1">
 </head>
 <body>
   <canvas id="visualizer" aria-hidden="true"></canvas>
@@ -22,13 +23,13 @@
   <div class="grain" aria-hidden="true"></div>
   <header>
     <button class="icon-btn orbit-home" onclick="parent.postMessage({type:'orbit-home'},'*')" aria-label="Back to Homebase">←</button>
-    <a class="brand" href="#"><span class="brand-mark">NO</span><span>HOMEBASE / ORBIT</span></a>
+    <a class="brand" href="#"><span>Radio Orbit</span></a>
     <button id="fullscreen" class="icon-btn" title="Fullscreen" aria-label="Fullscreen">⛶</button>
   </header>
 
   <main>
     <section class="hero">
-      <div class="eyebrow">TRANSMISSION / <span id="location">WORLDWIDE</span></div>
+      <div class="eyebrow" hidden>RADIO ORBIT / <span id="location">WORLDWIDE</span></div>
       <h1 id="stationName"><span class="station-title">Find your</span><br><em>frequency.</em></h1>
       <img id="localCover" class="local-cover" alt="Local playlist cover" hidden>
       <p id="stationMeta">Search thousands of independent stations broadcasting from every corner of the planet.</p>

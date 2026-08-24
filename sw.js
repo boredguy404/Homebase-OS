@@ -1,13 +1,13 @@
-const CACHE='homebase-v96';
+const CACHE='homebase-v97';
 const SHELL=[
   '/', '/index.html', '/offline.html', '/manifest.webmanifest', '/assets/icons/homebase-icon.svg',
   '/pages/arcade.html', '/pages/discover.html', '/pages/files.html', '/pages/apps.html',
   '/pages/settings.html', '/pages/github-setup.html', '/pages/readme-studio.html',
-  '/pages/browse.html', '/pages/game-setup.html', '/pages/game-manager.html', '/pages/console.html', '/version.json', '/assets/styles/discovery/browse.css', '/assets/scripts/discovery/browse.js',
+  '/pages/browse.html', '/pages/game-setup.html', '/pages/game-manager.html', '/pages/console.html', '/version.json', '/modules/radio-orbit/index.html', '/modules/radio-orbit/style.css', '/modules/radio-orbit/embedded.css', '/modules/radio-orbit/colorful.css', '/modules/radio-orbit/classic-gray.css', '/modules/radio-orbit/orbit-controls.css', '/modules/radio-orbit/retro-visual-fix.css', '/modules/radio-orbit/orbit-contrast.css', '/modules/radio-orbit/orbit-contrast-plus.css', '/modules/radio-orbit/orbit-channel-rail.css', '/modules/radio-orbit/theme-inherit.css', '/modules/radio-orbit/app.js', '/assets/styles/discovery/browse.css', '/assets/scripts/discovery/browse.js',
   '/assets/styles/homebase/visual-deck.css', '/assets/styles/homebase/shell.css', '/assets/styles/homebase/first-run.css', '/assets/styles/homebase/first-run-shortcuts.css',
   '/assets/styles/homebase/tiles.css', '/assets/styles/homebase/clock.css',
   '/assets/styles/homebase/gestures.css', '/assets/styles/homebase/indicators.css',
-  '/assets/styles/homebase/system-insights.css', '/assets/styles/homebase/scroll-motion.css',
+  '/assets/styles/homebase/system-insights.css', '/assets/styles/homebase/neofetch-ambient.css', '/assets/styles/homebase/scroll-motion.css',
   '/assets/styles/homebase/themes.css', '/assets/styles/homebase/mini-player.css',
   '/assets/styles/homebase/tile-layout.css', '/assets/styles/homebase/glass.css',
   '/assets/styles/homebase/header-actions.css', '/assets/styles/homebase/orbit-performance.css',
@@ -20,7 +20,7 @@ const SHELL=[
   '/assets/styles/settings/settings-dialog.css', '/assets/styles/shared/modal-global.css',
   '/assets/styles/shared/ultra-retro.css', '/assets/styles/shared/back-button-spacing.css', '/assets/styles/homebase/fake-virus-lab.css', '/assets/styles/apps/apps-icon-alignment.css', '/assets/scripts/homebase/deck.js', '/assets/scripts/homebase/first-run.js', '/assets/scripts/homebase/first-run-shortcuts.js', '/assets/scripts/shared/about-novashell.js',
   '/assets/scripts/homebase/deck-gestures.js', '/assets/scripts/homebase/gyro3d.js', '/assets/scripts/homebase/console.js', '/assets/scripts/homebase/relay-brain-panel.js', '/assets/scripts/homebase/relay-brain-browser.js', '/assets/scripts/homebase/relay-workshop-components.js', '/assets/scripts/homebase/relay-provider-config.js', '/assets/scripts/homebase/relay-workspace.js', '/assets/scripts/homebase/utility-project-board.js', '/assets/scripts/homebase/update-check.js', '/assets/styles/homebase/console.css', '/assets/styles/homebase/relay-composer-flow.css', '/assets/styles/homebase/relay-brain-deck.css', '/assets/styles/homebase/relay-brain-browser.css', '/assets/styles/homebase/relay-contrast-guard.css', '/assets/styles/homebase/relay-provider-config.css', '/assets/styles/homebase/relay-codex-runner.css',
-  '/assets/scripts/homebase/clock.js', '/assets/scripts/homebase/system-insights.js', '/assets/scripts/homebase/utility-workspace-manifest.js', '/assets/scripts/homebase/utility-live-snapshot.js',
+  '/assets/scripts/homebase/clock.js', '/assets/scripts/homebase/system-insights.js', '/assets/scripts/homebase/neofetch-ambient.js', '/assets/scripts/homebase/utility-workspace-manifest.js', '/assets/scripts/homebase/utility-live-snapshot.js',
   '/assets/scripts/homebase/scroll-motion.js', '/assets/scripts/arcade/game-controls.js',
   '/assets/scripts/arcade/game-capture.js', '/assets/scripts/arcade/game-details.js',
   '/assets/scripts/arcade/library-extras.js', '/assets/scripts/arcade/performance.js',
