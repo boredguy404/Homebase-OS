@@ -24,6 +24,7 @@ node --check assets/scripts/homebase/command-palette.js
 node --check assets/scripts/arcade/game-import.js
 node --check modules/radio-orbit/app.js
 node --check user-apps/games/novashell-world/world3d.js
+python3 scripts/recovery-insight-test.py
 echo "✓ core syntax"
 
 ./scripts/verify-theme-contract.sh "$base"

@@ -1,8 +1,11 @@
 {
-  "version": "121",
+  "version": "122",
   "released": "2026-08-24",
-  "notes": "The hosted NovaShell companion is now a tested static PWA instead of a placeholder, with honest browser-safe equivalents and public privacy-safe screenshots.",
+  "notes": "NovaShell now verifies two-controller N64 versus readiness and adds a read-only cleanup and recovery coach with completed-backup status.",
   "changes": [
+    "N64 versus launch now confirms Chrome sees two distinct controllers before starting and clearly shows whether player two is ready.",
+    "Storage details now include a read-only cleanup and recovery coach for stale Downloads, recoverable Trash, and the last completed selective backup.",
+    "Backup completion state is stored only in ignored local data and never includes credentials or file contents.",
     "Hosted NovaShell now includes Retro/Cobalt, touch/controller navigation, explicit IndexedDB game selection, Orbit, Notes, Kanban, Weather, Browse, Relay guidance, and browser backup.",
     "Public docs and the parity matrix now identify exactly which hosted features work and which still require local NovaShell.",
     "Show large files, open my music folder, and back up game saves now resolve to explicit NovaShell routes instead of falling through as unknown text.",

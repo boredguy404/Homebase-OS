@@ -107,7 +107,7 @@ This is not a replacement operating system. It is a fast console-like layer over
 |---|---|
 | ![Pocket Archive with intentionally pixelated local game artwork](media/pocket-archive.png) | ![Browse, Homebase’s retro internet-style discovery browser](media/rom-discovery.png) |
 
-Pocket Archive launches a locally installed EmulatorJS runtime for GBA, Game Boy, GBC, NES, SNES, Genesis, N64, and PlayStation files supplied by the user. Each game can have a detail sheet, swipeable gallery, Xbox controller diagram, save controls, performance profile, and fullscreen CRT presentation. Connected Xbox controllers are sorted into distinct EmulatorJS player slots with the complete face-button, D-pad, trigger, shoulder, stick-click, and analog-stick map. Known N64 versus games—and imported N64 games marked multiplayer—show a direct **2 players · versus** launch. A single-player title simply ignores the extra slot. In the library, Xbox **B** closes an open detail sheet before returning NovaShell; once a game is running, the emulator owns B normally.
+Pocket Archive launches a locally installed EmulatorJS runtime for GBA, Game Boy, GBC, NES, SNES, Genesis, N64, and PlayStation files supplied by the user. Each game can have a detail sheet, swipeable gallery, Xbox controller diagram, save controls, performance profile, and fullscreen CRT presentation. Connected Xbox controllers are sorted into distinct EmulatorJS player slots with the complete face-button, D-pad, trigger, shoulder, stick-click, and analog-stick map. Known N64 versus games—and imported N64 games marked multiplayer—show a direct two-player launch. It reads **2 pads ready** only when Chrome can see two distinct controllers; otherwise it asks the user to wake player two before launch. A single-player title simply ignores the extra slot. In the library, Xbox **B** closes an open detail sheet before returning NovaShell; once a game is running, the emulator owns B normally.
 
 The controller contract and a simulated two-pad assignment test run in the release audit. Real acceptance still requires two physical controllers on the target Chromebook: open the game’s own versus/player-select screen and verify each pad controls a different player. See the [Xbox controller smoke test](docs/HARDWARE_CONTROLLER_SMOKE.md).
 
@@ -224,7 +224,7 @@ Settings can export or merge independent data groups: My Library, user-provided 
 
 The README uses crisp current Settings captures. Pixel-mosaic treatment is reserved only for public game-shelf imagery that could expose local ROM covers or gameplay; it is a real low-resolution pixel mosaic, not a blur.
 
-Maintainers can run `./scripts/release-audit.sh` against a local NovaShell server before publishing. It checks core syntax, theme entry points, user-app registration, README media links, key routes, and that private runtime folders are not tracked. The separate controller smoke test still requires real hardware.
+Maintainers can run `./scripts/release-audit.sh` against a local NovaShell server before publishing. It checks core syntax, the isolated cleanup/recovery data contract, theme entry points, user-app registration, README media links, key routes, and that private runtime folders are not tracked. The separate controller smoke test still requires real hardware.
 
 EmulatorJS saves live in browser IndexedDB, so Homebase also includes a separate browser-save export/import tool for that protected data.
 
@@ -246,7 +246,7 @@ Cobalt + Radar is one compact optional modern view. It is kept as an alternative
 
 ### System insight and Homebase Control
 
-The dashboard begins with a compact local-system display rather than generic KPIs: OS and architecture, controller state, memory, storage, and load. Detail views add storage composition, large files, and active processes. Homebase Control exposes service health, controller detection, and protected native-save backups through a separate local helper.
+The dashboard begins with a compact local-system display rather than generic KPIs: OS and architecture, controller state, memory, storage, and load. Detail views add storage composition, large files, active processes, and a read-only **Cleanup & recovery coach**. The coach counts Downloads unchanged for 90 days, recoverable Trash contents, and the last completed selective backup; it exposes only totals and links to the existing review screen. It never deletes, empties Trash, or uploads anything. Homebase Control exposes service health, controller detection, and protected native-save backups through a separate local helper.
 
 ![NovaShell Device Readiness turns local measurements into safe next steps](media/system-readiness.png)
 

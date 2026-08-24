@@ -30,6 +30,13 @@ NovaShell World may reuse the isolated client-side engine pattern and the upstre
 
 The FTP audit has been completed at metadata level: 120 top-level candidates and 20 manifest signals. No remote code, media, databases, uploads, logs, or credentials were copied. Candidate patterns were classified into audio/visual, map maker, media viewer, weather, knowledge, and workflow; any future migration requires an owner-selected project plus a content and licensing review before code moves.
 
+## Published clean rebuilds
+
+- `boredguy404/novashell-gallery` is a private standalone browser-picked image viewer. Its `v0.1.0` tag follows a static-reference, JavaScript, browser-launch, and sensitive-token review; it contains no audited source or media.
+- `boredguy404/novashell-maker-desk` is a private standalone 16 × 12 local tile sketchpad. Its `v0.1.0` tag follows a 192-cell browser-launch, static-reference, service-worker, and sensitive-token review; it contains no archived maps, characters, or data.
+
+Both repositories keep their own focused history and stable tags. Future extracted projects follow the same provenance/privacy/removal gate before they are called stable.
+
 ## Next audit: hosted server
 
 Open `/pages/source-connection.html` to save an SFTP or FTPS profile locally. The profile lives in `local/source-connection.json`, which is ignored by Git and owner-readable only. Saving does not connect. Once access is supplied, the audit will:

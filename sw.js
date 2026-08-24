@@ -1,4 +1,4 @@
-const CACHE='homebase-v144';
+const CACHE='homebase-v145';
 const SHELL=[
   '/', '/index.html', '/offline.html', '/manifest.webmanifest', '/assets/icons/homebase-icon.svg', '/user-apps/wellness/reset-station/index.html', '/user-apps/wellness/reset-station/app.json', '/user-apps/wellness/reset-station/app.css', '/user-apps/wellness/reset-station/app.js',
   '/pages/arcade.html', '/pages/discover.html', '/pages/files.html', '/pages/apps.html', '/pages/source-connection.html',
@@ -7,7 +7,7 @@ const SHELL=[
   '/assets/styles/homebase/visual-deck.css', '/assets/styles/homebase/shell.css', '/assets/styles/homebase/first-run.css', '/assets/styles/homebase/first-run-shortcuts.css', '/assets/styles/homebase/command-palette.css',
   '/assets/styles/homebase/tiles.css', '/assets/styles/homebase/clock.css',
   '/assets/styles/homebase/gestures.css', '/assets/styles/homebase/indicators.css',
-  '/assets/styles/homebase/system-insights.css', '/assets/styles/homebase/neofetch-ambient.css','/assets/styles/homebase/neofetch-cobalt.css','/assets/styles/homebase/neofetch-retro-readout.css','/assets/styles/homebase/relay-live-build.css','/assets/styles/homebase/project-board-interaction.css','/assets/styles/homebase/relay-free-routes.css','/assets/styles/homebase/window-layering.css','/assets/styles/homebase/about-overview.css','/modules/radio-orbit/theme-inherit-surfaces.css','/assets/styles/shared/retro-window-standard.css', '/assets/styles/homebase/scroll-motion.css',
+  '/assets/styles/homebase/system-insights.css', '/assets/styles/homebase/system-recovery.css', '/assets/styles/homebase/neofetch-ambient.css','/assets/styles/homebase/neofetch-cobalt.css','/assets/styles/homebase/neofetch-retro-readout.css','/assets/styles/homebase/relay-live-build.css','/assets/styles/homebase/project-board-interaction.css','/assets/styles/homebase/relay-free-routes.css','/assets/styles/homebase/window-layering.css','/assets/styles/homebase/about-overview.css','/modules/radio-orbit/theme-inherit-surfaces.css','/assets/styles/shared/retro-window-standard.css', '/assets/styles/homebase/scroll-motion.css',
   '/assets/styles/homebase/themes.css', '/assets/styles/homebase/liquid-modern.css', '/assets/styles/homebase/mini-player.css',
   '/assets/styles/homebase/tile-layout.css', '/assets/styles/homebase/glass.css',
   '/assets/styles/homebase/header-actions.css', '/assets/styles/homebase/orbit-performance.css',

@@ -48,6 +48,7 @@ INSIGHT_CACHE = {"time": 0, "data": None}
 JOBS = {}
 JOBS_LOCK = threading.Lock()
 PROJECT_FEED_FILE = ROOT / "local" / "project-feed.json"
+BACKUP_STATUS_FILE = ROOT / "local" / "backup-status.json"
 PROJECT_FEED_LOCK = threading.RLock()
 RELAY_AGENT_RUNS = {}
 RELAY_AGENT_LOCK = threading.RLock()
@@ -546,6 +547,8 @@ def system_insights():
     groups = {"My Library": HOME_ROOT / "My Library", "Downloads": HOME_ROOT / "Downloads",
               "Games": ROOT / "roms", "Artwork": ROOT / "covers", "Imports": ROOT / "imports"}
     composition, largest = {}, []
+    stale_downloads = {"count": 0, "bytes": 0, "age_days": 90}
+    stale_before = time.time() - stale_downloads["age_days"] * 86400
     for label, folder in groups.items():
         total = 0
         if folder.exists():
@@ -554,10 +557,25 @@ def system_insights():
                 for name in files:
                     path = Path(base) / name
                     try:
-                        amount = path.stat().st_size; total += amount
+                        details = path.stat(); amount = details.st_size; total += amount
                         largest.append({"name": name, "path": str(path.relative_to(HOME_ROOT)), "bytes": amount})
+                        if label == "Downloads" and details.st_mtime < stale_before:
+                            stale_downloads["count"] += 1; stale_downloads["bytes"] += amount
                     except OSError: pass
         composition[label] = total
+    trash = {"count": 0, "bytes": 0}
+    trash_root = HOME_ROOT / ".local" / "share" / "Trash" / "files"
+    if trash_root.exists():
+        for base, dirs, files in os.walk(trash_root):
+            dirs[:] = [name for name in dirs if not name.startswith(".")]
+            for name in files:
+                try: trash["count"] += 1; trash["bytes"] += (Path(base) / name).stat().st_size
+                except OSError: pass
+    backup = {"last_export": None, "areas": [], "bytes": 0}
+    try:
+        saved_backup = json.loads(BACKUP_STATUS_FILE.read_text(encoding="utf-8"))
+        backup.update({"last_export": int(saved_backup.get("last_export")), "areas": [key for key in saved_backup.get("areas", []) if key in BACKUP_AREAS], "bytes": int(saved_backup.get("bytes", 0))})
+    except (OSError, ValueError, TypeError): pass
     output = subprocess.run(
         ["ps", "-eo", "pid=,comm=,%cpu=,%mem=,rss=,etimes=", "--sort=-%cpu"],
         capture_output=True, text=True, timeout=5
@@ -576,7 +594,8 @@ def system_insights():
     data = {"composition": composition, "largest": sorted(largest, key=lambda item:item["bytes"], reverse=True)[:16],
             "processes": processes, "cpu_count": os.cpu_count() or 1, "load": list(os.getloadavg()),
             "memory": memory, "disk": {"total": disk.total, "used": disk.used, "free": disk.free},
-            "uptime_seconds": int(float(Path("/proc/uptime").read_text().split()[0]))}
+            "uptime_seconds": int(float(Path("/proc/uptime").read_text().split()[0])),
+            "recovery": {"stale_downloads": stale_downloads, "trash": trash, "backup": backup}}
     INSIGHT_CACHE.update(time=time.time(), data=data); return data
 
 def safe_home_path(raw=""):
@@ -982,48 +1001,6 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                              for app in installed_apps().values()])
             return
         route = urllib.parse.urlsplit(self.path)
-        if route.path == "/api/backup/export":
-            length=min(int(self.headers.get("Content-Length","0")),5*1024*1024)
-            try: payload=json.loads(self.rfile.read(length) or b"{}")
-            except ValueError: self._json(400,{"error":"invalid settings"});return
-            selected=[key for key in payload.get("areas",[]) if key in BACKUP_AREAS];memory=io.BytesIO()
-            with zipfile.ZipFile(memory,"w",zipfile.ZIP_DEFLATED,compresslevel=5) as archive:
-                archive.writestr("homebase-backup.json",json.dumps({"format":1,"created":int(time.time()),"areas":selected,"preferences":payload.get("preferences",{}),"installed_apps":[{"id":app["id"],"name":app["name"]} for app in installed_apps().values()]},indent=2))
-                for key in selected:
-                    folder=BACKUP_AREAS[key]
-                    if folder.exists():
-                        for path in folder.rglob("*"):
-                            if path.is_file(): archive.write(path,"data/"+key+"/"+str(path.relative_to(folder)))
-            body=memory.getvalue();self.send_response(200);self.send_header("Content-Type","application/zip");self.send_header("Content-Disposition",'attachment; filename="homebase-backup.zip"');self.send_header("Content-Length",str(len(body)));self.end_headers();self.wfile.write(body);return
-        if route.path == "/api/backup/inspect":
-            length=min(int(self.headers.get("Content-Length","0")),16*1024**3)
-            try:
-                with zipfile.ZipFile(io.BytesIO(self.rfile.read(length))) as archive:
-                    manifest=json.loads(archive.read("homebase-backup.json"))
-                self._json(200,{"areas":manifest.get("areas",[]),"created":manifest.get("created"),"installed_apps":manifest.get("installed_apps",[]),"has_preferences":bool(manifest.get("preferences"))})
-            except (zipfile.BadZipFile,KeyError,ValueError,OSError) as error:self._json(400,{"error":str(error)})
-            return
-        if route.path == "/api/backup/import":
-            length=min(int(self.headers.get("Content-Length","0")),16*1024**3)
-            try:
-                with zipfile.ZipFile(io.BytesIO(self.rfile.read(length))) as archive:
-                    manifest=json.loads(archive.read("homebase-backup.json"));restored=[];skipped=[]
-                    requested={key for key in self.headers.get("X-Homebase-Areas","").split(",") if key};replace=self.headers.get("X-Homebase-Conflict")=="replace"
-                    for key in manifest.get("areas",[]):
-                        if key not in BACKUP_AREAS or requested and key not in requested: continue
-                        destination=BACKUP_AREAS[key];destination.mkdir(parents=True,exist_ok=True);prefix="data/"+key+"/"
-                        for name in archive.namelist():
-                            relative=Path(name[len(prefix):]) if name.startswith(prefix) else None
-                            if not relative or name.endswith("/") or relative.is_absolute() or ".." in relative.parts: continue
-                            target=destination/relative
-                            if target.exists() and not replace: skipped.append(str(relative));continue
-                            target.parent.mkdir(parents=True,exist_ok=True)
-                            with archive.open(name) as source,target.open("wb") as output: shutil.copyfileobj(source,output)
-                        restored.append(key)
-                preferences=manifest.get("preferences",{}) if not requested or "preferences" in requested else {}
-                self._json(200,{"restored":restored,"skipped":len(skipped),"preferences":preferences,"installed_apps":manifest.get("installed_apps",[])})
-            except (zipfile.BadZipFile,KeyError,ValueError,OSError) as error:self._json(400,{"error":str(error)})
-            return
         if route.path == "/api/files":
             raw = urllib.parse.parse_qs(route.query).get("path", ["Desktop"])[0]
             folder = safe_home_path(raw)
@@ -1375,7 +1352,7 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                 for key in selected:
                     for path, relative in backup_files(key):
                         archive.write(path,"data/"+key+"/"+str(relative))
-            body=memory.getvalue();self.send_response(200);self.send_header("Content-Type","application/zip");self.send_header("Content-Disposition",'attachment; filename="homebase-backup.zip"');self.send_header("Content-Length",str(len(body)));self.end_headers();self.wfile.write(body);return
+            body=memory.getvalue();BACKUP_STATUS_FILE.parent.mkdir(parents=True,exist_ok=True);temporary=BACKUP_STATUS_FILE.with_suffix(".tmp");temporary.write_text(json.dumps({"last_export":int(time.time()),"areas":selected,"bytes":len(body)},indent=2),encoding="utf-8");os.chmod(temporary,0o600);temporary.replace(BACKUP_STATUS_FILE);INSIGHT_CACHE.update(time=0,data=None);self.send_response(200);self.send_header("Content-Type","application/zip");self.send_header("Content-Disposition",'attachment; filename="homebase-backup.zip"');self.send_header("Content-Length",str(len(body)));self.end_headers();self.wfile.write(body);return
         if route.path == "/api/backup/inspect":
             length=min(int(self.headers.get("Content-Length","0")),16*1024**3)
             try:
