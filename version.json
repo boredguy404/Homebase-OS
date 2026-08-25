@@ -1,8 +1,9 @@
 {
-  "version": "124",
+  "version": "125",
   "released": "2026-08-25",
-  "notes": "NovaShell 124 repairs local runtime resilience, adds an honest inspect-before-restore comparison, and standardizes touch-safe window close controls.",
+  "notes": "NovaShell 125 repairs NovaShell World input and readability after a real playability review.",
   "changes": [
+    "NovaShell World now takes WASD and arrow-key input through both code and key fallbacks, focuses its canvas on launch, prevents page-scroll key loss, and uses larger high-contrast labels.",
     "Pocket Archive and all eleven bundled local apps received a clean runtime and interaction smoke pass; a real GBA game now reaches a live EmulatorJS canvas again.",
     "If Chrome displays a cached NovaShell shell while the local helper is stopped, the desktop now explains exactly why games, apps, files, and local tools cannot work and provides the one-line restart command.",
     "The normal Chromebook launcher now opens the correct 127.0.0.1 NovaShell address with a cache-busting launch URL.",
