@@ -247,7 +247,12 @@ def user_apps():
         except (OSError, ValueError): continue
         entry=Path(str(data.get("entry", "index.html"))).name
         if not (folder / entry).is_file(): continue
-        app_id="/".join(relative.parts);apps.append({"id":app_id,"name":str(data.get("name") or folder.name)[:60],"description":str(data.get("description") or "Local Homebase app.")[:180],"icon":str(data.get("icon") or "◫")[:4],"url":"/user-apps/"+app_id+"/"+entry})
+        # A user app can have several local assets behind one entry page.  Give
+        # each app launch a folder revision so an already-open PWA/iframe never
+        # silently keeps an old world, stylesheet, or module after an update.
+        try: revision=max(int(path.stat().st_mtime_ns) for path in folder.rglob("*") if path.is_file())
+        except OSError: revision=int((folder / entry).stat().st_mtime_ns)
+        app_id="/".join(relative.parts);apps.append({"id":app_id,"name":str(data.get("name") or folder.name)[:60],"description":str(data.get("description") or "Local Homebase app.")[:180],"icon":str(data.get("icon") or "◫")[:4],"url":"/user-apps/"+app_id+"/"+entry+"?v="+str(revision)})
     return apps
 
 def local_assistant(message):

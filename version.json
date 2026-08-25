@@ -1,8 +1,9 @@
 {
-  "version": "128",
+  "version": "129",
   "released": "2026-08-25",
-  "notes": "NovaShell 128 removes NovaShell World labels structurally and makes its only interaction panel readable in every theme.",
+  "notes": "NovaShell 129 makes every local user-app launch revisioned, so an open PWA cannot silently serve an older NovaShell World build.",
   "changes": [
+    "Every local user-app launch now includes an automatic folder revision, so updated HTML, styles, and modules receive a fresh launch URL instead of reusing a stale PWA or iframe response.",
     "NovaShell World now has no header, room status, proximity prompt, or renderer-made floating text at all; those elements were removed from the markup and renderer rather than merely hidden.",
     "NovaShell World's intentional interaction panel now uses explicit high-contrast text in every theme, including Ultra Retro.",
     "Maker Desk is now NovaShell World's real local setup editor: choose room finishes and up to eight owned-game arcade cabinets, save locally, then enter the building with that setup applied.",
