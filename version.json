@@ -1,8 +1,10 @@
 {
-  "version": "130",
+  "version": "131",
   "released": "2026-08-25",
-  "notes": "NovaShell 130 restores clear, controller-aware movement guidance, reliable keyboard focus, and direct access to every NovaShell World room.",
+  "notes": "NovaShell 131 gives key World stations usable in-world desks and makes Space/walking away close panels naturally.",
   "changes": [
+    "NovaShell World has usable in-world Library, Project Board, and Settings desks: inspect library names, read live task counts/latest work, and change themes without leaving the building; full NovaShell surfaces remain optional.",
+    "Space/A now toggles an open station panel closed, and walking away from a station closes its panel automatically.",
     "NovaShell World now shows one small, readable bottom control dock that automatically changes from WASD/arrow instructions to Xbox left-stick, A, and B instructions when a controller is present.",
     "NovaShell World reacquires keyboard focus after a tap, window focus, or return to the tab. Escape/B now closes a station panel, while Shift/RT is the optional faster walk modifier.",
     "The World has broad physical doorways between its four rooms; a movement-path check now reaches every room directly from spawn instead of trapping right-side destinations behind a long central collision wall.",
