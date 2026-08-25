@@ -1,4 +1,4 @@
-const CACHE='homebase-v152';
+const CACHE='homebase-v153';
 const SHELL=[
   '/', '/index.html', '/offline.html', '/manifest.webmanifest', '/assets/icons/homebase-icon.svg', '/user-apps/wellness/reset-station/index.html', '/user-apps/wellness/reset-station/app.json', '/user-apps/wellness/reset-station/app.css', '/user-apps/wellness/reset-station/app.js',
   '/pages/arcade.html', '/pages/discover.html', '/pages/files.html', '/pages/apps.html', '/pages/source-connection.html',
@@ -34,7 +34,7 @@ const SHELL=[
   '/assets/styles/homebase/relay-composer-flow.css', '/assets/styles/homebase/relay-keyring.css',
   '/assets/scripts/homebase/relay-keyring.js'
 ];
-SHELL.push('/user-apps/productivity/focus-deck/rounds.css','/user-apps/productivity/focus-deck/rounds.js','/user-apps/utilities/rail-finder/index.html','/user-apps/utilities/rail-finder/app.json','/user-apps/utilities/rail-finder/app.css','/user-apps/utilities/rail-finder/live.css','/user-apps/utilities/rail-finder/trip.css','/user-apps/utilities/rail-finder/app.js','/assets/styles/homebase/neofetch-placement.css','/user-apps/games/novashell-world/engine/pixel-renderer.js','/user-apps/games/novashell-world/engine/pixel-actor.js','/user-apps/games/novashell-world/engine/world.js','/user-apps/games/novashell-world/content/building.js');
+SHELL.push('/user-apps/productivity/focus-deck/rounds.css','/user-apps/productivity/focus-deck/rounds.js','/user-apps/utilities/rail-finder/index.html','/user-apps/utilities/rail-finder/app.json','/user-apps/utilities/rail-finder/app.css','/user-apps/utilities/rail-finder/live.css','/user-apps/utilities/rail-finder/trip.css','/user-apps/utilities/rail-finder/app.js','/assets/styles/homebase/neofetch-placement.css','/user-apps/games/novashell-world/engine/pixel-renderer.js','/user-apps/games/novashell-world/engine/pixel-actor.js','/user-apps/games/novashell-world/engine/world.js','/user-apps/games/novashell-world/content/building.js','/user-apps/games/novashell-world/world-controls.css');
 SHELL.push('/user-apps/utilities/weather-station/index.html','/user-apps/utilities/weather-station/app.json','/user-apps/utilities/weather-station/app.css','/user-apps/utilities/weather-station/app.js');
 SHELL.push('/assets/styles/arcade/game-setup.css','/assets/scripts/arcade/game-import.js','/assets/scripts/arcade/game-import-autofill.js','/assets/scripts/arcade/game-import-pixelate.js');
 SHELL.push('/assets/styles/arcade/game-manager.css','/assets/scripts/arcade/game-manager.js');

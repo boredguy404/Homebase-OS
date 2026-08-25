@@ -1,8 +1,11 @@
 {
-  "version": "129",
+  "version": "130",
   "released": "2026-08-25",
-  "notes": "NovaShell 129 makes every local user-app launch revisioned, so an open PWA cannot silently serve an older NovaShell World build.",
+  "notes": "NovaShell 130 restores clear, controller-aware movement guidance, reliable keyboard focus, and direct access to every NovaShell World room.",
   "changes": [
+    "NovaShell World now shows one small, readable bottom control dock that automatically changes from WASD/arrow instructions to Xbox left-stick, A, and B instructions when a controller is present.",
+    "NovaShell World reacquires keyboard focus after a tap, window focus, or return to the tab. Escape/B now closes a station panel, while Shift/RT is the optional faster walk modifier.",
+    "The World has broad physical doorways between its four rooms; a movement-path check now reaches every room directly from spawn instead of trapping right-side destinations behind a long central collision wall.",
     "Every local user-app launch now includes an automatic folder revision, so updated HTML, styles, and modules receive a fresh launch URL instead of reusing a stale PWA or iframe response.",
     "NovaShell World now has no header, room status, proximity prompt, or renderer-made floating text at all; those elements were removed from the markup and renderer rather than merely hidden.",
     "NovaShell World's intentional interaction panel now uses explicit high-contrast text in every theme, including Ultra Retro.",

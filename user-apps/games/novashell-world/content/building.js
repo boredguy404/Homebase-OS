@@ -9,7 +9,9 @@ export const building={
   ],
   walls:[
     [-32,-23,32,.5],[-32,23,32,.5],[-32,0,.5,23],[32,0,.5,23],
-    [0,-12,.5,11],[0,12,.5,11],
+    // Wide, visible room doors: the building should invite direct exploration,
+    // not force players to discover an invisible corridor route.
+    [0,-18,.5,4],[0,18,.5,4],
     [-25.5,-2,6.5,.5],[0,-2,13,.5],[25.5,-2,6.5,.5],
     [-25.5,2,6.5,.5],[0,2,13,.5],[25.5,2,6.5,.5]
   ],
