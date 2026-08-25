@@ -1,8 +1,9 @@
 {
-  "version": "131",
+  "version": "132",
   "released": "2026-08-25",
-  "notes": "NovaShell 131 gives key World stations usable in-world desks and makes Space/walking away close panels naturally.",
+  "notes": "NovaShell 132 turns more NovaShell World rooms into useful in-world desks while preserving optional full-app launches.",
   "changes": [
+    "NovaShell World now also has an in-world saved Writer note, live Oak Park weather readout, Browse quick launchpad, Relay local status, and a positional Orbit speaker; their full apps remain optional second actions.",
     "NovaShell World has usable in-world Library, Project Board, and Settings desks: inspect library names, read live task counts/latest work, and change themes without leaving the building; full NovaShell surfaces remain optional.",
     "Space/A now toggles an open station panel closed, and walking away from a station closes its panel automatically.",
     "NovaShell World now shows one small, readable bottom control dock that automatically changes from WASD/arrow instructions to Xbox left-stick, A, and B instructions when a controller is present.",

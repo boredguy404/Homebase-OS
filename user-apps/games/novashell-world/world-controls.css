@@ -3,6 +3,8 @@
 #dialogue{width:min(480px,calc(100vw - 28px));padding:20px}
 #dialogue b{font-size:15px;letter-spacing:.06em}
 #dialogue p{font-size:15px;line-height:1.55}
+.world-note{display:block;width:100%;min-height:112px;margin:12px 0;border:1px solid #9beaff;background:#02090d;color:#fff;padding:10px;font:14px ui-monospace,monospace;resize:vertical}
 html[data-theme="ultra-retro"] #controls{background:#000080;color:#fff;border:2px outset #eee;border-radius:0;text-shadow:none}
 html[data-theme="ultra-retro"] #dialogue p{color:#111!important}
+html[data-theme="ultra-retro"] .world-note{border:2px inset #eee;background:#fff;color:#111}
 @media(pointer:coarse){#controls{bottom:20px;left:auto;right:15px;transform:none;max-width:calc(100vw - 190px);font-size:9px}}
