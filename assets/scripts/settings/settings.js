@@ -185,7 +185,7 @@ document.querySelector('#export').onclick = async () => {
   link.click(); URL.revokeObjectURL(link.href); status.textContent = 'Backup exported to Downloads.';
 };
 
-const picker = document.querySelector('#backup');
+const picker = document.querySelector('#backup-file');
 document.querySelector('#import').onclick = () => picker.click();
 picker.onchange = async () => {
   const file = picker.files[0];

@@ -22,6 +22,7 @@ from functools import lru_cache
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from modules.relay.runtime import action_history, install_app_draft, load_app_draft, preview_document, record_action, save_app_draft
+from modules.backup.runtime import apply_restore_plan, build_restore_plan, public_restore_plan
 
 ROOT = Path(__file__).resolve().parent
 HOME_ROOT = Path.home().resolve()
@@ -585,9 +586,15 @@ def system_insights():
     for line in output:
         fields = line.split()
         if len(fields) >= 6:
-            processes.append({"pid": int(fields[0]), "name": fields[1],
-                              "cpu": float(fields[2]), "memory_percent": float(fields[3]),
-                              "mb": round(int(fields[4]) / 1024, 1), "seconds": int(fields[5])})
+            try:
+                # `comm` can include a spaced process title on some ChromeOS
+                # builds.  Parse the numeric tail instead of assuming it is a
+                # single token, otherwise one odd process breaks all insights.
+                processes.append({"pid": int(fields[0]), "name": " ".join(fields[1:-4]),
+                                  "cpu": float(fields[-4]), "memory_percent": float(fields[-3]),
+                                  "mb": round(int(fields[-2]) / 1024, 1), "seconds": int(fields[-1])})
+            except (TypeError, ValueError):
+                continue
     disk = shutil.disk_usage(HOME_ROOT)
     with open("/proc/meminfo", encoding="utf-8") as handle:
         memory = {line.split(":", 1)[0]: int(line.split()[1]) * 1024 for line in handle
@@ -1410,33 +1417,38 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
             body=memory.getvalue();BACKUP_STATUS_FILE.parent.mkdir(parents=True,exist_ok=True);temporary=BACKUP_STATUS_FILE.with_suffix(".tmp");temporary.write_text(json.dumps({"last_export":int(time.time()),"areas":selected,"bytes":len(body)},indent=2),encoding="utf-8");os.chmod(temporary,0o600);temporary.replace(BACKUP_STATUS_FILE);INSIGHT_CACHE.update(time=0,data=None);self.send_response(200);self.send_header("Content-Type","application/zip");self.send_header("Content-Disposition",'attachment; filename="homebase-backup.zip"');self.send_header("Content-Length",str(len(body)));self.end_headers();self.wfile.write(body);return
         if route.path == "/api/backup/inspect":
             length=min(int(self.headers.get("Content-Length","0")),16*1024**3)
+            action_id=self.headers.get("X-Relay-Action") or "backup-"+uuid.uuid4().hex[:12]
             try:
                 with zipfile.ZipFile(io.BytesIO(self.rfile.read(length))) as archive:
                     manifest=json.loads(archive.read("homebase-backup.json"))
+                    requested={key for key in self.headers.get("X-Homebase-Areas","").split(",") if key};replace=self.headers.get("X-Homebase-Conflict")=="replace"
+                    plan=build_restore_plan(archive,manifest,BACKUP_AREAS,backup_destination,requested,replace)
                 areas=[key for key in manifest.get("areas",[]) if key in BACKUP_AREAS]
-                self._json(200,{"areas":areas,"created":manifest.get("created"),"installed_apps":manifest.get("installed_apps",[]),"has_preferences":bool(manifest.get("preferences"))})
-            except (zipfile.BadZipFile,KeyError,ValueError,OSError) as error:self._json(400,{"error":str(error)})
+                if not self.headers.get("X-Relay-Action"):log_relay_action(action_id=action_id,kind="restore",stage="plan",title="Inspect selective backup",detail=f"{len(areas)} available data groups; no files extracted.",target="local backup archive")
+                log_relay_action(action_id=action_id,kind="restore",stage="preview",title="Restore comparison ready",detail=f"{plan['totals']['will_write']} writes, {plan['totals']['preserved']} preserved, {plan['totals']['blocked']} blocked.",target="selected backup groups")
+                self._json(200,{"areas":areas,"created":manifest.get("created"),"installed_apps":manifest.get("installed_apps",[]),"has_preferences":bool(manifest.get("preferences")),"comparison":public_restore_plan(plan),"action_id":action_id})
+            except (zipfile.BadZipFile,KeyError,ValueError,OSError) as error:
+                log_relay_action(action_id=action_id,kind="restore",stage="result",title="Backup inspection failed",detail=str(error)[:180],state="failed",target="local backup archive");self._json(400,{"error":str(error),"action_id":action_id})
             return
         if route.path == "/api/backup/import":
             length=min(int(self.headers.get("Content-Length","0")),16*1024**3)
+            action_id=self.headers.get("X-Relay-Action") or "backup-"+uuid.uuid4().hex[:12]
             try:
                 with zipfile.ZipFile(io.BytesIO(self.rfile.read(length))) as archive:
-                    manifest=json.loads(archive.read("homebase-backup.json"));restored=[];skipped=[]
+                    manifest=json.loads(archive.read("homebase-backup.json"))
                     requested={key for key in self.headers.get("X-Homebase-Areas","").split(",") if key};replace=self.headers.get("X-Homebase-Conflict")=="replace"
-                    for key in manifest.get("areas",[]):
-                        if key not in BACKUP_AREAS or requested and key not in requested: continue
-                        destination=backup_destination(key);destination.mkdir(parents=True,exist_ok=True);prefix="data/"+key+"/"
-                        for name in archive.namelist():
-                            relative=Path(name[len(prefix):]) if name.startswith(prefix) else None
-                            if not relative or name.endswith("/") or relative.is_absolute() or ".." in relative.parts: continue
-                            target=destination/relative
-                            if target.exists() and not replace: skipped.append(str(relative));continue
-                            target.parent.mkdir(parents=True,exist_ok=True)
-                            with archive.open(name) as source,target.open("wb") as output: shutil.copyfileobj(source,output)
-                        restored.append(key)
+                    plan=build_restore_plan(archive,manifest,BACKUP_AREAS,backup_destination,requested,replace)
+                    preview_fingerprint=self.headers.get("X-Homebase-Preview","")
+                    if preview_fingerprint and preview_fingerprint!=plan["fingerprint"]:raise ValueError("backup or destination changed after preview; inspect it again before restoring")
+                    log_relay_action(action_id=action_id,kind="restore",stage="confirm",title="Selective restore confirmed",detail=("Replace conflicts with local safety copies." if replace else "Preserve every existing conflict."),target="selected backup groups")
+                    safety_root=ROOT/"local"/"restore-backups"/(str(int(time.time()))+"-"+action_id[-8:]) if replace and plan["totals"]["will_replace"] else None
+                    outcome=apply_restore_plan(archive,plan,safety_root)
+                    restored=plan["selected"]
                 preferences=manifest.get("preferences",{}) if not requested or "preferences" in requested else {}
-                self._json(200,{"restored":restored,"skipped":len(skipped),"preferences":preferences,"installed_apps":manifest.get("installed_apps",[])})
-            except (zipfile.BadZipFile,KeyError,ValueError,OSError) as error:self._json(400,{"error":str(error)})
+                log_relay_action(action_id=action_id,kind="restore",stage="result",title="Selective restore complete",detail=f"{outcome['written']} written, {outcome['preserved']} preserved, {outcome['blocked']} blocked.",target="selected backup groups")
+                self._json(200,{"restored":restored,"skipped":outcome["preserved"],"written":outcome["written"],"replaced":outcome["replaced"],"blocked":outcome["blocked"],"safety_files":outcome["safety_files"],"safety_backup":str(safety_root.relative_to(ROOT)) if safety_root else "","preferences":preferences,"installed_apps":manifest.get("installed_apps",[]),"action_id":action_id})
+            except (zipfile.BadZipFile,KeyError,ValueError,OSError) as error:
+                log_relay_action(action_id=action_id,kind="restore",stage="result",title="Selective restore failed",detail=str(error)[:180],state="failed",target="selected backup groups");self._json(400,{"error":str(error),"action_id":action_id})
             return
         if route.path == "/api/preview":
             query = urllib.parse.parse_qs(route.query)

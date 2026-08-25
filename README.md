@@ -222,6 +222,8 @@ File access is confined to the current user’s home folder by the local server.
 
 Settings can export or merge independent data groups: My Library, user-provided ROMs, **game-card details and controller notes**, native saves, artwork, imports, mGBA data, Orbit playlists, Flatpak data, browser preferences, and an installed-app inventory. Preferences include the local Project Board and desktop layout; provider credentials are never exported. Restore defaults to inspect-before-merge and skip conflicts; replacing matching files requires an explicit choice.
 
+Before any restore, NovaShell now shows an in-app comparison of new files, existing conflicts, preserved files, blocked archive entries, and small file samples for each selected group. The exact preview is fingerprinted, so a changed archive or destination must be inspected again. Replacements create ignored local safety copies first.
+
 The README uses crisp current Settings captures. Pixel-mosaic treatment is reserved only for public game-shelf imagery that could expose local ROM covers or gameplay; it is a real low-resolution pixel mosaic, not a blur.
 
 Maintainers can run `./scripts/release-audit.sh` against a local NovaShell server before publishing. It checks core syntax, the isolated cleanup/recovery data contract, theme entry points, user-app registration, README media links, key routes, and that private runtime folders are not tracked. The separate controller smoke test still requires real hardware.

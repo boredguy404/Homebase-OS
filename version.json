@@ -1,8 +1,14 @@
 {
-  "version": "123",
-  "released": "2026-08-24",
-  "notes": "NovaShell 123 restores Relay's complete review harness, standardizes built-in app navigation, hardens the Orbit mini player, and adds a colorful retro pattern pack.",
+  "version": "124",
+  "released": "2026-08-25",
+  "notes": "NovaShell 124 repairs local runtime resilience, adds an honest inspect-before-restore comparison, and standardizes touch-safe window close controls.",
   "changes": [
+    "Pocket Archive and all eleven bundled local apps received a clean runtime and interaction smoke pass; a real GBA game now reaches a live EmulatorJS canvas again.",
+    "If Chrome displays a cached NovaShell shell while the local helper is stopped, the desktop now explains exactly why games, apps, files, and local tools cannot work and provides the one-line restart command.",
+    "The normal Chromebook launcher now opens the correct 127.0.0.1 NovaShell address with a cache-busting launch URL.",
+    "Selective restore now previews new files, conflicts, preserved entries, blocked archive entries, exact group samples, and replacement safety copies before extracting anything.",
+    "A changed backup or destination invalidates the reviewed restore fingerprint, so it must be inspected again before a write occurs.",
+    "Every shared Retro window now has one consistent draggable title bar and a larger touch-safe close target instead of overlapping duplicate close controls.",
     "Every built-in NovaShell app now inherits one centered, touch-sized Back control, including apps that previously had a mismatched link or no Back control.",
     "Orbit's compact player now recovers unsupported and stale visual states instead of occasionally showing a blank canvas.",
     "The top-left signal beacon now uses matching loop endpoints for fluid motion without a visible restart seam.",

@@ -62,8 +62,7 @@ case "${1:-status}" in
   logs) tail -n 100 /tmp/homebase-server.log ;;
   open)
     start >/dev/null
-    container_ip="$(ip -4 -brief address show scope global | awk 'NR==1 {split($3, address, "/"); print address[1]}')"
-    garcon-url-handler "http://${container_ip}:${port}/?v=61"
+    garcon-url-handler "http://127.0.0.1:${port}/?v=$(date +%s)"
     ;;
   *)
     echo "Usage: $0 {start|restart|stop|status|check|smoke|screenshot|logs|open}" >&2

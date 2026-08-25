@@ -1,14 +1,18 @@
 /* One shared retro window chrome contract: Relay-sized across every dialog. */
+dialog.retro-window-ready:not(.retro-bulletin){padding-top:62px!important}
+dialog.retro-window-ready>.retro-window-title{position:absolute;z-index:4;top:8px;left:8px;right:8px;height:44px;min-height:44px;padding:0 56px;display:flex;align-items:center;justify-content:center;border:1px solid #70b7c855;border-radius:9px;background:#183947;color:#fff;font:700 10px/1 Manrope,system-ui,sans-serif;letter-spacing:.08em;cursor:grab;user-select:none}
+dialog.retro-window-ready>.retro-window-title span{color:#fff}
+dialog.retro-window-ready>.retro-window-title button{position:absolute;right:2px;top:2px;width:44px;height:40px;min-height:40px;padding:0;border:1px solid #ffffff88;border-radius:6px;background:#e1e1e1;color:#111;font-size:26px;line-height:34px;cursor:pointer}
 html[data-theme="ultra-retro"] dialog.retro-window-ready:not(.retro-bulletin){
-  padding-top:54px!important;
+  padding-top:66px!important;
 }
 html[data-theme="ultra-retro"] dialog.retro-window-ready>.retro-window-title,
 html[data-theme="ultra-retro"] .retro-bulletin>.bulletin-title{
   top:8px!important;
   left:8px!important;
   right:8px!important;
-  height:36px!important;
-  min-height:36px!important;
+  height:48px!important;
+  min-height:48px!important;
   padding:0 52px!important;
   display:flex!important;
   align-items:center!important;
@@ -27,15 +31,15 @@ html[data-theme="ultra-retro"] dialog.retro-window-ready>.retro-window-title but
 html[data-theme="ultra-retro"] .retro-bulletin>.bulletin-title button{
   right:3px!important;
   top:3px!important;
-  width:30px!important;
-  height:30px!important;
-  min-height:30px!important;
+  width:44px!important;
+  height:40px!important;
+  min-height:40px!important;
   padding:0!important;
   border:2px outset #eee!important;
   border-radius:0!important;
   background:#d4d4d4!important;
   color:#000!important;
   font-size:26px!important;
-  line-height:24px!important;
+  line-height:34px!important;
   box-shadow:inset 1px 1px #fff,inset -1px -1px #666!important;
 }

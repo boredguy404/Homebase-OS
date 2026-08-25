@@ -1,0 +1,18 @@
+{
+  "id": "backup",
+  "name": "Portable Backup",
+  "purpose": "Selective local export, inspect-before-restore comparison, and safe merge.",
+  "runtime_data": [
+    "User-selected local folders and application data",
+    "Ignored local backup completion status",
+    "Ignored local safety copies created before explicit replacement"
+  ],
+  "network": "None",
+  "removal": "Remove modules/backup and the Settings backup wiring; personal archives remain ordinary ZIP files.",
+  "safety": [
+    "Preview and restore use the same validated plan.",
+    "Archive paths remain inside their selected destination.",
+    "Existing files are preserved by default.",
+    "Explicit replacement creates an ignored local safety copy first."
+  ]
+}
