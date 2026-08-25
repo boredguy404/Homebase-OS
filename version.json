@@ -1,9 +1,11 @@
 {
-  "version": "126",
+  "version": "127",
   "released": "2026-08-25",
-  "notes": "NovaShell 126 makes world stations optional, fixes theme synchronization, adds positional room audio, and corrects GBA multiplayer guidance.",
+  "notes": "NovaShell 127 turns Maker Desk into the local setup editor for NovaShell World and removes the permanent 3D HUD clutter.",
   "changes": [
-    "NovaShell World keeps filtered 3D labels out of the way, moves station names into readable HUD panels, and makes Orbit and every external surface an explicit optional choice.",
+    "Maker Desk is now NovaShell World's real local setup editor: choose room finishes and up to eight owned-game arcade cabinets, save locally, then enter the building with that setup applied.",
+    "NovaShell World no longer keeps developer-style labels, prompts, or a status HUD on top of the building; only an intentional station interaction opens a readable panel.",
+    "NovaShell World keeps filtered 3D labels out of the way, moves station names into readable interaction panels, and makes Orbit and every external surface an explicit optional choice.",
     "NovaShell World now has a low-key positional room tone that grows and pans as you approach the Orbit speaker after a user interaction enables sound.",
     "Theme changes now synchronize through settings, the desktop, open panels, and Orbit even when the setting changes in a separate same-origin window.",
     "GBA multiplayer now describes mGBA's real link flow honestly: NovaShell opens the first game and mGBA's New Multiplayer Window creates the link, rather than pretending two unrelated CLI windows are linked.",

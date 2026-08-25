@@ -1,4 +1,4 @@
-const CACHE='homebase-v149';
+const CACHE='homebase-v150';
 const SHELL=[
   '/', '/index.html', '/offline.html', '/manifest.webmanifest', '/assets/icons/homebase-icon.svg', '/user-apps/wellness/reset-station/index.html', '/user-apps/wellness/reset-station/app.json', '/user-apps/wellness/reset-station/app.css', '/user-apps/wellness/reset-station/app.js',
   '/pages/arcade.html', '/pages/discover.html', '/pages/files.html', '/pages/apps.html', '/pages/source-connection.html',
@@ -29,7 +29,7 @@ const SHELL=[
   '/assets/scripts/apps/apps-enhance.js', '/assets/scripts/apps/apps-install-modal.js',
   '/assets/scripts/apps/install-jobs.js',
   '/assets/scripts/settings/settings.js', '/assets/scripts/settings/settings-restore.js', '/assets/scripts/settings/settings-device-center.js',
-  '/assets/scripts/settings/settings-options.js', '/assets/scripts/settings/wallpaper-pattern-pack.js', '/assets/scripts/shared/theme-sync.js', '/assets/scripts/shared/user-app-navigation.js', '/assets/styles/shared/user-app-navigation.css', '/assets/scripts/homebase/orbit-mini-resilience.js', '/assets/styles/homebase/desktop-beacon-fluid.css', '/assets/styles/homebase/wallpaper-pattern-pack.css',
+  '/assets/scripts/settings/settings-options.js', '/assets/scripts/settings/wallpaper-pattern-pack.js', '/assets/scripts/shared/theme-sync.js', '/assets/scripts/shared/user-app-navigation.js', '/assets/styles/shared/user-app-navigation.css', '/assets/scripts/homebase/maker-world-setup.js', '/assets/scripts/homebase/orbit-mini-resilience.js', '/assets/styles/homebase/desktop-beacon-fluid.css', '/assets/styles/homebase/wallpaper-pattern-pack.css',
   '/assets/scripts/shared/github-status.js',
   '/assets/styles/homebase/relay-composer-flow.css', '/assets/styles/homebase/relay-keyring.css',
   '/assets/scripts/homebase/relay-keyring.js'
