@@ -1,8 +1,12 @@
 {
-  "version": "125",
+  "version": "126",
   "released": "2026-08-25",
-  "notes": "NovaShell 125 repairs NovaShell World input and readability after a real playability review.",
+  "notes": "NovaShell 126 makes world stations optional, fixes theme synchronization, adds positional room audio, and corrects GBA multiplayer guidance.",
   "changes": [
+    "NovaShell World keeps filtered 3D labels out of the way, moves station names into readable HUD panels, and makes Orbit and every external surface an explicit optional choice.",
+    "NovaShell World now has a low-key positional room tone that grows and pans as you approach the Orbit speaker after a user interaction enables sound.",
+    "Theme changes now synchronize through settings, the desktop, open panels, and Orbit even when the setting changes in a separate same-origin window.",
+    "GBA multiplayer now describes mGBA's real link flow honestly: NovaShell opens the first game and mGBA's New Multiplayer Window creates the link, rather than pretending two unrelated CLI windows are linked.",
     "NovaShell World now takes WASD and arrow-key input through both code and key fallbacks, focuses its canvas on launch, prevents page-scroll key loss, and uses larger high-contrast labels.",
     "Pocket Archive and all eleven bundled local apps received a clean runtime and interaction smoke pass; a real GBA game now reaches a live EmulatorJS canvas again.",
     "If Chrome displays a cached NovaShell shell while the local helper is stopped, the desktop now explains exactly why games, apps, files, and local tools cannot work and provides the one-line restart command.",
