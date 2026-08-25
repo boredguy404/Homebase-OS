@@ -1,8 +1,10 @@
 {
-  "version": "127",
+  "version": "128",
   "released": "2026-08-25",
-  "notes": "NovaShell 127 turns Maker Desk into the local setup editor for NovaShell World and removes the permanent 3D HUD clutter.",
+  "notes": "NovaShell 128 removes NovaShell World labels structurally and makes its only interaction panel readable in every theme.",
   "changes": [
+    "NovaShell World now has no header, room status, proximity prompt, or renderer-made floating text at all; those elements were removed from the markup and renderer rather than merely hidden.",
+    "NovaShell World's intentional interaction panel now uses explicit high-contrast text in every theme, including Ultra Retro.",
     "Maker Desk is now NovaShell World's real local setup editor: choose room finishes and up to eight owned-game arcade cabinets, save locally, then enter the building with that setup applied.",
     "NovaShell World no longer keeps developer-style labels, prompts, or a status HUD on top of the building; only an intentional station interaction opens a readable panel.",
     "NovaShell World keeps filtered 3D labels out of the way, moves station names into readable interaction panels, and makes Orbit and every external surface an explicit optional choice.",
