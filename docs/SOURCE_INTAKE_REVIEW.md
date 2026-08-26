@@ -37,6 +37,14 @@ The FTP audit has been completed at metadata level: 120 top-level candidates and
 
 Both repositories keep their own focused history and stable tags. Future extracted projects follow the same provenance/privacy/removal gate before they are called stable.
 
+## 2026-08-25 capability integration
+
+The approved Tempo/Cadence recovery pattern is now represented as a clean
+**Recovery Station** inside NovaShell World. It reads and updates only the
+existing browser-local Reset Station counters (water and recovery breaks), and
+offers the full Reset Station as an optional surface. No archive or FTP code,
+records, accounts, images, prompts, or remote content was imported.
+
 ## Next audit: hosted server
 
 Open `/pages/source-connection.html` to save an SFTP or FTPS profile locally. The profile lives in `local/source-connection.json`, which is ignored by Git and owner-readable only. Saving does not connect. Once access is supplied, the audit will:

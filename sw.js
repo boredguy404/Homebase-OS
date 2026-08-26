@@ -1,4 +1,4 @@
-const CACHE='homebase-v155';
+const CACHE='homebase-v157';
 const SHELL=[
   '/', '/index.html', '/offline.html', '/manifest.webmanifest', '/assets/icons/homebase-icon.svg', '/user-apps/wellness/reset-station/index.html', '/user-apps/wellness/reset-station/app.json', '/user-apps/wellness/reset-station/app.css', '/user-apps/wellness/reset-station/app.js',
   '/pages/arcade.html', '/pages/discover.html', '/pages/files.html', '/pages/apps.html', '/pages/source-connection.html',
@@ -36,6 +36,7 @@ const SHELL=[
 ];
 SHELL.push('/user-apps/productivity/focus-deck/rounds.css','/user-apps/productivity/focus-deck/rounds.js','/user-apps/utilities/rail-finder/index.html','/user-apps/utilities/rail-finder/app.json','/user-apps/utilities/rail-finder/app.css','/user-apps/utilities/rail-finder/live.css','/user-apps/utilities/rail-finder/trip.css','/user-apps/utilities/rail-finder/app.js','/assets/styles/homebase/neofetch-placement.css','/user-apps/games/novashell-world/engine/pixel-renderer.js','/user-apps/games/novashell-world/engine/pixel-actor.js','/user-apps/games/novashell-world/engine/world.js','/user-apps/games/novashell-world/content/building.js','/user-apps/games/novashell-world/world-controls.css');
 SHELL.push('/user-apps/utilities/weather-station/index.html','/user-apps/utilities/weather-station/app.json','/user-apps/utilities/weather-station/app.css','/user-apps/utilities/weather-station/app.js');
+SHELL.push('/user-apps/social/social-desk/index.html','/user-apps/social/social-desk/app.json','/user-apps/social/social-desk/app.css','/user-apps/social/social-desk/app.js');
 SHELL.push('/assets/styles/arcade/game-setup.css','/assets/scripts/arcade/game-import.js','/assets/scripts/arcade/game-import-autofill.js','/assets/scripts/arcade/game-import-pixelate.js');
 SHELL.push('/assets/styles/arcade/game-manager.css','/assets/scripts/arcade/game-manager.js');
 SHELL.push('/assets/styles/homebase/relay-app-review.css','/assets/scripts/homebase/relay-app-review.js','/assets/styles/homebase/relay-action-history.css','/assets/scripts/homebase/relay-action-history.js');

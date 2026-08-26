@@ -37,6 +37,7 @@ export const building={
     {id:'relay',name:'RELAY',x:17,z:7,kind:'terminal',action:'relay'},
     {id:'settings',name:'SETTINGS',x:27,z:7,kind:'terminal',route:'/pages/settings.html'},
     {id:'board',name:'PROJECT BOARD',x:7,z:18,kind:'terminal',route:'/pages/utility-desk.html#project-board'},
-    {id:'weather',name:'WEATHER',x:18,z:18,kind:'terminal',route:'/user-apps/utilities/weather-station/index.html'}
+    {id:'weather',name:'WEATHER',x:18,z:18,kind:'terminal',route:'/user-apps/utilities/weather-station/index.html'},
+    {id:'reset',name:'RECOVERY STATION',x:28,z:12,kind:'terminal',route:'/user-apps/wellness/reset-station/index.html'}
   ]
 };

@@ -1,8 +1,10 @@
 {
-  "version": "132",
+  "version": "134",
   "released": "2026-08-25",
-  "notes": "NovaShell 132 turns more NovaShell World rooms into useful in-world desks while preserving optional full-app launches.",
+  "notes": "NovaShell 134 adds a private, read-only Social Desk and a Recovery Station shaped by approved source capabilities—not imported personal content.",
   "changes": [
+    "Social Desk is a removable local app for public Bluesky profiles and topic searches. It is read-only, needs no account, and keeps only the shortcuts you choose on this device.",
+    "Recovery Station now works inside NovaShell World: log water or a recovery break directly into your existing browser-local Reset Station data, with the full Reset Station available as an optional surface.",
     "NovaShell World now also has an in-world saved Writer note, live Oak Park weather readout, Browse quick launchpad, Relay local status, and a positional Orbit speaker; their full apps remain optional second actions.",
     "NovaShell World has usable in-world Library, Project Board, and Settings desks: inspect library names, read live task counts/latest work, and change themes without leaving the building; full NovaShell surfaces remain optional.",
     "Space/A now toggles an open station panel closed, and walking away from a station closes its panel automatically.",

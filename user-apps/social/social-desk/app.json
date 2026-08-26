@@ -1,0 +1,7 @@
+{
+  "name": "Social Desk",
+  "description": "A local-first, read-only window for public Bluesky profiles and topic searches.",
+  "category": "social",
+  "entry": "index.html",
+  "icon": "◉"
+}
