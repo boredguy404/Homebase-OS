@@ -1,8 +1,12 @@
 {
-  "version": "135",
+  "version": "136",
   "released": "2026-08-25",
-  "notes": "NovaShell 135 adds a local, repeating soft reminder to Settings—defaulting to every 4½ minutes.",
+  "notes": "NovaShell 136 makes Relay local-first with an audited Offline Operator and removes an unnecessary provider-key gate from Local Codex.",
   "changes": [
+    "Relay's Offline Operator is a real local-only action layer: it can inspect safe system, owned-game, modular-app, and Project Board metadata or open selected NovaShell screens without a provider key, model, network request, shell command, file-content read, or write.",
+    "Every Offline Operator result now shows its small tool trace and data boundary, so its actions are visible instead of implied.",
+    "Local Codex no longer requires a Relay cloud-provider profile. It remains explicitly confirmed, locked to the NovaShell checkout, and separate from optional provider keys.",
+    "Relay's provider page now labels external routes honestly: provider access is optional, no automatic request is made after saving, and free-tier availability/privacy are controlled by each external provider.",
     "Settings now includes a saved Soft Reminder. Start it at the default 4½-minute interval or choose another interval; a gentle two-note chime continues through NovaShell navigation until stopped.",
     "Social Desk is a removable local app for public Bluesky profiles and topic searches. It is read-only, needs no account, and keeps only the shortcuts you choose on this device.",
     "Recovery Station now works inside NovaShell World: log water or a recovery break directly into your existing browser-local Reset Station data, with the full Reset Station available as an optional surface.",

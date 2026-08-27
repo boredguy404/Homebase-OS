@@ -283,6 +283,48 @@ def local_assistant(message):
         return {"reply": "I’m Relay: the Homebase computer guide, preserved in a nearly operational state. The developer keeps promising an update; I keep receiving themes and unresolved emotional baggage. Ask about your games, files, apps, storage, or Settings.", "action": None}
     return {"reply": "I can inspect your local games or system, open Pocket Archive, My Library, Settings, or Linux App Explore. Try: How is my Chromebook doing? or Show my games. I have been waiting for a useful question since approximately the last software update.", "action": None}
 
+def local_operator_status():
+    """Safe, local-only capability snapshot for Relay's deterministic operator."""
+    games = 0
+    for folder in (ROOT / "roms", HOME_ROOT / "My Library"):
+        if folder.exists():
+            try: games += sum(1 for path in folder.rglob("*") if path.is_file() and path.suffix.casefold() in ROM_CORES)
+            except OSError: pass
+    feed = project_feed()
+    lanes = {lane: sum(1 for item in feed.get("tasks", []) if item.get("lane") == lane) for lane in ("todo", "doing", "done")}
+    return {"mode":"local-only", "network":False, "workspace":"NovaShell local dashboard", "capabilities":["system summary", "owned game inventory", "local app inventory", "project board summary", "safe in-app navigation"], "games":games, "apps":len(user_apps()), "board":lanes}
+
+def run_local_operator(task):
+    """Execute one deliberately small, audited local Relay action. Never shells out."""
+    request = str(task or "").strip()[:500]
+    if not request: raise ValueError("describe what the offline operator should inspect or open")
+    lower = request.casefold()
+    trace = []
+    def result(reply, action=None):
+        return {"mode":"local-only", "network":False, "reply":reply, "action":action, "trace":trace}
+    if any(word in lower for word in ("game", "rom", "pocket archive")):
+        status=local_operator_status(); trace.append({"tool":"owned_game_inventory","access":"read-only metadata","result":str(status["games"])+" game files"})
+        return result("I checked the owned-game inventory locally: "+str(status["games"])+" game file(s) are available. No files were opened or changed.", {"type":"navigate","target":"/pages/arcade.html","label":"Open Pocket Archive"})
+    if any(word in lower for word in ("system", "storage", "memory", "performance", "chromebook", "device", "brief")):
+        stats=system_insights(); free=round(stats["disk"]["free"] / 1024**3,1); used=round((1-stats["memory"]["MemAvailable"]/stats["memory"]["MemTotal"])*100)
+        trace.append({"tool":"system_insights","access":"read-only operating-system counters","result":str(free)+" GB free / "+str(used)+"% memory used"})
+        return result("Local device brief: "+str(free)+" GB free storage, "+str(used)+"% memory in use, and "+format(stats["load"][0],".2f")+" one-minute load. Nothing was changed.", {"type":"system","label":"Open System Activity"})
+    if any(word in lower for word in ("board", "task", "progress", "kanban")):
+        status=local_operator_status(); trace.append({"tool":"project_board","access":"read-only local project feed","result":json.dumps(status["board"],sort_keys=True)})
+        board=status["board"]
+        return result("Project Board currently has "+str(board["doing"])+" active, "+str(board["todo"])+" queued, and "+str(board["done"])+" completed task(s).", {"type":"navigate","target":"/pages/utility.html#project-board","label":"Open Project Board"})
+    if any(word in lower for word in ("app", "installed", "linux")):
+        apps=user_apps(); trace.append({"tool":"user_app_inventory","access":"read-only local manifests","result":str(len(apps))+" apps"})
+        names=", ".join(item["name"] for item in apps[:5]) or "no modular apps"
+        return result("I inspected local app manifests only. Found "+str(len(apps))+" app(s): "+names+".", {"type":"navigate","target":"/pages/apps.html","label":"Open App Explore"})
+    routes=(("library", "/pages/files.html?path=My%20Library", "Open My Library"),("file", "/pages/files.html?path=My%20Library", "Open My Library"),("setting", "/pages/settings.html", "Open Settings"),("theme", "/pages/settings.html#appearance", "Open Appearance"),("orbit", "/modules/radio-orbit/index.html", "Open Radio Orbit"),("radio", "/modules/radio-orbit/index.html", "Open Radio Orbit"),("browse", "/pages/browse.html", "Open Browse"))
+    for keyword,target,label in routes:
+        if keyword in lower:
+            trace.append({"tool":"in_app_navigation","access":"browser route only","result":label})
+            return result("Ready to take you there. This is only an in-app navigation action.", {"type":"navigate","target":target,"label":label})
+    trace.append({"tool":"operator_policy","access":"no action","result":"request not in local tool registry"})
+    return result("I did not run that because Offline Operator only performs its visible local tools: inspect system, games, apps, or board status; or open Pocket Archive, My Library, Settings, Orbit, and Browse. For code changes, use the separately confirmed Local Codex runner.")
+
 def assistant_profile():
     """Read a local-only provider profile, with legacy OpenAI-key fallback."""
     try:
@@ -777,6 +819,7 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                 {"id":"apps","method":"GET","path":"/api/user-apps","purpose":"User-created app inventory."},
                 {"id":"taxonomy","method":"GET","path":"/api/taxonomy","purpose":"Editable core product and module contracts."},
                 {"id":"query","method":"GET","path":"/api/agent/query?scope=games|apps|taxonomy&q=...","purpose":"Local semantic search over safe metadata only."},
+                {"id":"offline-operator","method":"GET/POST","path":"/api/relay/offline-operator/status and /run","purpose":"Deterministic local-only operator with an allowlisted navigation and read-only inspection registry; no provider or shell calls."},
                 {"id":"core-workspace","method":"GET/POST","path":"/api/relay/workspace and /api/relay/workspace/apply","purpose":"Confirmation-gated editor for a small allowlist of core files; every write creates a local backup."},
                 {"id":"browse","method":"GET","path":"/api/browse/<source>?q=...","purpose":"Read-only external-source cards for Browse."}
             ]})
@@ -819,6 +862,9 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
             with RELAY_AGENT_LOCK:
                 jobs=[{key:value for key,value in job.items() if key!="task"} for job in RELAY_AGENT_RUNS.values()]
             self._json(200,{"available":bool(shutil.which("codex")),"workspace":"NovaShell local checkout","jobs":sorted(jobs,key=lambda job:job.get("started",0),reverse=True)[:6]})
+            return
+        if self.path == "/api/relay/offline-operator/status":
+            self._json(200, local_operator_status())
             return
         if self.path == "/api/setup/status":
             disk = shutil.disk_usage(HOME_ROOT)
@@ -1223,8 +1269,16 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
             try:
                 payload=json.loads(self.rfile.read(length) or b"{}")
                 if payload.get("confirm")!="RUN LOCAL CODEX": raise ValueError("type RUN LOCAL CODEX to start a local developer run")
-                if not assistant_profile(): raise ValueError("connect an AI provider in Relay first")
                 self._json(202,{"job":start_relay_coding_agent(payload.get("task",""))})
+            except (OSError,ValueError,TypeError) as error:self._json(400,{"error":str(error)})
+            return
+        if route.path == "/api/relay/offline-operator/run":
+            length=min(int(self.headers.get("Content-Length","0")),2048)
+            try:
+                payload=json.loads(self.rfile.read(length) or b"{}")
+                result=run_local_operator(payload.get("task",""))
+                log_relay_action(action_id="offline-"+uuid.uuid4().hex[:12],kind="agent",stage="result",title="Offline Operator",detail=result["reply"],state="ok")
+                self._json(200,result)
             except (OSError,ValueError,TypeError) as error:self._json(400,{"error":str(error)})
             return
         if route.path in {"/api/assistant/app", "/api/assistant/app/draft"}:
