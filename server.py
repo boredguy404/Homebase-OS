@@ -317,6 +317,9 @@ def run_local_operator(task):
         apps=user_apps(); trace.append({"tool":"user_app_inventory","access":"read-only local manifests","result":str(len(apps))+" apps"})
         names=", ".join(item["name"] for item in apps[:5]) or "no modular apps"
         return result("I inspected local app manifests only. Found "+str(len(apps))+" app(s): "+names+".", {"type":"navigate","target":"/pages/apps.html","label":"Open App Explore"})
+    if "steam link" in lower or "steamlink" in lower:
+        trace.append({"tool":"steam_link_launcher","access":"explicit local app launch","result":"Steam Link launch requested"})
+        return result("Steam Link is ready to launch through ChromeOS. NovaShell is only handing the explicit request to the installed app; it does not receive your Steam account data.", {"type":"launch","target":"/api/launch/steamlink","label":"Launch Steam Link"})
     routes=(("library", "/pages/files.html?path=My%20Library", "Open My Library"),("file", "/pages/files.html?path=My%20Library", "Open My Library"),("setting", "/pages/settings.html", "Open Settings"),("theme", "/pages/settings.html#appearance", "Open Appearance"),("orbit", "/modules/radio-orbit/index.html", "Open Radio Orbit"),("radio", "/modules/radio-orbit/index.html", "Open Radio Orbit"),("browse", "/pages/browse.html", "Open Browse"))
     for keyword,target,label in routes:
         if keyword in lower:
@@ -1281,6 +1284,16 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                 self._json(200,result)
             except (OSError,ValueError,TypeError) as error:self._json(400,{"error":str(error)})
             return
+        if route.path == "/api/relay/actions/comment":
+            length=min(int(self.headers.get("Content-Length","0")),4096)
+            try:
+                payload=json.loads(self.rfile.read(length) or b"{}"); action_id=str(payload.get("action_id","")).strip(); comment=str(payload.get("comment","")).strip()
+                if not re.fullmatch(r"[a-z0-9-]{8,80}",action_id): raise ValueError("choose a valid Relay action")
+                if not comment or len(comment)>800: raise ValueError("write a short comment (1–800 characters)")
+                log_relay_action(action_id=action_id,kind="agent",stage="result",title="Owner comment",detail=comment,state="ok")
+                self._json(201,{"saved":True,"action_id":action_id})
+            except (OSError,ValueError,TypeError) as error:self._json(400,{"error":str(error)})
+            return
         if route.path in {"/api/assistant/app", "/api/assistant/app/draft"}:
             length=min(int(self.headers.get("Content-Length","0")),12*1024)
             action_id="app-"+uuid.uuid4().hex[:12]
@@ -1368,6 +1381,9 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                 safety=ROOT/"local"/"workspace-backups"/(file_id+"-before-restore-"+str(int(time.time()))+path.suffix)
                 if path.exists():shutil.copy2(path,safety)
                 temporary=path.with_suffix(path.suffix+".tmp");temporary.write_text(content,encoding="utf-8");temporary.replace(path)
+                restore_action_id="core-restore-"+uuid.uuid4().hex[:10]
+                log_relay_action(action_id=restore_action_id,kind="core",stage="confirm",title="Core rollback confirmed",detail="Restoring reviewed local backup; a safety copy is made first.",target=file_id)
+                log_relay_action(action_id=restore_action_id,kind="core",stage="result",title="Core rollback saved",detail="Restored "+str(backup.relative_to(ROOT))+" · safety copy: "+str(safety.relative_to(ROOT)),target=file_id)
                 self._json(200,{"restored":file_id,"backup":str(backup.relative_to(ROOT)),"safety_backup":str(safety.relative_to(ROOT))})
             except (OSError,ValueError,TypeError,SyntaxError) as error:self._json(400,{"error":str(error)})
             return

@@ -1,8 +1,13 @@
 {
-  "version": "136",
+  "version": "138",
   "released": "2026-08-25",
-  "notes": "NovaShell 136 makes Relay local-first with an audited Offline Operator and removes an unnecessary provider-key gate from Local Codex.",
+  "notes": "NovaShell 138 extends Relay’s real-agent workflow and repairs Pokédex form artwork plus its Retro detail sheet.",
   "changes": [
+    "Pokédex now resolves card artwork by the Pokémon API identifier, including forms such as Galarian Mr. Mime, with official-art/home/sprite fallbacks.",
+    "Pokédex detail sheets now show flavor text, base stats, notable moves, abilities, and weaknesses in a high-contrast Retro layout.",
+    "Offline Operator can now offer an explicit Steam Link launch; NovaShell only hands ChromeOS the launch request and never reads Steam account data.",
+    "Settings now lists removable Relay-created desktop utilities with an in-app typed removal confirmation. These are isolated in user-apps/ and never remove NovaShell core files.",
+    "Relay Action Ledger now accepts owner comments, and guarded core rollbacks write their confirmation/result pair into the same ignored local history.",
     "Relay's Offline Operator is a real local-only action layer: it can inspect safe system, owned-game, modular-app, and Project Board metadata or open selected NovaShell screens without a provider key, model, network request, shell command, file-content read, or write.",
     "Every Offline Operator result now shows its small tool trace and data boundary, so its actions are visible instead of implied.",
     "Local Codex no longer requires a Relay cloud-provider profile. It remains explicitly confirmed, locked to the NovaShell checkout, and separate from optional provider keys.",
