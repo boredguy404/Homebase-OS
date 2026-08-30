@@ -12,8 +12,8 @@
 | Pantry inventory | removable Pantry Ledger | shipped |
 | Local audio loop editor | removable Loop Lab | shipped |
 | Screenplay/file writer | Writer Desk with local drafts plus opt-in Chromium file handles | shipped |
-| 3D world and generated shelf | NovaShell World + Maker Desk | foundation shipped |
-| Knowledge graph | Relay Second Brain | foundation shipped |
+| 3D world and generated shelf | NovaShell World + Maker Desk | shipped with continuing optional world polish |
+| Knowledge graph | Relay Second Brain with local text search, owner notes, and a direct structure map | shipped |
 | Hyperlocal weather | improve Weather Station, not another app | reviewed |
 | Markets watchlist | local watchlist with clearly sourced delayed data | review API and financial disclaimers |
 | Live transit | Rail Finder ships the keyless station/accessibility directory; predictions remain gated on an approved CTA key | partial, honest boundary shipped |

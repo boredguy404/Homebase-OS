@@ -20,9 +20,15 @@ matters, appears through `/api/user-apps`, and passes the release audit.
 | Lord of the Rocks client | `user-apps/games/novashell-world/` | real 3D navigation and interaction model | only reviewed MIT runtime retained; no personal content |
 | Lumen visualizer | `modules/radio-orbit/` | audio-reactive Aurora visual language | no stations, media, or identifying content copied |
 | Riptide audio engine | `user-apps/media/loop-lab/` | local waveform, A/B loop points, playback speed and touch seeking | no bundled tracks, presets, source identity, or server code |
+| Skylight weather console | `user-apps/utilities/weather-station/` | local forecast console, clear source state, and offline fallback | no source records, location history, or provider credentials |
+| Vantage dashboard pattern | `user-apps/utilities/signal-board/` | local capability/workflow overview with explicit state | no source dashboard data, analytics, or control plane |
+| Headway transit pattern | `user-apps/utilities/rail-finder/` | clear keyless directory and honest gated-live-data boundary | no source users, keys, or private routes |
+| Cortex knowledge structure | `pages/second-brain.html` | plain-file local notes, categories, content search, and structure map | no archive notes, vectors, sources, or personas copied |
 
-## Still under review
+## Remaining review boundary
 
-Riptide media tooling, Skylight weather presentation, Vantage dashboards, Headway
-workflow patterns, and remaining Node sub-apps are candidates—not approvals. Prefer
-integration into an existing NovaShell surface when a separate app would duplicate UI.
+The reviewed interaction patterns above are now represented by modular NovaShell
+surfaces and must continue to pass the source-module smoke gate. Remaining Node
+sub-apps are not bulk-migration candidates: a future one needs an owner-selected
+capability, a privacy review, an ownership/license check, and a reason it cannot
+be cleanly integrated into an existing surface.
