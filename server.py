@@ -1407,6 +1407,20 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                 self._json(201,{"saved":True,"entry":{"id":item["id"],"path":item["path"],"source":item["source"]}})
             except (OSError,ValueError,TypeError) as error:self._json(400,{"error":str(error)})
             return
+        if route.path == "/api/relay/knowledge/owner-note/delete":
+            length=min(int(self.headers.get("Content-Length","0")),4096)
+            try:
+                payload=json.loads(self.rfile.read(length) or b"{}")
+                identifier=str(payload.get("id","")).strip()
+                if payload.get("confirm")!="REMOVE OWNER NOTE": raise ValueError("type REMOVE OWNER NOTE to delete this local note")
+                item=next((entry for entry in relay_knowledge() if entry.get("id")==identifier),None)
+                if not item or item.get("source")!="Owner-authored local note": raise ValueError("choose an owner-authored local note")
+                destination=(ROOT / item["path"]).resolve()
+                if not destination.is_relative_to(BRAIN_OWNER_NOTES) or not destination.is_file() or destination.suffix.casefold()!=".md": raise ValueError("owner note file is unavailable")
+                destination.unlink()
+                self._json(200,{"deleted":True,"path":item["path"]})
+            except (OSError,ValueError,TypeError) as error:self._json(400,{"error":str(error)})
+            return
         if route.path in {"/api/assistant/app", "/api/assistant/app/draft"}:
             length=min(int(self.headers.get("Content-Length","0")),12*1024)
             action_id="app-"+uuid.uuid4().hex[:12]

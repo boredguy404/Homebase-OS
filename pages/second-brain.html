@@ -7,7 +7,8 @@
   <script src="/assets/scripts/shared/theme-sync.js"></script>
   <link rel="stylesheet" href="/assets/styles/homebase/second-brain.css?v=3">
   <link rel="stylesheet" href="/assets/styles/homebase/second-brain-owner-notes.css?v=1">
-  <script src="/assets/scripts/homebase/second-brain.js?v=3" defer></script>
+  <link rel="stylesheet" href="/assets/styles/homebase/second-brain-owner-note-dialog.css?v=1">
+  <script src="/assets/scripts/homebase/second-brain.js?v=4" defer></script>
 </head>
 <body>
   <main>
@@ -35,8 +36,9 @@
     </details>
     <section class="browser">
       <div class="tools"><input id="search" type="search" placeholder="Search notes, paths, and topics…"><span id="count">Loading…</span></div>
-      <div class="content"><nav id="notes" aria-label="Second Brain notes"></nav><article id="reader"><small>SELECT A NOTE</small><h2>Local context</h2><p>Choose a note to read it here.</p><pre></pre></article></div>
+      <div class="content"><nav id="notes" aria-label="Second Brain notes"></nav><article id="reader"><small>SELECT A NOTE</small><h2>Local context</h2><p>Choose a note to read it here.</p><button id="remove-owner-note" type="button" hidden>Remove this owner note</button><pre></pre></article></div>
     </section>
   </main>
+  <dialog id="remove-note-dialog" class="note-dialog"><form method="dialog"><header><b>REMOVE OWNER NOTE</b><button value="cancel" aria-label="Close removal dialog">×</button></header><p>This deletes only the selected owner-authored local note. Imported archive notes and NovaShell’s built-in knowledge cannot be removed here.</p><label>Type <code>REMOVE OWNER NOTE</code><input id="remove-note-confirm" autocomplete="off"></label><div><button value="cancel">Keep note</button><button id="confirm-remove-note" type="button">Remove local note</button></div><output id="remove-note-status" aria-live="polite"></output></form></dialog>
 </body>
 </html>

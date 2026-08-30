@@ -1,8 +1,9 @@
 {
-  "version": "145",
+  "version": "146",
   "released": "2026-08-30",
-  "notes": "NovaShell 145 makes durable workflow state honest after a local helper restart.",
+  "notes": "NovaShell 146 completes the local owner-note lifecycle with a safe, typed-confirmed removal flow.",
   "changes": [
+    "Owner-authored Second Brain notes can now be removed from an in-app confirmation window. The route only resolves notes inside the dedicated ignored owner-note folder and requires REMOVE OWNER NOTE; imported and built-in notes remain read-only.",
     "A persisted workflow whose in-memory runner disappears after a local helper restart now becomes needs review instead of being left falsely running or silently marked complete.",
     "Second Brain can now save an owner-authored local Markdown note under ignored local storage after validating its title, category, and bounded body. The note is indexed for Relay context but grants no file, shell, network, or edit power.",
     "Signal Board is a new removable, read-only local dashboard for Relay knowledge, modular apps, durable workflows, and Project Board activity. It uses existing local NovaShell endpoints and makes no model or network call.",

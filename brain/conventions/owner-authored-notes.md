@@ -19,6 +19,9 @@ Relay's file, shell, network, or edit authority.
 - NovaShell derives a safe Markdown filename and writes only inside the owner
   note folder.
 - Saving the same title in the same folder intentionally updates that note.
+- Removing an owner note requires the exact typed confirmation `REMOVE OWNER NOTE`.
+  The delete endpoint resolves the indexed note and refuses every path outside
+  the dedicated owner-note folder.
 - Imported archive content remains read-only; only the separate owner-note
   folder accepts this intentional local write.
 
