@@ -8,10 +8,14 @@
     $('#knowledge-copy').textContent=`${number(harness.knowledge.entries)} indexed notes are visible to Relay. ${number(harness.knowledge.imported)} optional local imports stay read-only.`;
   };
   const workflowTitle=item=>String(item.title||item.task||'Untitled workflow').replace(/\s+/g,' ').replace(/^(Workflow lifecycle validation only:|Create the approved|Make one small reviewed|Create one removable)/i,'').slice(0,74).replace(/[,:;]$/,'');
+  const stateLabel=state=>({completed:'completed',planned:'planned',running:'active','needs-review':'needs review',failed:'failed'})[state]||'unknown';
   const showWorkflows=workflows=>{
     const list=Array.isArray(workflows)?workflows:[];
     const recent=list.slice(0,4);
-    $('#workflow-copy').innerHTML=recent.length?recent.map(item=>`<div><b>${escape(workflowTitle(item))}</b><span>${escape(item.state||'unknown')} · ${escape(item.scope||'local')}</span></div>`).join(''):'No tracked workflows yet.';
+    const counts=list.reduce((all,item)=>{const state=item.state||'unknown';all[state]=(all[state]||0)+1;return all},{});
+    const states=['running','planned','needs-review','completed','failed'].filter(state=>counts[state]);
+    $('#workflow-summary').innerHTML=states.map(state=>`<span class="${escape(state)}"><b>${escape(number(counts[state]))}</b>${escape(stateLabel(state))}</span>`).join('')||'<span><b>0</b>tracked</span>';
+    $('#workflow-copy').innerHTML=recent.length?recent.map(item=>`<div class="state-${escape(item.state||'unknown')}"><b>${escape(workflowTitle(item))}</b><span>${escape(stateLabel(item.state))} · ${escape(item.scope||'local')}</span></div>`).join(''):'No tracked workflows yet.';
   };
   const load=async()=>{
     $('#status').textContent='Refreshing local signal…';
