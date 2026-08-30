@@ -31,3 +31,18 @@ h1 { margin-top: 7px; font-size: clamp(2rem, 7vw, 3.2rem); letter-spacing: -.05e
 #progress { color: #a8c7c8; font-size: .9rem; }
 .reset { padding: 0 15px; border: 1px solid #61777d; background: transparent; color: #ecf5f6; }
 @media (max-width: 480px) { main { padding: 0; } .shell { border-radius: 0; border-inline: 0; min-height: 100dvh; } header, .body { padding-inline: 18px; } .add-row { flex-wrap: wrap; } .primary { width: 100%; } }
+
+/* The workflow helper is an embedded NovaShell app, so a saved Retro desktop
+   must carry through without waiting for a settings toggle. */
+html[data-theme="ultra-retro"] { color-scheme: light; background: #aaa; color: #111; }
+html[data-theme="ultra-retro"] body { background: #aaa; color: #111; font-family: "MS Sans Serif", Tahoma, sans-serif; }
+html[data-theme="ultra-retro"] .shell { border: 3px solid #111; border-radius: 0; background: #d4d4d4; box-shadow: 6px 6px #111; }
+html[data-theme="ultra-retro"] header { background: #000080; color: #fff; }
+html[data-theme="ultra-retro"] h1,html[data-theme="ultra-retro"] .eyebrow,html[data-theme="ultra-retro"] .subtitle { color: #fff !important; text-shadow: none; }
+html[data-theme="ultra-retro"] .privacy,html[data-theme="ultra-retro"] .item { border: 2px inset #eee; border-radius: 0; background: #eee; color: #111; }
+html[data-theme="ultra-retro"] .add-row input { border: 2px inset #eee; border-radius: 0; background: #fff; color: #111; }
+html[data-theme="ultra-retro"] .primary,html[data-theme="ultra-retro"] .reset { border: 2px outset #eee; border-radius: 0; background: #d4d4d4; color: #111; }
+html[data-theme="ultra-retro"] .primary:active,html[data-theme="ultra-retro"] .reset:active { border-style: inset; }
+html[data-theme="ultra-retro"] .toggle { border: 2px inset #eee; border-radius: 0; background: #fff; }
+html[data-theme="ultra-retro"] .toggle:checked { border-color: #000080; background-color: #000080; }
+html[data-theme="ultra-retro"] .item.done label,html[data-theme="ultra-retro"] #progress { color: #111; }

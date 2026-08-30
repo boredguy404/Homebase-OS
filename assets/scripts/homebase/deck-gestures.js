@@ -10,7 +10,15 @@ addEventListener('DOMContentLoaded',()=>{
     {id:'solaris',name:'Solaris',signal:'255,126,48',alt:'255,204,102'},
     {id:'ultra-retro',name:'Ultra Retro',signal:'255,176,46',alt:'70,255,149'}
   ],visuals=['Topographic Flow','Radar','Particle Tunnel'];
-  if(localStorage.getItem('homebase-visual-version')!=='3'){localStorage.setItem('nightglass-theme','solaris');localStorage.setItem('nightglass-visual','0');localStorage.setItem('homebase-visual-version','3')}
+  // Never replace a real saved theme during a visual migration. The previous
+  // migration reset Ultra Retro to Solaris on boot when only this version flag
+  // was missing.
+  const savedTheme=localStorage.getItem('nightglass-theme');
+  if(localStorage.getItem('homebase-visual-version')!=='3'){
+    if(!themes.some(item=>item.id===savedTheme))localStorage.setItem('nightglass-theme','ultra-retro');
+    if(localStorage.getItem('nightglass-visual')===null)localStorage.setItem('nightglass-visual','0');
+    localStorage.setItem('homebase-visual-version','3');
+  }
   let theme=Math.max(0,themes.findIndex(item=>item.id===(localStorage.getItem('nightglass-theme')||'solaris')));
   let visual=Number(localStorage.getItem('nightglass-visual')||0)%visuals.length;
   function applyTheme(animate=false){

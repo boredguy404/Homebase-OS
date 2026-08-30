@@ -1,8 +1,11 @@
 {
-  "version": "151",
+  "version": "152",
   "released": "2026-08-30",
-  "notes": "NovaShell 151 brings the browseable source-adoption knowledge map in line with the verified modular integrations.",
+  "notes": "NovaShell 152 fixes saved-theme boot consistency and gives every shared Retro window one clear close control.",
   "changes": [
+    "A saved Ultra Retro preference now survives the visual migration on first launch instead of being reset to a modern theme; embedded Workflow Proof also inherits the selected theme immediately.",
+    "Shared Retro window chrome now adopts nested legacy close icons into its title bar and removes duplicate × controls, including Pokédex detail sheets.",
+    "Workflow Proof now explains its local-only checklist purpose in plain language: repeat a launch, backup, install, or handoff without losing steps or sending data anywhere.",
     "Second Brain now records a source-adoption audit and updated migration map: reviewed focus, inventory, audio, weather, transit, dashboard, Brain, world, and FTP plugin patterns are represented by clean NovaShell surfaces; unresolved higher-risk candidates remain explicitly held back.",
     "Second Brain search now calls the existing local knowledge index after a short debounce, so content-only terms work in both the reader list and Structure map without an external provider.",
     "The new source-module smoke script validates every removable app manifest, declared local entry, JavaScript syntax, and local HTTP response without reading private local data.",
