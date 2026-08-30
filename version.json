@@ -1,8 +1,10 @@
 {
-  "version": "139",
+  "version": "140",
   "released": "2026-08-25",
-  "notes": "NovaShell 139 adds Retro Dark and makes the Second Brain browser visible and explicit in Relay.",
+  "notes": "NovaShell 140 makes Second Brain a full browseable page and adds durable Relay workflow planning with explicit execution boundaries.",
   "changes": [
+    "Second Brain is now a full NovaShell page with searchable local notes, categories, readable source previews, and a live harness summary.",
+    "Relay now has a persistent Long Work panel for modular project workflows and external/API handoffs. Only reviewed project workflows can enter the fixed NovaShell coding runner after typed confirmation; external handoffs are never auto-executed.",
     "Retro Dark is a persistent charcoal-and-phosphor theme that keeps NovaShell’s retro material and high contrast without using a flat black overlay.",
     "Relay now shows a dedicated Second Brain browser launcher with the local indexed-note/import count and a clear read-only boundary.",
     "Pokédex now resolves card artwork by the Pokémon API identifier, including forms such as Galarian Mr. Mime, with official-art/home/sprite fallbacks.",

@@ -52,6 +52,7 @@ JOBS_LOCK = threading.Lock()
 PROJECT_FEED_FILE = ROOT / "local" / "project-feed.json"
 BACKUP_STATUS_FILE = ROOT / "local" / "backup-status.json"
 RELAY_ACTION_FILE = ROOT / "local" / "relay-action-history.json"
+RELAY_WORKFLOW_FILE = ROOT / "local" / "relay-workflows.json"
 RELAY_APP_DRAFT_DIR = ROOT / "local" / "relay-app-drafts"
 PROJECT_FEED_LOCK = threading.RLock()
 RELAY_AGENT_RUNS = {}
@@ -523,6 +524,35 @@ def log_relay_action(**entry):
     with RELAY_ACTION_LOCK:
         return record_action(RELAY_ACTION_FILE, **entry)
 
+def relay_workflows():
+    """Small persistent workflow ledger. It contains plans/status, never keys or command output."""
+    try:
+        items=json.loads(RELAY_WORKFLOW_FILE.read_text(encoding="utf-8"))
+        return [item for item in items if isinstance(item,dict)][-80:]
+    except (OSError,ValueError,TypeError): return []
+
+def save_relay_workflows(items):
+    RELAY_WORKFLOW_FILE.parent.mkdir(parents=True,exist_ok=True)
+    temporary=RELAY_WORKFLOW_FILE.with_suffix(".tmp")
+    temporary.write_text(json.dumps(items[-80:],indent=2),encoding="utf-8")
+    os.chmod(temporary,0o600);temporary.replace(RELAY_WORKFLOW_FILE)
+
+def create_relay_workflow(task,scope):
+    task=str(task or "").strip()[:4000]
+    if not task: raise ValueError("describe the workflow")
+    if scope not in {"project-code","external-handoff"}: raise ValueError("choose a supported workflow boundary")
+    item={"id":"workflow-"+uuid.uuid4().hex[:12],"task":task,"scope":scope,"state":"planned","created":int(time.time()),"updated":int(time.time())}
+    items=relay_workflows();items.append(item);save_relay_workflows(items)
+    log_relay_action(action_id=item["id"],kind="agent",stage="plan",title="Workflow planned",detail=("Fixed NovaShell checkout coding run." if scope=="project-code" else "External handoff only; no external command is run by Relay."),state="working",target="NovaShell checkout" if scope=="project-code" else "explicit owner handoff")
+    return item
+
+def update_relay_workflow(workflow_id,state,job=None):
+    items=relay_workflows();item=next((row for row in items if row.get("id")==workflow_id),None)
+    if not item: raise ValueError("workflow not found")
+    item["state"]=state;item["updated"]=int(time.time())
+    if job: item["job"]=job.get("id")
+    save_relay_workflows(items);return item
+
 def agent_event_label(raw):
     """Keep live browser status useful without echoing prompts, paths, or secrets."""
     try:
@@ -740,6 +770,14 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
         browse_route = urllib.parse.urlsplit(self.path)
         if browse_route.path == "/api/relay/actions":
             self._json(200, {"actions": list(reversed(action_history(RELAY_ACTION_FILE))), "local_only": True})
+            return
+        if browse_route.path == "/api/relay/workflows":
+            self._json(200,{"workflows":list(reversed(relay_workflows())),"boundaries":{"project-code":"Can be started in the fixed NovaShell checkout after typed confirmation.","external-handoff":"Creates a durable handoff only. Relay never receives an arbitrary computer-wide shell authority."}})
+            return
+        if browse_route.path == "/api/relay/harness":
+            entries=relay_knowledge()
+            imported=sum(1 for item in entries if item.get("source")=="Optional local import")
+            self._json(200,{"mode":"reviewable-local-harness","knowledge":{"entries":len(entries),"imported":imported},"tools":{"offline_operator":len(local_operator_status()["capabilities"]),"core_files":sum(1 for path in CORE_EDITABLE.values() if path.is_file()),"modular_apps":len(user_apps())},"ledger":{"entries":len(action_history(RELAY_ACTION_FILE,200)),"persistent":"local/relay-action-history.json (ignored by Git)"},"boundaries":["No browser-supplied shell command or working folder.","Core writes need review, typed confirmation, and a local backup.","Imported Brain notes are read-only and never expand tool authority.","Optional provider routes run only after an explicit send, test, or draft request."]})
             return
         preview_match = re.fullmatch(r"/api/assistant/app/draft/([a-f0-9]{16})/preview", browse_route.path)
         if preview_match:
@@ -1273,6 +1311,25 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                 payload=json.loads(self.rfile.read(length) or b"{}")
                 if payload.get("confirm")!="RUN LOCAL CODEX": raise ValueError("type RUN LOCAL CODEX to start a local developer run")
                 self._json(202,{"job":start_relay_coding_agent(payload.get("task",""))})
+            except (OSError,ValueError,TypeError) as error:self._json(400,{"error":str(error)})
+            return
+        if route.path == "/api/relay/workflows":
+            length=min(int(self.headers.get("Content-Length","0")),8192)
+            try:
+                payload=json.loads(self.rfile.read(length) or b"{}")
+                self._json(201,{"workflow":create_relay_workflow(payload.get("task",""),str(payload.get("scope","project-code")))})
+            except (OSError,ValueError,TypeError) as error:self._json(400,{"error":str(error)})
+            return
+        if route.path == "/api/relay/workflows/run":
+            length=min(int(self.headers.get("Content-Length","0")),4096)
+            try:
+                payload=json.loads(self.rfile.read(length) or b"{}");workflow_id=str(payload.get("id","")).strip();workflow=next((row for row in relay_workflows() if row.get("id")==workflow_id),None)
+                if not workflow: raise ValueError("workflow not found")
+                if workflow.get("scope")!="project-code": raise ValueError("external handoffs are deliberately not auto-executed; open the handoff in your terminal or API client after review")
+                if payload.get("confirm")!="RUN WORKFLOW": raise ValueError("type RUN WORKFLOW to start this fixed-checkout workflow")
+                job=start_relay_coding_agent(workflow.get("task",""));update_relay_workflow(workflow_id,"running",job)
+                log_relay_action(action_id=workflow_id,kind="agent",stage="confirm",title="Workflow run confirmed",detail="Local Codex will work only in the fixed NovaShell checkout.",target="NovaShell checkout")
+                self._json(202,{"workflow":workflow_id,"job":job})
             except (OSError,ValueError,TypeError) as error:self._json(400,{"error":str(error)})
             return
         if route.path == "/api/relay/offline-operator/run":
