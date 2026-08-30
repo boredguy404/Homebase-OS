@@ -69,6 +69,7 @@ ASSISTANT_CONFIG_FILE = ROOT / "local" / "relay-provider.json"
 SOURCE_CONNECTION_FILE = ROOT / "local" / "source-connection.json"
 TRANSIT_CONFIG_FILE = ROOT / "local" / "transit-provider.json"
 BRAIN_IMPORT = ROOT / "local" / "brain-import"
+BRAIN_OWNER_NOTES = BRAIN_IMPORT / "owner-notes"
 USER_APPS = ROOT / "user-apps"
 CORE_EDITABLE = {
     "homebase-deck": ROOT / "assets/scripts/homebase/deck.js",
@@ -225,8 +226,8 @@ def relay_knowledge(topic=""):
         identifier="brain-"+re.sub(r"[^a-z0-9-]+","-",str(path.relative_to(ROOT / "brain")).casefold()).strip("-")
         if term and term not in (identifier+" "+relative+" "+content).casefold(): continue
         entries.append({"id":identifier[:120],"path":relative,"content":content,"source":"NovaShell built-in"})
-    # An imported Brain archive is optional, ignored by Git, and read-only.
-    # Its notes can inform a local draft but never expand Relay's file authority.
+    # Imported Brain material and owner notes are ignored by Git. They can inform
+    # local drafts but never expand Relay's file authority.
     if BRAIN_IMPORT.is_dir():
         budget=48000
         for path in sorted(BRAIN_IMPORT.rglob("*"), key=lambda value:str(value).casefold()):
@@ -235,7 +236,8 @@ def relay_knowledge(topic=""):
             except (OSError, UnicodeDecodeError): continue
             relative=str(path.relative_to(ROOT)); identifier="brain-"+re.sub(r"[^a-z0-9-]+","-",str(path.relative_to(BRAIN_IMPORT)).casefold()).strip("-")
             if term and term not in (identifier+" "+relative+" "+content).casefold(): continue
-            entries.append({"id":identifier[:120],"path":relative,"content":content,"source":"Optional local import"});budget-=len(content)
+            owner_note=path.is_relative_to(BRAIN_OWNER_NOTES)
+            entries.append({"id":identifier[:120],"path":relative,"content":content,"source":"Owner-authored local note" if owner_note else "Optional local import"});budget-=len(content)
     return entries
 
 def user_apps():
@@ -789,7 +791,8 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
         if browse_route.path == "/api/relay/harness":
             entries=relay_knowledge()
             imported=sum(1 for item in entries if item.get("source")=="Optional local import")
-            self._json(200,{"mode":"reviewable-local-harness","knowledge":{"entries":len(entries),"imported":imported},"tools":{"offline_operator":len(local_operator_status()["capabilities"]),"core_files":sum(1 for path in CORE_EDITABLE.values() if path.is_file()),"modular_apps":len(user_apps()),"persistent_workflows":len(relay_workflows())},"ledger":{"entries":len(action_history(RELAY_ACTION_FILE,200)),"persistent":"local/relay-action-history.json (ignored by Git)"},"boundaries":["No browser-supplied shell command or working folder.","Core writes need review, typed confirmation, and a local backup.","Imported Brain notes are read-only and never expand tool authority.","Optional provider routes run only after an explicit send, test, or draft request."]})
+            authored=sum(1 for item in entries if item.get("source")=="Owner-authored local note")
+            self._json(200,{"mode":"reviewable-local-harness","knowledge":{"entries":len(entries),"imported":imported,"authored":authored},"tools":{"offline_operator":len(local_operator_status()["capabilities"]),"core_files":sum(1 for path in CORE_EDITABLE.values() if path.is_file()),"modular_apps":len(user_apps()),"persistent_workflows":len(relay_workflows())},"ledger":{"entries":len(action_history(RELAY_ACTION_FILE,200)),"persistent":"local/relay-action-history.json (ignored by Git)"},"boundaries":["No browser-supplied shell command or working folder.","Core writes need review, typed confirmation, and a local backup.","Imported Brain notes are read-only and never expand tool authority.","Owner-authored notes stay in ignored local storage and never expand tool authority.","Optional provider routes run only after an explicit send, test, or draft request."]})
             return
         preview_match = re.fullmatch(r"/api/assistant/app/draft/([a-f0-9]{16})/preview", browse_route.path)
         if preview_match:
@@ -1372,6 +1375,30 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                 if not comment or len(comment)>800: raise ValueError("write a short comment (1–800 characters)")
                 log_relay_action(action_id=action_id,kind="agent",stage="result",title="Owner comment",detail=comment,state="ok")
                 self._json(201,{"saved":True,"action_id":action_id})
+            except (OSError,ValueError,TypeError) as error:self._json(400,{"error":str(error)})
+            return
+        if route.path == "/api/relay/knowledge/owner-note":
+            length=min(int(self.headers.get("Content-Length","0")),16*1024)
+            try:
+                payload=json.loads(self.rfile.read(length) or b"{}")
+                title=str(payload.get("title","")).strip()
+                body=str(payload.get("body","")).strip()
+                category=str(payload.get("category","context")).strip().casefold()
+                if not title or len(title)>120: raise ValueError("write a title between 1 and 120 characters")
+                if not body or len(body)>12000: raise ValueError("write a note between 1 and 12,000 characters")
+                if category not in {"context","decisions","domain","map","open","patterns"}: raise ValueError("choose a valid note category")
+                slug=re.sub(r"[^a-z0-9]+","-",title.casefold()).strip("-")[:72]
+                if not slug: raise ValueError("use a title with letters or numbers")
+                BRAIN_OWNER_NOTES.joinpath(category).mkdir(parents=True,exist_ok=True)
+                destination=(BRAIN_OWNER_NOTES / category / (slug+".md")).resolve()
+                if not destination.is_relative_to(BRAIN_OWNER_NOTES): raise ValueError("invalid local note destination")
+                stamp=datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0).isoformat()
+                content="---\ntype: owner-note\nstatus: active\nsource: owner-authored local note\nupdated: "+stamp+"\n---\n\n# "+title+"\n\n"+body+"\n"
+                destination.write_text(content,encoding="utf-8")
+                relative=str(destination.relative_to(ROOT))
+                item=next((entry for entry in relay_knowledge() if entry.get("path")==relative),None)
+                if not item: raise ValueError("note was saved but could not be indexed")
+                self._json(201,{"saved":True,"entry":{"id":item["id"],"path":item["path"],"source":item["source"]}})
             except (OSError,ValueError,TypeError) as error:self._json(400,{"error":str(error)})
             return
         if route.path in {"/api/assistant/app", "/api/assistant/app/draft"}:

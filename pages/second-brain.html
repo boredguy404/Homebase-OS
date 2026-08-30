@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Second Brain · NovaShell</title>
   <script src="/assets/scripts/shared/theme-sync.js"></script>
-  <link rel="stylesheet" href="/assets/styles/homebase/second-brain.css?v=2">
-  <script src="/assets/scripts/homebase/second-brain.js?v=2" defer></script>
+  <link rel="stylesheet" href="/assets/styles/homebase/second-brain.css?v=3">
+  <link rel="stylesheet" href="/assets/styles/homebase/second-brain-owner-notes.css?v=1">
+  <script src="/assets/scripts/homebase/second-brain.js?v=3" defer></script>
 </head>
 <body>
   <main>
@@ -22,6 +23,16 @@
       <div id="filters" role="toolbar" aria-label="Filter Second Brain notes"></div>
       <p>Browse the whole working memory, or narrow it to decisions, workflow patterns, boundaries, maps, guides, and optional local imports.</p>
     </section>
+    <details class="capture">
+      <summary>Write an owner note</summary>
+      <p>Save a deliberate local note that Relay can read as context. It is stored only under ignored local storage; it never grants new permissions or changes NovaShell code.</p>
+      <form id="owner-note">
+        <label>Title<input name="title" maxlength="120" required placeholder="What should Relay remember?"></label>
+        <label>Folder<select name="category"><option value="context">Context</option><option value="decisions">Decision</option><option value="domain">Domain</option><option value="map">Map</option><option value="open">Open question</option><option value="patterns">Pattern</option></select></label>
+        <label>Note<textarea name="body" maxlength="12000" required placeholder="Write the durable context in your own words…"></textarea></label>
+        <button type="submit">Save local note</button><output id="note-status" aria-live="polite"></output>
+      </form>
+    </details>
     <section class="browser">
       <div class="tools"><input id="search" type="search" placeholder="Search notes, paths, and topics…"><span id="count">Loading…</span></div>
       <div class="content"><nav id="notes" aria-label="Second Brain notes"></nav><article id="reader"><small>SELECT A NOTE</small><h2>Local context</h2><p>Choose a note to read it here.</p><pre></pre></article></div>

@@ -1,5 +1,14 @@
 # Relay Brain
 
+## Owner-authored local knowledge
+
+Second Brain can save a deliberate owner note to the ignored local path
+`local/brain-import/owner-notes/`. The note is indexed as local context and can
+be read by Relay, but it never adds tool authority or becomes a Git-tracked
+project file. The browser accepts only a title, an approved knowledge folder,
+and a bounded Markdown body. See `brain/conventions/owner-authored-notes.md` for
+the full boundary.
+
 Relay keeps lightweight, local Markdown knowledge alongside the code it can review.
 
 ## Scopes
