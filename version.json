@@ -1,8 +1,10 @@
 {
-  "version": "138",
+  "version": "139",
   "released": "2026-08-25",
-  "notes": "NovaShell 138 extends Relay’s real-agent workflow and repairs Pokédex form artwork plus its Retro detail sheet.",
+  "notes": "NovaShell 139 adds Retro Dark and makes the Second Brain browser visible and explicit in Relay.",
   "changes": [
+    "Retro Dark is a persistent charcoal-and-phosphor theme that keeps NovaShell’s retro material and high contrast without using a flat black overlay.",
+    "Relay now shows a dedicated Second Brain browser launcher with the local indexed-note/import count and a clear read-only boundary.",
     "Pokédex now resolves card artwork by the Pokémon API identifier, including forms such as Galarian Mr. Mime, with official-art/home/sprite fallbacks.",
     "Pokédex detail sheets now show flavor text, base stats, notable moves, abilities, and weaknesses in a high-contrast Retro layout.",
     "Offline Operator can now offer an explicit Steam Link launch; NovaShell only hands ChromeOS the launch request and never reads Steam account data.",

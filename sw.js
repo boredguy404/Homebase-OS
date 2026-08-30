@@ -1,4 +1,4 @@
-const CACHE='homebase-v161';
+const CACHE='homebase-v162';
 const SHELL=[
   '/', '/index.html', '/offline.html', '/manifest.webmanifest', '/assets/icons/homebase-icon.svg', '/user-apps/wellness/reset-station/index.html', '/user-apps/wellness/reset-station/app.json', '/user-apps/wellness/reset-station/app.css', '/user-apps/wellness/reset-station/app.js',
   '/pages/arcade.html', '/pages/discover.html', '/pages/files.html', '/pages/apps.html', '/pages/source-connection.html',
@@ -39,7 +39,7 @@ SHELL.push('/user-apps/utilities/weather-station/index.html','/user-apps/utiliti
 SHELL.push('/user-apps/social/social-desk/index.html','/user-apps/social/social-desk/app.json','/user-apps/social/social-desk/app.css','/user-apps/social/social-desk/app.js');
 SHELL.push('/assets/styles/arcade/game-setup.css','/assets/scripts/arcade/game-import.js','/assets/scripts/arcade/game-import-autofill.js','/assets/scripts/arcade/game-import-pixelate.js');
 SHELL.push('/assets/styles/arcade/game-manager.css','/assets/scripts/arcade/game-manager.js');
-SHELL.push('/assets/styles/homebase/relay-app-review.css','/assets/scripts/homebase/relay-app-review.js','/assets/styles/homebase/relay-action-history.css','/assets/scripts/homebase/relay-action-history.js','/assets/styles/homebase/relay-offline-operator.css','/assets/scripts/homebase/relay-offline-operator.js','/assets/styles/settings/user-app-manager.css','/assets/scripts/settings/user-app-manager.js');
+SHELL.push('/assets/styles/homebase/relay-app-review.css','/assets/scripts/homebase/relay-app-review.js','/assets/styles/homebase/relay-action-history.css','/assets/scripts/homebase/relay-action-history.js','/assets/styles/homebase/relay-offline-operator.css','/assets/scripts/homebase/relay-offline-operator.js','/assets/styles/homebase/relay-brain-launcher.css','/assets/scripts/homebase/relay-brain-launcher.js','/assets/styles/settings/user-app-manager.css','/assets/scripts/settings/user-app-manager.js','/assets/styles/settings/retro-dark.css');
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;event.respondWith(fetch(event.request).then(response=>{const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy));return response}).catch(async()=>{const exact=await caches.match(event.request),pathFallback=await caches.match(event.request,{ignoreSearch:true});return exact||pathFallback||(event.request.mode==='navigate'?caches.match('/offline.html'):Response.error())}))});
