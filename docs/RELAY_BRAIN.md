@@ -9,6 +9,13 @@ project file. The browser accepts only a title, an approved knowledge folder,
 and a bounded Markdown body. See `brain/conventions/owner-authored-notes.md` for
 the full boundary.
 
+## Local text search
+
+The Second Brain search field asks NovaShell's local knowledge index to match
+note content as well as paths and titles. It is debounced in the browser and
+does not send the query to an external provider. Category filters and the
+Structure map use the same resulting local entry set.
+
 Relay keeps lightweight, local Markdown knowledge alongside the code it can review.
 
 ## Scopes

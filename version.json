@@ -1,8 +1,9 @@
 {
-  "version": "149",
+  "version": "150",
   "released": "2026-08-30",
-  "notes": "NovaShell 149 adds a reusable verification gate for all removable source-informed modules.",
+  "notes": "NovaShell 150 makes Second Brain search the actual local note contents.",
   "changes": [
+    "Second Brain search now calls the existing local knowledge index after a short debounce, so content-only terms work in both the reader list and Structure map without an external provider.",
     "The new source-module smoke script validates every removable app manifest, declared local entry, JavaScript syntax, and local HTTP response without reading private local data.",
     "Second Brain now has a Structure map that projects the same indexed local Markdown folders and categories as interactive nodes. Selecting a node opens that exact indexed note; the map does not invent semantic relationships.",
     "Signal Board now summarizes workflow states including planned, active, completed, failed, and needs review, and visually flags entries that need attention. Its full modular asset set is now part of the offline shell cache.",
