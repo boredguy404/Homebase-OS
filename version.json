@@ -1,8 +1,10 @@
 {
-  "version": "141",
-  "released": "2026-08-25",
-  "notes": "NovaShell 141 proves Relay workflows end-to-end and reconciles completed local coding jobs into the persistent workflow ledger.",
+  "version": "142",
+  "released": "2026-08-30",
+  "notes": "NovaShell 142 turns the Second Brain into a richer, filtered source map and records clean source-informed build rules.",
   "changes": [
+    "Second Brain now has focused filters for decisions, workflows, boundaries, maps, guides, and optional local imports, alongside its local full-text reader.",
+    "Relay now carries a clean capability portfolio, source-informed build decision, workflow playbook, and reviewable next-integration candidates. These are NovaShell-authored summaries; no private archive or FTP content is bundled.",
     "Relay workflow proof created a removable local Workflow Proof app, made a constrained harness core change, and recorded a separate reviewed external-workspace handoff.",
     "Workflow cards now reconcile a completed Local Codex job into the durable local ledger instead of remaining stale after normal polling.",
     "Second Brain is now a full NovaShell page with searchable local notes, categories, readable source previews, and a live harness summary.",
