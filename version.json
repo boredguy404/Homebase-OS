@@ -1,8 +1,10 @@
 {
-  "version": "140",
+  "version": "141",
   "released": "2026-08-25",
-  "notes": "NovaShell 140 makes Second Brain a full browseable page and adds durable Relay workflow planning with explicit execution boundaries.",
+  "notes": "NovaShell 141 proves Relay workflows end-to-end and reconciles completed local coding jobs into the persistent workflow ledger.",
   "changes": [
+    "Relay workflow proof created a removable local Workflow Proof app, made a constrained harness core change, and recorded a separate reviewed external-workspace handoff.",
+    "Workflow cards now reconcile a completed Local Codex job into the durable local ledger instead of remaining stale after normal polling.",
     "Second Brain is now a full NovaShell page with searchable local notes, categories, readable source previews, and a live harness summary.",
     "Relay now has a persistent Long Work panel for modular project workflows and external/API handoffs. Only reviewed project workflows can enter the fixed NovaShell coding runner after typed confirmation; external handoffs are never auto-executed.",
     "Retro Dark is a persistent charcoal-and-phosphor theme that keeps NovaShell’s retro material and high contrast without using a flat black overlay.",

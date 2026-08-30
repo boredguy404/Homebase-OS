@@ -553,6 +553,18 @@ def update_relay_workflow(workflow_id,state,job=None):
     if job: item["job"]=job.get("id")
     save_relay_workflows(items);return item
 
+def reconcile_relay_workflows():
+    """Reflect completed local coding jobs in the persistent workflow ledger."""
+    items=relay_workflows();changed=False
+    with RELAY_AGENT_LOCK: jobs={job_id:dict(job) for job_id,job in RELAY_AGENT_RUNS.items()}
+    for item in items:
+        job=jobs.get(item.get("job"))
+        if item.get("state")!="running" or not job or job.get("status") not in {"completed","failed"}: continue
+        item["state"]="completed" if job.get("status")=="completed" else "failed";item["updated"]=int(time.time());changed=True
+        log_relay_action(action_id=item["id"],kind="agent",stage="result",title="Workflow "+item["state"],detail="Local coding runner "+item["state"]+" with exit code "+str(job.get("exit_code")),target="NovaShell checkout",state="ok" if item["state"]=="completed" else "failed")
+    if changed: save_relay_workflows(items)
+    return items
+
 def agent_event_label(raw):
     """Keep live browser status useful without echoing prompts, paths, or secrets."""
     try:
@@ -772,12 +784,12 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
             self._json(200, {"actions": list(reversed(action_history(RELAY_ACTION_FILE))), "local_only": True})
             return
         if browse_route.path == "/api/relay/workflows":
-            self._json(200,{"workflows":list(reversed(relay_workflows())),"boundaries":{"project-code":"Can be started in the fixed NovaShell checkout after typed confirmation.","external-handoff":"Creates a durable handoff only. Relay never receives an arbitrary computer-wide shell authority."}})
+            self._json(200,{"workflows":list(reversed(reconcile_relay_workflows())),"boundaries":{"project-code":"Can be started in the fixed NovaShell checkout after typed confirmation.","external-handoff":"Creates a durable handoff only. Relay never receives an arbitrary computer-wide shell authority."}})
             return
         if browse_route.path == "/api/relay/harness":
             entries=relay_knowledge()
             imported=sum(1 for item in entries if item.get("source")=="Optional local import")
-            self._json(200,{"mode":"reviewable-local-harness","knowledge":{"entries":len(entries),"imported":imported},"tools":{"offline_operator":len(local_operator_status()["capabilities"]),"core_files":sum(1 for path in CORE_EDITABLE.values() if path.is_file()),"modular_apps":len(user_apps())},"ledger":{"entries":len(action_history(RELAY_ACTION_FILE,200)),"persistent":"local/relay-action-history.json (ignored by Git)"},"boundaries":["No browser-supplied shell command or working folder.","Core writes need review, typed confirmation, and a local backup.","Imported Brain notes are read-only and never expand tool authority.","Optional provider routes run only after an explicit send, test, or draft request."]})
+            self._json(200,{"mode":"reviewable-local-harness","knowledge":{"entries":len(entries),"imported":imported},"tools":{"offline_operator":len(local_operator_status()["capabilities"]),"core_files":sum(1 for path in CORE_EDITABLE.values() if path.is_file()),"modular_apps":len(user_apps()),"persistent_workflows":len(relay_workflows())},"ledger":{"entries":len(action_history(RELAY_ACTION_FILE,200)),"persistent":"local/relay-action-history.json (ignored by Git)"},"boundaries":["No browser-supplied shell command or working folder.","Core writes need review, typed confirmation, and a local backup.","Imported Brain notes are read-only and never expand tool authority.","Optional provider routes run only after an explicit send, test, or draft request."]})
             return
         preview_match = re.fullmatch(r"/api/assistant/app/draft/([a-f0-9]{16})/preview", browse_route.path)
         if preview_match:
@@ -1330,6 +1342,17 @@ class PocketArchiveHandler(SimpleHTTPRequestHandler):
                 job=start_relay_coding_agent(workflow.get("task",""));update_relay_workflow(workflow_id,"running",job)
                 log_relay_action(action_id=workflow_id,kind="agent",stage="confirm",title="Workflow run confirmed",detail="Local Codex will work only in the fixed NovaShell checkout.",target="NovaShell checkout")
                 self._json(202,{"workflow":workflow_id,"job":job})
+            except (OSError,ValueError,TypeError) as error:self._json(400,{"error":str(error)})
+            return
+        if route.path == "/api/relay/workflows/complete-handoff":
+            length=min(int(self.headers.get("Content-Length","0")),4096)
+            try:
+                payload=json.loads(self.rfile.read(length) or b"{}");workflow_id=str(payload.get("id","")).strip();workflow=next((row for row in relay_workflows() if row.get("id")==workflow_id),None)
+                if not workflow or workflow.get("scope")!="external-handoff": raise ValueError("choose an external handoff workflow")
+                if payload.get("confirm")!="COMPLETE HANDOFF": raise ValueError("type COMPLETE HANDOFF after you have reviewed the separate project")
+                item=update_relay_workflow(workflow_id,"completed")
+                log_relay_action(action_id=workflow_id,kind="agent",stage="result",title="External handoff recorded",detail="Owner confirmed the separate reviewed project was completed outside the NovaShell checkout.",target="explicit owner handoff")
+                self._json(200,{"workflow":item})
             except (OSError,ValueError,TypeError) as error:self._json(400,{"error":str(error)})
             return
         if route.path == "/api/relay/offline-operator/run":
