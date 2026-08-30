@@ -19,3 +19,11 @@ approved local file actions, backups, and protected Relay routes.
 - `local/` is ignored and may contain optional keys, imported Brain notes, and runtime state.
 
 The public app must never track owner ROMs, BIOS files, saves, private media, credentials, or imported local notes.
+
+## Second Brain navigation
+
+The Second Brain exposes the same local index through a list reader and a
+structure map. The map is a direct folder/category projection of indexed notes:
+selecting a node opens that exact note in the same reader. It is intentionally
+not an invented semantic graph, so visual connections never claim relationships
+that the note files do not actually state.
