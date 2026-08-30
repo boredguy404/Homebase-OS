@@ -1,8 +1,9 @@
 {
-  "version": "144",
+  "version": "145",
   "released": "2026-08-30",
-  "notes": "NovaShell 144 adds deliberate owner-authored local notes to the Second Brain without expanding Relay authority.",
+  "notes": "NovaShell 145 makes durable workflow state honest after a local helper restart.",
   "changes": [
+    "A persisted workflow whose in-memory runner disappears after a local helper restart now becomes needs review instead of being left falsely running or silently marked complete.",
     "Second Brain can now save an owner-authored local Markdown note under ignored local storage after validating its title, category, and bounded body. The note is indexed for Relay context but grants no file, shell, network, or edit power.",
     "Signal Board is a new removable, read-only local dashboard for Relay knowledge, modular apps, durable workflows, and Project Board activity. It uses existing local NovaShell endpoints and makes no model or network call.",
     "Second Brain now has focused filters for decisions, workflows, boundaries, maps, guides, and optional local imports, alongside its local full-text reader.",

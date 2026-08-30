@@ -14,7 +14,7 @@ Relay handles substantial work as a visible lifecycle instead of pretending a si
 2. **Route** — choose a removable app, an allowed core edit, a local research note, or an explicit external handoff.
 3. **Act** — create a tracked workflow and attach its local job when code runs.
 4. **Verify** — run syntax checks, focused smoke checks, and a diff check.
-5. **Reconcile** — the workflow reads the real job result and becomes completed or failed; it is not marked complete from optimistic UI state.
+5. **Reconcile** — the workflow reads the real job result and becomes completed or failed; it is not marked complete from optimistic UI state. If the local helper restarts before a result is known, it becomes **needs review** rather than falsely claiming it still runs or silently completing it.
 6. **Record** — save the decision, boundary, and outcome in the project ledger so the next task has context.
 
 ## Guardrails

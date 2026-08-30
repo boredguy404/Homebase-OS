@@ -560,10 +560,16 @@ def reconcile_relay_workflows():
     items=relay_workflows();changed=False
     with RELAY_AGENT_LOCK: jobs={job_id:dict(job) for job_id,job in RELAY_AGENT_RUNS.items()}
     for item in items:
+        if item.get("state")!="running": continue
         job=jobs.get(item.get("job"))
-        if item.get("state")!="running" or not job or job.get("status") not in {"completed","failed"}: continue
-        item["state"]="completed" if job.get("status")=="completed" else "failed";item["updated"]=int(time.time());changed=True
-        log_relay_action(action_id=item["id"],kind="agent",stage="result",title="Workflow "+item["state"],detail="Local coding runner "+item["state"]+" with exit code "+str(job.get("exit_code")),target="NovaShell checkout",state="ok" if item["state"]=="completed" else "failed")
+        if job and job.get("status") in {"completed","failed"}:
+            item["state"]="completed" if job.get("status")=="completed" else "failed";item["updated"]=int(time.time());changed=True
+            log_relay_action(action_id=item["id"],kind="agent",stage="result",title="Workflow "+item["state"],detail="Local coding runner "+item["state"]+" with exit code "+str(job.get("exit_code")),target="NovaShell checkout",state="ok" if item["state"]=="completed" else "failed")
+        elif not job and int(time.time())-int(item.get("updated") or item.get("created") or 0)>90:
+            # Runner state lives only in memory. After a helper restart we must
+            # not keep claiming an old job is running, nor invent a completion.
+            item["state"]="needs-review";item["updated"]=int(time.time());changed=True
+            log_relay_action(action_id=item["id"],kind="agent",stage="result",title="Workflow needs review",detail="The local helper restarted before this runner's final status could be reconciled. Review the work and mark a new workflow if needed.",target="NovaShell checkout",state="failed")
     if changed: save_relay_workflows(items)
     return items
 
