@@ -37,6 +37,14 @@ The FTP audit has been completed at metadata level: 120 top-level candidates and
 
 Both repositories keep their own focused history and stable tags. Future extracted projects follow the same provenance/privacy/removal gate before they are called stable.
 
+## Stable module gate
+
+Every removable NovaShell module participates in `bash scripts/source-module-smoke.sh`.
+The release check confirms each manifest, declared local entry, JavaScript syntax,
+and local HTTP entry response without inspecting private app data or source
+archives. Focused visual and hardware checks still apply when a feature changes
+those surfaces.
+
 ## 2026-08-25 capability integration
 
 The approved Tempo/Cadence recovery pattern is now represented as a clean
