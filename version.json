@@ -1,8 +1,9 @@
 {
-  "version": "142",
+  "version": "143",
   "released": "2026-08-30",
-  "notes": "NovaShell 142 turns the Second Brain into a richer, filtered source map and records clean source-informed build rules.",
+  "notes": "NovaShell 143 adds a removable local Signal Board and improves the source-informed Second Brain map.",
   "changes": [
+    "Signal Board is a new removable, read-only local dashboard for Relay knowledge, modular apps, durable workflows, and Project Board activity. It uses existing local NovaShell endpoints and makes no model or network call.",
     "Second Brain now has focused filters for decisions, workflows, boundaries, maps, guides, and optional local imports, alongside its local full-text reader.",
     "Relay now carries a clean capability portfolio, source-informed build decision, workflow playbook, and reviewable next-integration candidates. These are NovaShell-authored summaries; no private archive or FTP content is bundled.",
     "Relay workflow proof created a removable local Workflow Proof app, made a constrained harness core change, and recorded a separate reviewed external-workspace handoff.",

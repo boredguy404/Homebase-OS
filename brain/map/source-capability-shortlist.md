@@ -23,6 +23,7 @@
 | Skeletal animation tool | do not substitute a generic draggable rig; revisit only after a faithful source-workflow review | rejected prototype removed |
 | Round/interval timer | Focus Deck training mode | shipped |
 | Hydration/breath/reset PWA | removable Reset Station, rebuilt from FTP manifest concept | shipped |
+| Local system/capability dashboard | removable Signal Board, rebuilt from reviewed dashboard patterns | shipped |
 
 ## Exclude or consolidate
 

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Signal Board · NovaShell</title>
+  <script src="/assets/scripts/shared/theme-sync.js"></script>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <main class="shell">
+    <button class="back" type="button" onclick="parent!==window&&parent.closePocket?parent.closePocket():history.back()">← NovaShell</button>
+    <header><div><small>LOCAL SYSTEM PULSE</small><h1>Signal Board</h1><p>A read-only dashboard for the parts NovaShell is already running: the Relay knowledge base, modular apps, durable workflows, and Project Board activity.</p></div><button id="refresh" type="button">Refresh signal</button></header>
+    <p id="status" role="status">Reading the local shell…</p>
+    <section id="metrics" class="metrics" aria-label="NovaShell system metrics"></section>
+    <section class="grid">
+      <article class="panel"><small>KNOWLEDGE MAP</small><h2>Relay context</h2><p id="knowledge-copy">Local notes, decisions, and boundaries are loading.</p><a href="/pages/second-brain.html">Open Second Brain →</a></article>
+      <article class="panel"><small>WORKFLOW STATE</small><h2>Tracked work</h2><div id="workflow-copy" class="list">Loading…</div><a href="/pages/utility-desk.html#project-board">Open Project Board →</a></article>
+      <article class="panel"><small>MODULE ROUTING</small><h2>What belongs where</h2><ul><li>Shell-wide behavior: core modules.</li><li>Focused tools: removable user apps.</li><li>Personal state: browser-local by default.</li><li>External work: explicit handoff only.</li></ul><a href="/api/relay/knowledge/brain-map-capability-portfolio-md" target="_blank" rel="noopener">Read capability portfolio →</a></article>
+    </section>
+    <footer>Local read-only view · no model call · no credentials · no source archive content</footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

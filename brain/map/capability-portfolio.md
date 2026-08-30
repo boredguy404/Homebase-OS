@@ -19,6 +19,7 @@ This is the short map Relay should use when deciding whether a request belongs i
 | Desktop world | NovaShell World + Maker Desk | tangible navigation is optional, never the only route | active |
 | Weather and local signals | Weather Station + Rail Finder | show source/state clearly and fail softly | active |
 | Image viewing | Gallery app | owner-picked files, no cloud upload required | active |
+| Source and system pulse | Signal Board | a dashboard can be useful without becoming a hidden control plane | active |
 | Markets, sports, routes | Browse candidates | needs stable data sources and a separate accuracy review | research |
 
 ## Routing rule

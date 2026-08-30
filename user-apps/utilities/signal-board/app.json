@@ -1,0 +1,6 @@
+{
+  "name": "Signal Board",
+  "description": "A local, read-only pulse of NovaShell modules, knowledge, and tracked work.",
+  "icon": "▦",
+  "entry": "index.html"
+}
