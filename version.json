@@ -1,8 +1,11 @@
 {
-  "version": "152",
+  "version": "153",
   "released": "2026-08-30",
-  "notes": "NovaShell 152 fixes saved-theme boot consistency and gives every shared Retro window one clear close control.",
+  "notes": "NovaShell 153 makes the desktop honest about what stays inside NovaShell, what is useful locally, and what opens elsewhere.",
   "changes": [
+    "The desktop is now organized in the same order for Retro and modern themes: NovaShell essentials, Local utility, Find & add, Local add-ons, then Opens outside NovaShell.",
+    "Every tile now carries an explicit destination badge. External web, ChromeOS, and Linux launches are grouped last rather than mixed into useful in-shell tools.",
+    "Retro Start now calls out that its destinations stay in NovaShell and directs external launches to the separately labeled desktop group.",
     "A saved Ultra Retro preference now survives the visual migration on first launch instead of being reset to a modern theme; embedded Workflow Proof also inherits the selected theme immediately.",
     "Shared Retro window chrome now adopts nested legacy close icons into its title bar and removes duplicate × controls, including Pokédex detail sheets.",
     "Workflow Proof now explains its local-only checklist purpose in plain language: repeat a launch, backup, install, or handoff without losing steps or sending data anywhere.",
