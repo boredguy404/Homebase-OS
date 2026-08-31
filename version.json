@@ -1,8 +1,10 @@
 {
-  "version": "153",
+  "version": "154",
   "released": "2026-08-30",
-  "notes": "NovaShell 153 makes the desktop honest about what stays inside NovaShell, what is useful locally, and what opens elsewhere.",
+  "notes": "NovaShell 154 keeps the everyday dashboard focused on useful core tools and removes publishing clutter.",
   "changes": [
+    "Publish Homebase and README Studio were removed from the desktop and Retro Help menu; the supporting pages remain available to maintainers without occupying daily space.",
+    "Optional local add-on cards are no longer shown on the primary desktop. Installed apps remain intact and manageable, while the dashboard stays focused on core utility.",
     "The desktop is now organized in the same order for Retro and modern themes: NovaShell essentials, Local utility, Find & add, Local add-ons, then Opens outside NovaShell.",
     "Every tile now carries an explicit destination badge. External web, ChromeOS, and Linux launches are grouped last rather than mixed into useful in-shell tools.",
     "Retro Start now calls out that its destinations stay in NovaShell and directs external launches to the separately labeled desktop group.",

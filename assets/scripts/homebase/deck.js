@@ -119,7 +119,6 @@ addEventListener('DOMContentLoaded',()=>{
   if(files){files.querySelector('b').textContent='My Library';files.querySelector('span').textContent='Your personal drop space for files, media, projects, installers, and owned games.';files.onclick=()=>openPanel('/pages/files.html?path=My%20Library')}
   const libraryTile=[...document.querySelectorAll('.tile')].find(tile=>tile.querySelector('b')?.textContent==='My Library');if(libraryTile)libraryTile.querySelector('i').textContent='▰';
   const steamTile=[...document.querySelectorAll('.tile')].find(tile=>tile.querySelector('b')?.textContent==='Steam Link');if(steamTile)steamTile.querySelector('i').textContent='◉';
-  const computer=document.querySelectorAll('.grid')[1];if(computer&&!document.querySelector('[data-github-setup]'))computer.insertAdjacentHTML('beforeend','<button class="tile" data-github-setup onclick="openPanel(\'/pages/github-setup.html\')"><i>⌂</i><b>Publish Homebase</b><span>Guided GitHub setup, privacy choices, README plan, and release media.</span></button><button class="tile" onclick="openPanel(\'/pages/readme-studio.html\')"><i>▧</i><b>README Studio</b><span>Capture real screenshots and plan a polished presentation with free tools.</span></button>');
   if(computer&&!document.querySelector('[data-browse]'))computer.insertAdjacentHTML('afterbegin','<button class="tile" data-browse onclick="openPanel(\'/pages/browse.html\')"><i>⌕</i><b>Browse</b><span>Search live news, books, references, and useful open-source projects without leaving Homebase.</span></button>');
   if(computer&&!document.querySelector('[data-assistant]'))computer.insertAdjacentHTML('afterbegin','<button class="tile" data-assistant onclick="openAssistant()"><i>✦</i><b>Relay</b><span>Persistent local-first assistant for games, apps, files, device health, and navigation.</span></button>');
   if(computer&&!document.querySelector('[data-settings]'))computer.insertAdjacentHTML('beforeend','<button class="tile" data-settings onclick="openPanel(\'/pages/settings.html\')"><i>⚙</i><b>Settings</b><span>Themes, visuals, private backup, restore, and installed-app inventory.</span></button>');
@@ -174,8 +173,7 @@ addEventListener('DOMContentLoaded',()=>{
   const groups=[
     ['novashell-essentials','NovaShell essentials','Stays inside NovaShell · games, music, and the useful daily surfaces.'],
     ['novashell-utility','Local utility','Stays inside NovaShell · practical tools and device-facing controls.'],
-    ['novashell-explore','Find & add','Stays inside NovaShell · browse software, sources, and optional local add-ons.'],
-    ['novashell-addons','Local add-ons','Stays inside NovaShell · optional apps kept on this device.'],
+    ['novashell-explore','Find & add','Stays inside NovaShell · browse software and useful sources.'],
     ['outside-homebase','Opens outside NovaShell','Launches another website, ChromeOS app, or Linux program.']
   ];
   const ensure=()=>groups.map(([id,title,copy])=>{
@@ -186,11 +184,11 @@ addEventListener('DOMContentLoaded',()=>{
   });
   const classify=tile=>{
     const name=tile.querySelector('b')?.textContent.trim()||'';
-    if(external.has(name)||tile.matches('a[target="_blank"],a[href^="http"]'))return 4;
+    if(external.has(name)||tile.matches('a[target="_blank"],a[href^="http"]'))return 3;
     if(core.has(name))return 0;
     if(utility.has(name))return 1;
     if(discovery.has(name))return 2;
-    return tile.dataset.userApp?3:1;
+    return 1;
   };
   let organizing=false,queued=false;
   const organize=()=>{
@@ -201,21 +199,28 @@ addEventListener('DOMContentLoaded',()=>{
     containers.forEach(container=>shell.append(container));
     document.querySelectorAll('.shell>.section-title,.shell>section.grid').forEach(node=>node.style.setProperty('display','none','important'));
     document.querySelectorAll('.tile').forEach(tile=>{
+      // Optional generated/imported apps remain installed and manageable, but
+      // they do not belong on the main dashboard.
+      if(tile.dataset.userApp){tile.remove();return}
       const group=classify(tile),name=tile.querySelector('b')?.textContent.trim()||'Item';
       tile.dataset.destination=groups[group][0];
-      const label=group===4?'OPENS OUTSIDE':group===3?'LOCAL ADD-ON':'IN NOVASHELL';
+      const label=group===3?'OPENS OUTSIDE':'IN NOVASHELL';
       let badge=tile.querySelector('.destination-badge');
       if(!badge){badge=document.createElement('small');badge.className='destination-badge';tile.append(badge)}
       badge.textContent=label;
       const target=containers[group].querySelector('.grid');if(tile.parentElement!==target)target.append(tile);
       tile.setAttribute('aria-label',name+' · '+badge.textContent.toLowerCase().replaceAll('-',' '));
     });
+    containers.forEach(container=>container.style.setProperty('display',container.querySelector('.grid .tile')?'':'none','important'));
     organizing=false;
   };
   organize();
   new MutationObserver(()=>{if(organizing||queued)return;queued=true;requestAnimationFrame(()=>{queued=false;organize()})}).observe(shell,{childList:true,subtree:true});
   document.head.insertAdjacentHTML('beforeend','<style data-desktop-categories>.desktop-category{margin:34px 0}.desktop-category>header{position:relative;z-index:4;display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,420px);gap:18px;align-items:end;margin:0 0 14px}.desktop-category h2{margin:0;font-size:13px;letter-spacing:.11em;text-transform:uppercase}.desktop-category p{margin:0;padding:6px 8px;border:1px solid #ffffff18;border-radius:7px;background:#0d1720d9;color:var(--muted);font-size:11px;line-height:1.45;text-align:right}.destination-badge{position:absolute;right:14px;top:14px;padding:4px 6px;border:1px solid #ffffff2e;border-radius:999px;background:#0d1317cc;color:#b8d9df;font:700 8px ui-monospace,monospace;letter-spacing:.08em}.tile[data-destination="outside-homebase"] .destination-badge{border-color:#e5c27277;background:#2d2415d9;color:#ffe3a2}.tile[data-destination="novashell-addons"] .destination-badge{color:#b9efca}html[data-theme="ultra-retro"] .desktop-category{margin:22px 0}html[data-theme="ultra-retro"] .desktop-category>header{display:block;margin-bottom:9px;padding:7px 9px;border:2px solid #111;background:#000080;color:#fff;box-shadow:3px 3px #111}html[data-theme="ultra-retro"] .desktop-category h2{font:700 12px "MS Sans Serif",Tahoma,sans-serif;letter-spacing:.07em}html[data-theme="ultra-retro"] .desktop-category p{margin-top:4px;padding:0;border:0;border-radius:0;background:transparent;color:#fff!important;font:10px "MS Sans Serif",Tahoma,sans-serif;text-align:left}html[data-theme="ultra-retro"] .destination-badge{position:static;display:table;width:max-content;margin:7px 0 0;border:1px solid #111;border-radius:0;background:#fff;color:#000080;box-shadow:1px 1px #111}html[data-theme="ultra-retro"] .tile[data-destination="outside-homebase"] .destination-badge{background:#d4d4d4;color:#7a0000;border-color:#7a0000}@media(max-width:640px){.desktop-category>header{grid-template-columns:1fr;gap:5px}.desktop-category p{text-align:left}}</style>');
 });
+
+// Presentation/publishing helpers are deliberately kept off the everyday UI.
+addEventListener('DOMContentLoaded',()=>setTimeout(()=>document.querySelectorAll('[data-menu-action="readme"]').forEach(button=>button.remove()),180));
 
 /* This lives after drawOrbitMini on purpose.  The regular renderer draws every
    frame first; this pass owns Pixel Field in the expanded compact player. */
